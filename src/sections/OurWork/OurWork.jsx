@@ -2,14 +2,14 @@ import React, { useRef } from 'react';
 import './OurWork.css';
 import { useStickySection } from '../../hooks/useStickySection';
 
-// Project card images
-import corporateEventsImg from '../../assets/images/our-work/corporate-events.png';
-import cricketTournamentsImg from '../../assets/images/our-work/cricket-tournaments.png';
-import professionalCoachingImg from '../../assets/images/our-work/professional-coaching.png';
-import liveStreamingImg from '../../assets/images/our-work/live-streaming.png';
-import groundBookingImg from '../../assets/images/our-work/ground-booking.png';
-import sportswearProductsImg from '../../assets/images/our-work/sportswear-products.png';
-import sportsTechnologyImg from '../../assets/images/our-work/sports-technology.png';
+// Project card images (WebP format)
+import corporateEventsImg from '../../assets/images/our-work/corporate-events.webp';
+import cricketTournamentsImg from '../../assets/images/our-work/cricket-tournaments.webp';
+import professionalCoachingImg from '../../assets/images/our-work/professional-coaching.webp';
+import liveStreamingImg from '../../assets/images/our-work/live-streaming.webp';
+import groundBookingImg from '../../assets/images/our-work/ground-booking.webp';
+import sportswearProductsImg from '../../assets/images/our-work/sportswear-products.webp';
+import sportsTechnologyImg from '../../assets/images/our-work/sports-technology.webp';
 
 const projects = [
   {
