@@ -102,15 +102,32 @@ export default function Header() {
     };
   };
 
-  // Prevent background scrolling when mobile menu is open
+  // Prevent background scrolling when mobile/tablet menu is open (lock html & body)
   useEffect(() => {
     if (mobileMenuOpen && !isClosing) {
-      document.body.style.overflow = 'hidden';
+      document.documentElement.classList.add('nav-menu-open');
+      document.body.classList.add('nav-menu-open');
+
+      const handleTouchMove = (e) => {
+        const menu = document.querySelector('.mobile-fullscreen-menu');
+        if (menu && !menu.contains(e.target)) {
+          e.preventDefault();
+        }
+      };
+
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      return () => {
+        document.documentElement.classList.remove('nav-menu-open');
+        document.body.classList.remove('nav-menu-open');
+        window.removeEventListener('touchmove', handleTouchMove);
+      };
     } else {
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove('nav-menu-open');
+      document.body.classList.remove('nav-menu-open');
     }
     return () => {
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove('nav-menu-open');
+      document.body.classList.remove('nav-menu-open');
     };
   }, [mobileMenuOpen, isClosing]);
 
