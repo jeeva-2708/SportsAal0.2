@@ -202,25 +202,25 @@
   display: none;
 }
 
-/* Squeeze nav spacing gracefully on intermediate laptops (1025px - 1240px) */
-@media (min-width: 1025px) and (max-width: 1240px) {
+/* Squeeze nav spacing gracefully on intermediate laptops (1151px - 1300px) */
+@media (min-width: 1151px) and (max-width: 1300px) {
   .desktop-nav-menu {
-    gap: 1.4rem;
+    gap: 1.5rem;
   }
   .nav-link {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
   }
   .btn-header-cta {
-    padding: 0.55rem 1.1rem;
+    padding: 0.55rem 1.15rem;
     font-size: 0.825rem;
   }
 }
 
 /* ==========================================================================
-   Responsive Mobile & Tablet Navigation Drawer (≤1024px)
+   Responsive Mobile & Tablet Navigation Drawer (≤1150px)
    ========================================================================== */
 
-@media (max-width: 1024px) {
+@media (max-width: 1150px) {
   .site-header {
     padding: 1rem 0;
   }

@@ -289,18 +289,26 @@
   .hero-player-img { object-position: 4% center; }
 }
 
-@media (max-width: 1024px) and (min-width: 768px) {
+/* ==========================================================================
+   ALL TABLET RESOLUTIONS (768px - 1150px)
+   Including iPad (768x1024), iPad Air (820x1180), iPad Pro (834x1194, 1024x1366, 1032x1376)
+   Centered, cinematic sports poster layout with prominent batsman background
+   ========================================================================== */
+
+@media (max-width: 1150px) and (min-width: 768px) {
   .hero-section {
     min-height: 100vh;
     min-height: 100dvh;
-    padding-top: 5.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: clamp(5.5rem, 8vh, 7.5rem);
+    padding-bottom: clamp(3rem, 5vh, 4.5rem);
     display: flex;
     align-items: center;
+    justify-content: center;
     position: sticky;
     top: 0;
     z-index: 1;
     overflow: hidden;
+    text-align: center;
   }
 
   .hero-visual-layer {
@@ -323,70 +331,173 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 65% center;
+    object-position: 70% 30%;
     display: block;
-    filter: contrast(1.04) brightness(0.88);
+    filter: contrast(1.04) brightness(0.80);
+    transform: scale(1.02);
   }
 
   [data-theme="light"] .hero-player-img {
-    filter: contrast(1.05) brightness(0.92);
-    object-position: 65% center;
+    filter: contrast(1.05) brightness(0.88);
+    object-position: 70% 30%;
   }
 
+  /* Radial atmospheric vignette centered behind text for maximum legibility */
   .hero-blend-left {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-      to right,
-      var(--bg-primary) 0%,
-      rgba(5, 5, 5, 0.94) 36%,
-      rgba(5, 5, 5, 0.50) 65%,
-      transparent 100%
+    background: radial-gradient(
+      ellipse 85% 75% at 50% 50%,
+      rgba(5, 5, 5, 0.88) 0%,
+      rgba(5, 5, 5, 0.72) 42%,
+      rgba(5, 5, 5, 0.40) 70%,
+      rgba(5, 5, 5, 0.85) 100%
     );
     z-index: 2;
   }
 
   [data-theme="light"] .hero-blend-left {
-    background: linear-gradient(
-      to right,
-      var(--bg-primary) 0%,
-      rgba(217, 228, 238, 0.94) 36%,
-      rgba(217, 228, 238, 0.45) 65%,
-      transparent 100%
+    background: radial-gradient(
+      ellipse 85% 75% at 50% 50%,
+      rgba(217, 228, 238, 0.90) 0%,
+      rgba(217, 228, 238, 0.75) 42%,
+      rgba(217, 228, 238, 0.45) 70%,
+      rgba(217, 228, 238, 0.88) 100%
     );
+  }
+
+  .hero-blend-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    background: linear-gradient(to top, var(--bg-primary) 0%, transparent 100%);
+    z-index: 2;
+  }
+
+  .hero-blend-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20%;
+    background: linear-gradient(to bottom, var(--bg-overlay) 0%, transparent 100%);
+    z-index: 2;
   }
 
   .hero-container {
     position: relative;
     z-index: 5;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: clamp(1.5rem, 4vw, 3rem);
+    padding-right: clamp(1.5rem, 4vw, 3rem);
   }
 
   .hero-content {
-    max-width: 540px;
+    max-width: 740px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Centered Tag with symmetric red line accents */
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-tag::after {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 2px;
+    background-color: var(--color-primary);
+    border-radius: 2px;
   }
 
   .hero-title {
-    font-size: clamp(2.3rem, 5.2vw, 3.8rem);
+    font-size: clamp(2.4rem, 5.4vw, 4.2rem);
     line-height: 0.94 !important;
+    letter-spacing: 0.01em !important;
+    text-align: center;
+    margin: 0 auto 1.4rem auto;
+    width: 100%;
+  }
+
+  .title-row {
+    display: block;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .title-navy,
+  .text-red {
+    display: inline-block;
   }
 
   .hero-description {
-    max-width: 480px;
-    font-size: 0.95rem;
+    font-size: clamp(0.95rem, 1.8vw, 1.125rem);
+    line-height: 1.55;
+    text-align: center;
+    max-width: 580px;
+    margin: 0 auto 2rem auto;
+    color: var(--text-secondary);
   }
 
   .hero-cta-group {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    width: auto;
+    margin: 0 auto;
   }
 }
 
-/* Desktop & Laptop Height Optimizations (Prevents buttons from being cut off on 1366x768, 1536x864, or scaled 1080p screens) */
-@media (min-width: 768px) and (max-height: 850px) {
+/* Tablet Landscape Height Adjustment (e.g. 1024x768, 1180x820) */
+@media (max-width: 1150px) and (min-width: 768px) and (max-height: 800px) {
+  .hero-section {
+    padding-top: 4.75rem;
+    padding-bottom: 1.75rem;
+  }
+
+  .hero-tag {
+    margin-bottom: 0.65rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.1rem, 5.2vh, 3.4rem);
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-description {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin-bottom: 1.25rem;
+  }
+
+  .btn {
+    padding: 0.72rem 1.45rem;
+    font-size: 0.825rem;
+  }
+}
+
+/* Desktop & Laptop Height Optimizations (≥1151px) */
+@media (min-width: 1151px) and (max-height: 850px) {
   .hero-section {
     padding-top: 4.5rem;
     padding-bottom: 1.35rem;
@@ -413,7 +524,7 @@
   }
 }
 
-@media (min-width: 768px) and (max-height: 720px) {
+@media (min-width: 1151px) and (max-height: 720px) {
   .hero-section {
     padding-top: 4rem;
     padding-bottom: 1rem;
