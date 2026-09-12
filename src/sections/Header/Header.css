@@ -202,11 +202,25 @@
   display: none;
 }
 
+/* Squeeze nav spacing gracefully on intermediate laptops (1025px - 1240px) */
+@media (min-width: 1025px) and (max-width: 1240px) {
+  .desktop-nav-menu {
+    gap: 1.4rem;
+  }
+  .nav-link {
+    font-size: 0.85rem;
+  }
+  .btn-header-cta {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.825rem;
+  }
+}
+
 /* ==========================================================================
-   Responsive Mobile Navigation & Open/Close Animations (≤767px)
+   Responsive Mobile & Tablet Navigation Drawer (≤1024px)
    ========================================================================== */
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .site-header {
     padding: 1rem 0;
   }

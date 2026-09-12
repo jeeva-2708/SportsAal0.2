@@ -290,12 +290,99 @@
 }
 
 @media (max-width: 1024px) and (min-width: 768px) {
-  .hero-section { min-height: auto; padding-top: 5.5rem; padding-bottom: 2.5rem; }
-  .hero-content { max-width: 100%; }
-  .hero-title { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
-  .hero-description { max-width: 100%; }
-  .hero-visual-layer { width: 54vw; opacity: 0.85; }
-  .hero-player-img { object-position: 2% center; }
+  .hero-section {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: 5.5rem;
+    padding-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .hero-visual-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hero-visual-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .hero-player-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 65% center;
+    display: block;
+    filter: contrast(1.04) brightness(0.88);
+  }
+
+  [data-theme="light"] .hero-player-img {
+    filter: contrast(1.05) brightness(0.92);
+    object-position: 65% center;
+  }
+
+  .hero-blend-left {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      var(--bg-primary) 0%,
+      rgba(5, 5, 5, 0.94) 36%,
+      rgba(5, 5, 5, 0.50) 65%,
+      transparent 100%
+    );
+    z-index: 2;
+  }
+
+  [data-theme="light"] .hero-blend-left {
+    background: linear-gradient(
+      to right,
+      var(--bg-primary) 0%,
+      rgba(217, 228, 238, 0.94) 36%,
+      rgba(217, 228, 238, 0.45) 65%,
+      transparent 100%
+    );
+  }
+
+  .hero-container {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+  }
+
+  .hero-content {
+    max-width: 540px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.3rem, 5.2vw, 3.8rem);
+    line-height: 0.94 !important;
+  }
+
+  .hero-description {
+    max-width: 480px;
+    font-size: 0.95rem;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
 }
 
 /* Desktop & Laptop Height Optimizations (Prevents buttons from being cut off on 1366x768, 1536x864, or scaled 1080p screens) */
