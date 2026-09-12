@@ -7,8 +7,8 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding-top: 6rem;
-  padding-bottom: 2.5rem;
+  padding-top: 4.75rem;
+  padding-bottom: 1.75rem;
   transition: background-color 0.3s ease;
 }
 
@@ -94,12 +94,12 @@
 }
 
 .hero-title {
-  font-size: clamp(2.8rem, 5.2vw, 5.0rem);
-  line-height: 0.90 !important;
+  font-size: clamp(2.4rem, min(4.4vw, 7vh), 4.5rem);
+  line-height: 0.92 !important;
   letter-spacing: 0.01em !important;
   text-transform: uppercase;
   color: var(--text-headline-navy);
-  margin-bottom: 1.35rem;
+  margin-bottom: 1.1rem;
   transition: color 0.3s ease;
 }
 
@@ -122,12 +122,12 @@
 /* Supporting Paragraph */
 .hero-description {
   font-family: 'Barlow', 'Archivo', sans-serif !important;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.48;
   color: var(--text-secondary);
   max-width: 480px;
-  margin-bottom: 1.85rem;
+  margin-bottom: 1.4rem;
   transition: color 0.3s ease;
 }
 
@@ -135,7 +135,7 @@
 .hero-cta-group {
   display: flex;
   align-items: center;
-  gap: 1.15rem;
+  gap: 1rem;
 }
 
 .btn {
@@ -277,25 +277,80 @@
    ========================================================================== */
 
 @media (max-width: 1440px) {
-  .hero-title { font-size: clamp(2.6rem, 4.8vw, 4.6rem); }
+  .hero-title { font-size: clamp(2.3rem, min(4.2vw, 6.8vh), 4.2rem); }
   .hero-visual-layer { width: 62vw; }
   .hero-player-img { object-position: 6% center; }
 }
 
 @media (max-width: 1240px) {
   .hero-content { max-width: 620px; }
-  .hero-title { font-size: clamp(2.4rem, 4.4vw, 4.2rem); }
+  .hero-title { font-size: clamp(2.15rem, min(4vw, 6.5vh), 3.8rem); }
   .hero-visual-layer { width: 58vw; }
   .hero-player-img { object-position: 4% center; }
 }
 
 @media (max-width: 1024px) and (min-width: 768px) {
-  .hero-section { min-height: auto; padding-top: 6.5rem; padding-bottom: 3rem; }
+  .hero-section { min-height: auto; padding-top: 5.5rem; padding-bottom: 2.5rem; }
   .hero-content { max-width: 100%; }
   .hero-title { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
   .hero-description { max-width: 100%; }
   .hero-visual-layer { width: 54vw; opacity: 0.85; }
   .hero-player-img { object-position: 2% center; }
+}
+
+/* Desktop & Laptop Height Optimizations (Prevents buttons from being cut off on 1366x768, 1536x864, or scaled 1080p screens) */
+@media (min-width: 768px) and (max-height: 850px) {
+  .hero-section {
+    padding-top: 4.5rem;
+    padding-bottom: 1.35rem;
+  }
+
+  .hero-tag {
+    margin-bottom: 0.6rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.15rem, 5.6vh, 3.8rem);
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-description {
+    font-size: 0.92rem;
+    line-height: 1.45;
+    margin-bottom: 1.2rem;
+  }
+
+  .btn {
+    padding: 0.72rem 1.45rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (min-width: 768px) and (max-height: 720px) {
+  .hero-section {
+    padding-top: 4rem;
+    padding-bottom: 1rem;
+  }
+
+  .hero-tag {
+    margin-bottom: 0.45rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.95rem, 5.2vh, 3.2rem);
+    margin-bottom: 0.65rem;
+  }
+
+  .hero-description {
+    font-size: 0.86rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .btn {
+    padding: 0.65rem 1.3rem;
+    font-size: 0.8rem;
+  }
 }
 
 /* ==========================================================================
