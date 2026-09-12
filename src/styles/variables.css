@@ -144,8 +144,8 @@
 
 /* Spacing & Layout Tokens */
 :root {
-  --container-max-width: 1560px;
-  --container-padding: 4.5rem;
+  --container-max-width: 1280px;
+  --container-padding: 2.5rem;
   --section-padding-y: 5rem;
   --section-padding-y-mobile: 3rem;
 
