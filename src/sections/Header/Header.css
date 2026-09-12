@@ -242,8 +242,9 @@
   }
 
   .desktop-nav-menu,
-  .btn-header-cta {
-    display: none;
+  .btn-header-cta,
+  .header-actions .theme-toggle-btn {
+    display: none !important;
   }
 
   .mobile-toggle-circle {
@@ -269,18 +270,18 @@
 
   /* Opening Slide-Down & Scale-Up Animation */
   .mobile-fullscreen-menu.opening {
-    animation: mobileMenuSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: mobileMenuSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  /* Closing Slide-Up & Fade-Out Animation */
+  /* Closing Slide-Up & Fade-Out Animation (Delayed so items exit first from bottom to top!) */
   .mobile-fullscreen-menu.closing {
-    animation: mobileMenuSlideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: mobileMenuSlideOut 0.30s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
   }
 
   @keyframes mobileMenuSlideIn {
     from {
       opacity: 0;
-      transform: translateY(-20px) scale(0.98);
+      transform: translateY(-24px) scale(0.98);
     }
     to {
       opacity: 1;
@@ -295,7 +296,7 @@
     }
     to {
       opacity: 0;
-      transform: translateY(-20px) scale(0.98);
+      transform: translateY(-28px) scale(0.98);
     }
   }
 
@@ -380,6 +381,60 @@
     animation: navLinkFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.26s forwards;
   }
 
+  /* Reverse Staggered Exit Animations for Navigation Items When Closing (Bottom to Top) */
+  @keyframes navLinkFadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-18px);
+    }
+  }
+
+  /* When closing, keep items visible at opacity 1 until their specific staggered exit triggers */
+  .mobile-fullscreen-menu.closing .mobile-nav-item,
+  .mobile-fullscreen-menu.closing .mobile-menu-footer,
+  .mobile-fullscreen-menu.closing .mobile-menu-top {
+    opacity: 1;
+  }
+
+  /* 1. Bottom: Footer & Theme Switcher disappears first */
+  .mobile-fullscreen-menu.closing .mobile-menu-footer {
+    animation: navLinkFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0s both;
+  }
+
+  /* 2. Item 5: CONTACT (Bottom link disappears first) */
+  .mobile-fullscreen-menu.closing .item-5 {
+    animation: navLinkFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  }
+
+  /* 3. Item 4: COACHING */
+  .mobile-fullscreen-menu.closing .item-4 {
+    animation: navLinkFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.10s both;
+  }
+
+  /* 4. Item 3: TOURNAMENTS */
+  .mobile-fullscreen-menu.closing .item-3 {
+    animation: navLinkFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  }
+
+  /* 5. Item 2: VENUES */
+  .mobile-fullscreen-menu.closing .item-2 {
+    animation: navLinkFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.20s both;
+  }
+
+  /* 6. Item 1: SERVICES (Top link disappears last of the links) */
+  .mobile-fullscreen-menu.closing .item-1 {
+    animation: navLinkFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+  }
+
+  /* 7. Header Top Bar (Logo & Close 'X') */
+  .mobile-fullscreen-menu.closing .mobile-menu-top {
+    animation: navLinkFadeOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+  }
+
   .mobile-nav-item:hover {
     padding-left: 0.5rem;
   }
@@ -416,6 +471,65 @@
 
   .mobile-fullscreen-menu.opening .mobile-menu-footer {
     animation: navLinkFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  }
+
+  /* Mobile Navigation Theme Switcher Row */
+  .mobile-theme-section {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+  }
+
+  .mobile-theme-title {
+    font-family: var(--font-body);
+    font-size: 0.825rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #71717A;
+    text-transform: uppercase;
+  }
+
+  .mobile-theme-pill-box {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .mobile-theme-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 1rem;
+    border-radius: 9999px;
+    border: none;
+    background: transparent;
+    color: #A1A1AA;
+    font-family: var(--font-body);
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .mobile-theme-pill-btn .pill-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .mobile-theme-pill-btn.active {
+    background: #FF2B2B;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 10px rgba(255, 43, 43, 0.35);
+  }
+
+  .mobile-theme-pill-btn.active .pill-icon {
+    transform: scale(1.05);
   }
 
   .mobile-menu-divider {
@@ -528,5 +642,25 @@
     background: rgba(245, 45, 45, 0.1);
     border-color: rgba(245, 45, 45, 0.3);
     color: var(--color-primary);
+  }
+
+  /* ── Light Theme Overrides for Mobile Theme Switcher ── */
+  [data-theme="light"] .mobile-theme-title {
+    color: #526E8F;
+  }
+
+  [data-theme="light"] .mobile-theme-pill-box {
+    background: rgba(18, 52, 91, 0.08);
+    border: 1px solid rgba(18, 52, 91, 0.15);
+  }
+
+  [data-theme="light"] .mobile-theme-pill-btn {
+    color: #334D6E;
+  }
+
+  [data-theme="light"] .mobile-theme-pill-btn.active {
+    background: #F52D2D;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 10px rgba(245, 45, 45, 0.30);
   }
 }
