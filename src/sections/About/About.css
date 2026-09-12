@@ -14,12 +14,12 @@
   width: 100%;
 }
 
-/* Top 2-Column Grid Layout */
+/* Top 2-Column Grid Layout (Vertically Centers Left Content Relative to Feature Cards) */
 .about-top-grid {
   display: grid;
   grid-template-columns: 1fr 1.15fr;
   gap: 4rem;
-  align-items: start;
+  align-items: center;
 }
 
 /* Left Column Styling */
@@ -235,6 +235,7 @@
 @media (max-width: 1200px) {
   .about-top-grid {
     gap: 2.5rem;
+    align-items: center;
   }
 
   .stat-item {
