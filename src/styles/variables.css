@@ -1,0 +1,164 @@
+/* Google Fonts @import & @font-face declarations for Anton, Barlow, and Archivo */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Archivo:ital,wght@0,300..900;1,300..900&display=swap');
+
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/anton/v25/1Ptg8pYfAXabzssi5r4.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E_Ass58nQ.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E3_-gs51os8A.woff2') format('woff2');
+}
+
+/* Base Dark Theme (Default) */
+:root,
+[data-theme="dark"] {
+  /* Brand Typography */
+  --font-heading: 'Anton', sans-serif;
+  --font-body: 'Barlow', 'Archivo', sans-serif;
+
+  /* Brand Accent Colors */
+  --color-primary: #FF2B2B;
+  --color-primary-hover: #D41F1F;
+  --color-primary-active: #B01515;
+  --color-primary-glow: rgba(255, 43, 43, 0.25);
+  --color-primary-subtle: rgba(255, 43, 43, 0.1);
+
+  /* Background Palette */
+  --bg-primary: #050505;
+  --bg-secondary: #121212;
+  --bg-tertiary: #1A1A1A;
+  --bg-card: #121212;
+  --bg-card-hover: #1A1A1A;
+  --bg-overlay: rgba(5, 5, 5, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.05);
+
+  /* Text Colors */
+  --text-primary: #FFFFFF;
+  --text-headline-navy: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --text-body-navy: #A1A1AA;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.15);
+
+  /* Navigation Header Tokens (Floating Pill Design for Dark Mode) */
+  --header-bg: transparent;
+  --header-container-bg: rgba(18, 18, 18, 0.78);
+  --header-border: rgba(255, 255, 255, 0.12);
+  --header-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --header-nav-link: #D1D5DB;
+  --header-nav-link-hover: #FFFFFF;
+  --header-cta-bg: #FF2B2B;
+  --header-cta-text: #FFFFFF;
+
+  /* Hero Section Tokens */
+  --hero-blend-left: linear-gradient(to right, #050505 0%, rgba(5, 5, 5, 0.85) 45%, rgba(5, 5, 5, 0.3) 75%, transparent 100%);
+  --hero-title-white: #FFFFFF;
+
+  /* Card & Panel Tokens */
+  --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+  --stat-panel-bg: #121212;
+  --stat-label-color: #FFFFFF;
+  --section-stack-shadow: 0 -30px 60px rgba(0, 0, 0, 0.95);
+
+  /* Theme Switcher Button Tokens */
+  --toggle-bg: rgba(255, 255, 255, 0.08);
+  --toggle-border: rgba(255, 255, 255, 0.15);
+  --toggle-icon-color: #FFD700;
+}
+
+/* Light Theme (Noticeable Athletic Cool Slate Mist Tone - Non-Glare & Non-Gray) */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Brand Accent Colors */
+  --color-primary: #F52D2D;
+  --color-primary-hover: #D41F1F;
+  --color-primary-active: #B01515;
+  --color-primary-glow: rgba(245, 45, 45, 0.2);
+  --color-primary-subtle: rgba(245, 45, 45, 0.08);
+
+  /* Background Palette: Noticeably tinted, distinctly not white and not dull gray */
+  --bg-primary: #D9E4EE;
+  --bg-secondary: #E8F0F8;
+  --bg-tertiary: #CAD8E6;
+  --bg-card: #E8F0F8;
+  --bg-card-hover: #DFEBF5;
+  --bg-overlay: rgba(217, 228, 238, 0.94);
+  --bg-glass: rgba(18, 52, 91, 0.05);
+
+  /* Text Colors */
+  --text-primary: #12345B;
+  --text-headline-navy: #12345B;
+  --text-secondary: #334D6E;
+  --text-muted: #526E8F;
+  --text-body-navy: #334D6E;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(18, 52, 91, 0.12);
+  --border-medium: rgba(18, 52, 91, 0.20);
+
+  /* Navigation Header Tokens (Floating Pill Design for Light Mode) */
+  --header-bg: transparent;
+  --header-container-bg: rgba(232, 240, 248, 0.82);
+  --header-border: rgba(18, 52, 91, 0.12);
+  --header-shadow: 0 4px 25px rgba(18, 52, 91, 0.10);
+  --header-nav-link: #12345B;
+  --header-nav-link-hover: #F52D2D;
+  --header-cta-bg: #F52D2D;
+  --header-cta-text: #FFFFFF;
+
+  /* Hero Section Tokens */
+  --hero-blend-left: linear-gradient(to right, #D9E4EE 0%, rgba(217, 228, 238, 0.92) 45%, rgba(217, 228, 238, 0.4) 75%, transparent 100%);
+  --hero-title-white: #12345B;
+
+  /* Card & Panel Tokens */
+  --card-shadow: 0 10px 30px rgba(18, 52, 91, 0.10);
+  --stat-panel-bg: #E8F0F8;
+  --stat-label-color: #12345B;
+  --section-stack-shadow: 0 -20px 45px rgba(18, 52, 91, 0.14), 0 -1px 0 rgba(18, 52, 91, 0.10);
+
+  /* Theme Switcher Button Tokens */
+  --toggle-bg: rgba(18, 52, 91, 0.08);
+  --toggle-border: rgba(18, 52, 91, 0.18);
+  --toggle-icon-color: #12345B;
+}
+
+/* Spacing & Layout Tokens */
+:root {
+  --container-max-width: 1560px;
+  --container-padding: 4.5rem;
+  --section-padding-y: 5rem;
+  --section-padding-y-mobile: 3rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-glow: 0 0 20px rgba(245, 45, 45, 0.3);
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}

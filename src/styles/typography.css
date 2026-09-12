@@ -1,0 +1,72 @@
+/* Typography Classes & Rules */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading {
+  font-family: 'Anton', sans-serif !important;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  font-weight: 400 !important;
+  line-height: 0.92;
+  color: var(--text-primary);
+}
+
+body,
+p,
+button,
+input,
+textarea,
+select,
+.font-body {
+  font-family: 'Barlow', 'Archivo', sans-serif;
+  color: var(--text-primary);
+}
+
+/* Typography Utility Classes */
+.text-accent {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.heading-display {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 0.95;
+}
+
+.heading-1 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+
+.heading-2 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.heading-3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.body-large {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.body-regular {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.body-small {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
