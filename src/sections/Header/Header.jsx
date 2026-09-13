@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Header.css';
 import logoDarkImg from '../../assets/logos/sportsaal-logo.png';
+import { scrollToSection } from '../../utils/navigation';
 
 
 export default function Header() {
@@ -10,10 +11,13 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const toggleBtnRef = useRef(null);
   const overlayRef = useRef(null);
+  const scrollPositionRef = useRef(0);
+  const targetSectionRef = useRef(null);
 
   // Monitor scroll position to apply translucent color only when scrolled
   useEffect(() => {
     const handleScroll = () => {
+      if (document.body.classList.contains('nav-menu-open')) return;
       setIsScrolled(window.scrollY > 20);
     };
 
@@ -102,10 +106,17 @@ export default function Header() {
     };
   };
 
-  // Prevent background scrolling when mobile/tablet menu is open (lock html & body)
+  // Prevent background scrolling when mobile/tablet menu is open without losing scroll position
   useEffect(() => {
-    if (mobileMenuOpen && !isClosing) {
-      document.documentElement.classList.add('nav-menu-open');
+    if (mobileMenuOpen) {
+      // 1. Capture exact scroll offset before applying lock
+      const currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      scrollPositionRef.current = currentScrollY;
+
+      // 2. Lock body position without collapsing document height or resetting scrollTop
+      document.body.style.top = `-${currentScrollY}px`;
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
       document.body.classList.add('nav-menu-open');
 
       const handleTouchMove = (e) => {
@@ -116,20 +127,43 @@ export default function Header() {
       };
 
       window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
       return () => {
-        document.documentElement.classList.remove('nav-menu-open');
-        document.body.classList.remove('nav-menu-open');
         window.removeEventListener('touchmove', handleTouchMove);
+        document.body.classList.remove('nav-menu-open');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+
+        if (targetSectionRef.current) {
+          const target = targetSectionRef.current;
+          targetSectionRef.current = null;
+          setTimeout(() => {
+            scrollToSection(target);
+          }, 30);
+        } else {
+          // Closed without clicking navigation link; restore exact prior scroll position
+          document.documentElement.style.scrollBehavior = 'auto';
+          window.scrollTo(0, scrollPositionRef.current);
+          requestAnimationFrame(() => {
+            document.documentElement.style.scrollBehavior = '';
+          });
+        }
       };
-    } else {
-      document.documentElement.classList.remove('nav-menu-open');
-      document.body.classList.remove('nav-menu-open');
     }
-    return () => {
-      document.documentElement.classList.remove('nav-menu-open');
-      document.body.classList.remove('nav-menu-open');
+  }, [mobileMenuOpen]);
+
+  // Auto-close mobile menu if viewport resized to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1150 && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        setIsClosing(false);
+      }
     };
-  }, [mobileMenuOpen, isClosing]);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [mobileMenuOpen]);
 
   const handleOpenMenu = () => {
     setIsClosing(false);
@@ -145,23 +179,36 @@ export default function Header() {
     }, 600);
   };
 
+  const handleNavClick = (e, href) => {
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      targetSectionRef.current = href;
+      handleCloseMenu();
+    }
+  };
+
   const currentLogo = logoDarkImg;
 
   return (
     <header className={`site-header${isScrolled ? ' is-scrolled' : ''}`}>
       <div className={`container header-container${isScrolled ? ' is-scrolled' : ''}`}>
         {/* Brand Logo */}
-        <a href="#" className="brand-logo" aria-label="Sportsaal Home">
+        <a 
+          href="#hero" 
+          className="brand-logo" 
+          aria-label="Sportsaal Home"
+          onClick={(e) => { e.preventDefault(); scrollToSection('#hero'); }}
+        >
           <img src={currentLogo} alt="SPORTSAAL" className="brand-logo-img" />
         </a>
 
         {/* Desktop Navigation Menu */}
         <nav className="desktop-nav-menu">
-          <a href="#services" className="nav-link">Services</a>
-          <a href="#venues" className="nav-link">Venues</a>
-          <a href="#tournaments" className="nav-link">Tournaments</a>
-          <a href="#coaching" className="nav-link">Coaching</a>
-          <a href="#contact" className="nav-link">Contact</a>
+          <a href="#hero" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#hero'); }}>Home</a>
+          <a href="#about" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#about'); }}>About Us</a>
+          <a href="#services" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#services'); }}>Services</a>
+          <a href="#work" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#work'); }}>Our Work</a>
+          <a href="#contact" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#contact'); }}>Contact Us</a>
         </nav>
 
         {/* Header Actions */}
@@ -195,7 +242,11 @@ export default function Header() {
             )}
           </button>
 
-          <a href="#book" className="btn-header-cta">
+          <a 
+            href="#contact" 
+            className="btn-header-cta"
+            onClick={(e) => { e.preventDefault(); scrollToSection('#contact'); }}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="btn-calendar-icon">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
@@ -223,10 +274,11 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className={`mobile-fullscreen-menu ${isClosing ? 'closing' : 'opening'}`}>
           <div className="mobile-menu-top">
-            <a href="#" onClick={handleCloseMenu}>
+            <a href="#" className="mobile-menu-logo-link" onClick={(e) => { e.preventDefault(); handleCloseMenu(); }}>
               <img src={logoDarkImg} alt="SPORTSAAL" className="mobile-menu-logo" />
             </a>
             <button
+              type="button"
               className="mobile-close-x"
               onClick={handleCloseMenu}
               aria-label="Close navigation menu"
@@ -239,14 +291,20 @@ export default function Header() {
           </div>
 
           <nav className="mobile-nav-links">
-            {['SERVICES','VENUES','TOURNAMENTS','COACHING','CONTACT'].map((label, i) => (
+            {[
+              { label: 'HOME', href: '#hero' },
+              { label: 'ABOUT US', href: '#about' },
+              { label: 'SERVICES', href: '#services' },
+              { label: 'OUR WORK', href: '#work' },
+              { label: 'CONTACT US', href: '#contact' },
+            ].map((item, i) => (
               <a
-                key={label}
-                href={`#${label.toLowerCase()}`}
+                key={item.label}
+                href={item.href}
                 className={`mobile-nav-item item-${i + 1}`}
-                onClick={handleCloseMenu}
+                onClick={(e) => handleNavClick(e, item.href)}
               >
-                <span className="item-text">{label}</span>
+                <span className="item-text">{item.label}</span>
                 <span className="item-arrow">→</span>
               </a>
             ))}
@@ -296,7 +354,7 @@ export default function Header() {
             </div>
 
             <div className="mobile-menu-divider"></div>
-            <a href="#book" className="mobile-cta-full-red" onClick={handleCloseMenu}>
+            <a href="#book" className="mobile-cta-full-red" onClick={(e) => handleNavClick(e, '#book')}>
               <span>BOOK A VENUE</span>
               <span className="cta-arrow">→</span>
             </a>

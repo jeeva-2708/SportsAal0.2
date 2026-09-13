@@ -1,0 +1,375 @@
+/* ==========================================================================
+   FOOTER SECTION STYLES
+   - Dark cinematic sports aesthetic matching website design system
+   - No background image (uses deep dark background with subtle ambient glow)
+   - 4-Column desktop layout: Brand/Socials, Quick Links, Services, Contact Us
+   - Fully responsive across Desktop, Tablet, and Mobile
+   ========================================================================== */
+
+.footer-section {
+  position: relative;
+  width: 100%;
+  min-height: auto !important;
+  background-color: var(--bg-primary, #050505);
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  padding-top: 5rem;
+  padding-bottom: 2rem;
+}
+
+/* Subtle stadium lighting / ambient top red glow */
+.footer-ambient-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 1100px;
+  height: 240px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 43, 43, 0.09) 0%, rgba(5, 5, 5, 0) 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Container */
+.footer-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ==========================================================================
+   MAIN 4-COLUMN GRID
+   ========================================================================== */
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.95fr 1.15fr 1.25fr;
+  gap: 48px;
+  align-items: flex-start;
+}
+
+/* Column Common Styles */
+.footer-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-col-title {
+  font-family: var(--font-body, 'Barlow', 'Archivo', sans-serif);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Red underline accent bar under column titles */
+.footer-title-bar {
+  width: 28px;
+  height: 2.5px;
+  background-color: var(--color-primary, #FF2B2B);
+  border-radius: 2px;
+  margin-top: 10px;
+  margin-bottom: 22px;
+}
+
+/* ==========================================================================
+   COLUMN 1: BRAND LOGO, DESCRIPTION & SOCIALS
+   ========================================================================== */
+
+.footer-col-brand {
+  max-width: 340px;
+}
+
+.footer-brand-logo {
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.footer-brand-logo:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.footer-logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.footer-brand-desc {
+  font-family: var(--font-body, 'Barlow', 'Archivo', sans-serif);
+  font-size: 0.935rem;
+  line-height: 1.65;
+  color: var(--text-secondary, #A1A1AA);
+  margin: 0 0 1.75rem 0;
+}
+
+/* Social Media Circular Buttons */
+.footer-social-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary, #A1A1AA);
+  text-decoration: none;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-social-btn:hover,
+.footer-social-btn:focus-visible {
+  background-color: var(--color-primary, #FF2B2B);
+  border-color: var(--color-primary, #FF2B2B);
+  color: #FFFFFF;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(255, 43, 43, 0.4);
+  outline: none;
+}
+
+/* ==========================================================================
+   COLUMNS 2 & 3: NAVIGATION LINKS
+   ========================================================================== */
+
+.footer-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-nav-list li a {
+  display: inline-block;
+  font-family: var(--font-body, 'Barlow', 'Archivo', sans-serif);
+  font-size: 0.935rem;
+  color: var(--text-secondary, #A1A1AA);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  line-height: 1.4;
+}
+
+.footer-nav-list li a:hover,
+.footer-nav-list li a:focus-visible {
+  color: var(--color-primary, #FF2B2B);
+  transform: translateX(4px);
+  outline: none;
+}
+
+/* ==========================================================================
+   COLUMN 4: CONTACT US
+   ========================================================================== */
+
+.footer-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.footer-contact-item {
+  display: flex;
+  align-items: center;
+}
+
+.footer-contact-link,
+.footer-contact-static {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  font-family: var(--font-body, 'Barlow', 'Archivo', sans-serif);
+  font-size: 0.935rem;
+  color: var(--text-secondary, #A1A1AA);
+  transition: all 0.24s ease;
+}
+
+.footer-contact-icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 43, 43, 0.1);
+  border: 1px solid rgba(255, 43, 43, 0.22);
+  color: var(--color-primary, #FF2B2B);
+  flex-shrink: 0;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footer-contact-text {
+  line-height: 1.4;
+}
+
+/* Hover on interactive contact links */
+.footer-contact-link:hover,
+.footer-contact-link:focus-visible {
+  color: #FFFFFF;
+  outline: none;
+}
+
+.footer-contact-link:hover .footer-contact-icon-box,
+.footer-contact-link:focus-visible .footer-contact-icon-box {
+  background-color: var(--color-primary, #FF2B2B);
+  border-color: var(--color-primary, #FF2B2B);
+  color: #FFFFFF;
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(255, 43, 43, 0.35);
+}
+
+.footer-contact-cta:hover .footer-contact-text {
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   BOTTOM COPYRIGHT & POLICY BAR
+   ========================================================================== */
+
+.footer-bottom-divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--border-subtle, rgba(255, 255, 255, 0.08));
+  margin: 50px 0 24px 0;
+}
+
+.footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  font-family: var(--font-body, 'Barlow', 'Archivo', sans-serif);
+  font-size: 0.865rem;
+  color: var(--text-muted, #71717A);
+}
+
+.footer-copyright {
+  line-height: 1.5;
+}
+
+.footer-policy-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-policy-link {
+  color: var(--text-muted, #71717A);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-policy-link:hover,
+.footer-policy-link:focus-visible {
+  color: #FFFFFF;
+  outline: none;
+}
+
+.footer-policy-sep {
+  color: rgba(255, 255, 255, 0.15);
+  user-select: none;
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+/* Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .footer-section {
+    padding-top: 4rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 32px;
+  }
+
+  .footer-col-brand {
+    max-width: 100%;
+  }
+
+  .footer-bottom-divider {
+    margin-top: 40px;
+  }
+}
+
+/* Mobile (max-width: 640px) */
+@media (max-width: 640px) {
+  .footer-section {
+    padding-top: 3.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .footer-col-brand {
+    max-width: 100%;
+  }
+
+  .footer-title-bar {
+    margin-bottom: 18px;
+  }
+
+  .footer-nav-list {
+    gap: 14px;
+  }
+
+  .footer-nav-list li a {
+    font-size: 0.975rem;
+    padding: 2px 0;
+  }
+
+  .footer-contact-list {
+    gap: 16px;
+  }
+
+  .footer-contact-link,
+  .footer-contact-static {
+    font-size: 0.95rem;
+  }
+
+  .footer-bottom-divider {
+    margin-top: 32px;
+    margin-bottom: 20px;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+  }
+
+  .footer-policy-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+}

@@ -30,10 +30,8 @@ body {
 }
 
 /* Background Scroll Lock when Navigation Menu is Active (Mobile & Tablet) */
-html.nav-menu-open,
 body.nav-menu-open {
   overflow: hidden !important;
-  height: 100% !important;
   overscroll-behavior: none !important;
   touch-action: none !important;
 }
@@ -107,6 +105,18 @@ body.nav-menu-open {
 
 .stacked-section-5 {
   z-index: 5;
+}
+
+.stacked-section-6 {
+  z-index: 6;
+}
+
+.stacked-section-7 {
+  z-index: 7;
+}
+
+.stacked-section-8 {
+  z-index: 8;
 }
 
 /* Reduced Motion Compliance */

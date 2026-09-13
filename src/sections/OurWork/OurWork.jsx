@@ -80,8 +80,8 @@ export default function OurWork() {
             </div>
 
             <h2 className="work-title">
-              <span className="title-row title-white">EVENTS THAT</span>
-              <span className="title-row">
+              <span className="work-title-row title-white">EVENTS THAT</span>
+              <span className="work-title-row work-title-row-accent">
                 <span className="text-red">BRING PEOPLE</span>{' '}
                 <span className="title-white">TOGETHER</span>
               </span>
@@ -118,24 +118,50 @@ export default function OurWork() {
         </div>
 
         {/* 4-Column Bento Project Cards Grid / Horizontal Scroll Carousel */}
-        <div className="work-grid" ref={gridRef}>
-          {projects.map((project) => (
-            <div 
-              key={project.id} 
-              className={`work-card${project.isFeatured ? ' featured-card' : ''}`}
-            >
+        <div className="work-carousel-wrapper">
+          {/* Overlay Arrow Left (visible on mobile/tablet carousel) */}
+          <button 
+            className="carousel-overlay-arrow arrow-overlay-left" 
+            onClick={() => handleScroll('left')}
+            aria-label="Previous work projects"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+
+          <div className="work-grid" ref={gridRef}>
+            {projects.map((project) => (
               <div 
-                className="work-card-bg" 
-                style={{ backgroundImage: `url(${project.image})` }}
-              ></div>
-              <div className="work-card-overlay"></div>
-              
-              <div className="work-card-content">
-                <h3 className="work-card-title">{project.title}</h3>
-                <p className="work-card-subtitle">{project.subtitle}</p>
+                key={project.id} 
+                className={`work-card${project.isFeatured ? ' featured-card' : ''}`}
+              >
+                <div 
+                  className="work-card-bg" 
+                  style={{ backgroundImage: `url(${project.image})` }}
+                ></div>
+                <div className="work-card-overlay"></div>
+                
+                <div className="work-card-content">
+                  <h3 className="work-card-title">{project.title}</h3>
+                  <p className="work-card-subtitle">{project.subtitle}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Overlay Arrow Right (visible on mobile/tablet carousel) */}
+          <button 
+            className="carousel-overlay-arrow arrow-overlay-right" 
+            onClick={() => handleScroll('right')}
+            aria-label="Next work projects"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
         </div>
 
         {/* Bottom CTA Button */}

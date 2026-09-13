@@ -61,7 +61,7 @@
 /* Display Headline */
 .work-title,
 .work-title *,
-.work-title .title-row,
+.work-title .work-title-row,
 .work-title .title-white,
 .work-title .text-red {
   font-family: 'Anton', sans-serif !important;
@@ -75,10 +75,21 @@
   letter-spacing: 0.01em !important;
   text-transform: uppercase;
   margin-bottom: 1.25rem;
+  text-align: left !important;
 }
 
-.work-title .title-row {
+.work-title-row {
   display: block;
+  text-align: left !important;
+  width: 100%;
+}
+
+.work-title-row-accent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: baseline;
+  text-align: left !important;
 }
 
 .title-white {
@@ -134,6 +145,16 @@
 
 .arrow-btn:active {
   transform: scale(0.95);
+}
+
+/* ── Carousel Wrapper & Overlay Controls ── */
+.work-carousel-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.carousel-overlay-arrow {
+  display: none;
 }
 
 /* ── 4-Column Bento Project Cards Grid ── */
@@ -314,6 +335,20 @@
   background: var(--color-primary);
 }
 
+[data-theme="light"] .carousel-overlay-arrow {
+  background: rgba(232, 240, 248, 0.92);
+  border-color: rgba(18, 52, 91, 0.25);
+  color: var(--text-headline-navy);
+  box-shadow: 0 4px 16px rgba(18, 52, 91, 0.18);
+}
+
+[data-theme="light"] .carousel-overlay-arrow:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 16px var(--color-primary-glow);
+}
+
 [data-theme="light"] .work-card {
   box-shadow: 0 8px 24px rgba(18, 52, 91, 0.12);
   border: 1px solid rgba(18, 52, 91, 0.16);
@@ -357,6 +392,33 @@
     margin-bottom: 2.25rem;
   }
 
+  .work-header-left {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .work-title {
+    text-align: left !important;
+  }
+
+  .work-title-row {
+    display: block;
+    text-align: left !important;
+    width: 100%;
+  }
+
+  .work-title-row-accent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: baseline;
+    text-align: left !important;
+  }
+
+  .work-description {
+    text-align: left !important;
+  }
+
   .work-grid {
     display: flex;
     overflow-x: auto;
@@ -372,25 +434,69 @@
     display: none;
   }
 
-  .work-card {
-    min-width: 290px;
-    width: 290px;
-    height: 350px;
+  /* Hide top header arrows on tablet/mobile in favor of carousel overlay arrows */
+  .work-header .work-nav-arrows {
+    display: none !important;
+  }
+
+  /* Show floating overlay arrows on left and right side of carousel */
+  .carousel-overlay-arrow {
+    display: flex;
+    position: absolute;
+    top: calc(50% - 1.25rem);
+    transform: translateY(-50%);
+    z-index: 25;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(255, 255, 255, 0.28);
+    color: #FFFFFF;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65);
+    transition: all var(--transition-fast);
+    padding: 0;
+  }
+
+  .carousel-overlay-arrow:hover {
+    background: rgba(255, 43, 43, 0.35);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 18px var(--color-primary-glow);
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  .carousel-overlay-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .arrow-overlay-left {
+    left: 0.25rem;
+  }
+
+  .arrow-overlay-right {
+    right: 0.25rem;
+  }
+
+  .work-card,
+  .work-card.featured-card {
+    min-width: 290px !important;
+    width: 290px !important;
+    max-width: 290px !important;
+    height: 350px !important;
+    min-height: 350px !important;
+    max-height: 350px !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
     flex-shrink: 0;
     scroll-snap-align: start;
   }
-
-  .work-card.featured-card {
-    grid-column: auto;
-    grid-row: auto;
-    min-height: 350px;
-    min-width: 290px;
-    width: 290px;
-    height: 350px;
-  }
 }
 
-/* Mobile View: Fluid Swipeable Carousel */
+/* Mobile View: Fluid Swipeable Carousel with Identical Card Sizes */
 @media (max-width: 767px) {
   .our-work-section {
     padding: 5rem 0;
@@ -400,21 +506,54 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 1.25rem;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .work-header-left {
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
   }
 
   .work-title {
-    font-size: clamp(2rem, 8vw, 2.75rem);
+    font-size: clamp(1.85rem, 7.8vw, 2.35rem);
+    line-height: 1.02 !important;
     margin-bottom: 0.85rem;
+    text-align: left !important;
+  }
+
+  .work-title-row {
+    display: block;
+    text-align: left !important;
+    width: 100%;
+  }
+
+  /* Stack BRING PEOPLE and TOGETHER on separate rows to prevent right-edge clipping on narrow screens */
+  .work-title-row-accent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left !important;
   }
 
   .work-description {
     font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: left !important;
   }
 
-  .work-nav-arrows {
-    align-self: flex-start;
-    margin-bottom: 0;
+  .carousel-overlay-arrow {
+    width: 40px;
+    height: 40px;
+    top: calc(50% - 1.15rem);
+  }
+
+  .arrow-overlay-left {
+    left: 0.15rem;
+  }
+
+  .arrow-overlay-right {
+    right: 0.15rem;
   }
 
   .work-grid {
@@ -422,11 +561,19 @@
     margin-bottom: 2.25rem;
   }
 
+  /* All cards, including the first/featured card, have the exact same size */
   .work-card,
   .work-card.featured-card {
-    min-width: 260px;
-    width: 260px;
-    height: 320px;
+    min-width: 260px !important;
+    width: 260px !important;
+    max-width: 260px !important;
+    height: 320px !important;
+    min-height: 320px !important;
+    max-height: 320px !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .work-card-content {

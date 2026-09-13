@@ -103,12 +103,12 @@
   transition: color 0.3s ease;
 }
 
-.title-row {
+.hero-title .title-row {
   display: block;
   white-space: nowrap;
 }
 
-.title-navy {
+.hero-title .title-navy {
   color: var(--text-headline-navy);
   display: inline-block;
   transition: color 0.3s ease;
@@ -437,14 +437,14 @@
     width: 100%;
   }
 
-  .title-row {
+  .hero-title .title-row {
     display: block;
     text-align: center;
     white-space: nowrap;
   }
 
-  .title-navy,
-  .text-red {
+  .hero-title .title-navy,
+  .hero-title .text-red {
     display: inline-block;
   }
 
@@ -697,7 +697,7 @@
     margin-bottom: 0.85rem;
   }
 
-  .title-row {
+  .hero-title .title-row {
     white-space: nowrap;
     display: block;
   }
@@ -805,7 +805,7 @@
     margin-bottom: 0.75rem !important;
   }
 
-  .title-row {
+  .hero-title .title-row {
     white-space: nowrap !important;
     display: block;
   }
