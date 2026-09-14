@@ -1,0 +1,446 @@
+/* ==========================================================================
+   SPORTSAAL SPLIT-SCREEN CRICKET LOADER
+   - Split 50/50 Screen: Top 50% Solid Black (#000000) / Bottom 50% Solid White (#FFFFFF)
+   - Bat & Ball animation positioned exactly at the central horizon seam
+   - Mathematically synchronized contact: zero gap, zero overlap, realistic squash/stretch
+   - Pure Code (HTML, CSS, SVG, JS) - Zero Video, GIF, or Lottie library
+   - Non-blocking overlay: page resources, components, and fonts load freely
+   ========================================================================== */
+
+/* Fullscreen Fixed Holding Overlay */
+.sportsaal-split-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, visibility;
+}
+
+/* Smooth Fade-Out State */
+.sportsaal-split-loader.loader-fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Prevent Background Scrolling While Loader is Displaying */
+body.sportsaal-loader-active {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   SPLIT 50/50 HORIZONTAL HALVES
+   -------------------------------------------------------------------------- */
+
+/* Top 50% Solid Black Half */
+.loader-half-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-color: #000000;
+  overflow: hidden;
+}
+
+/* Subtle Ambient Red Spotlight in Black Half */
+.loader-top-ambient-glow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  height: 240px;
+  background: radial-gradient(ellipse at 50% 100%, rgba(239, 28, 36, 0.18) 0%, rgba(239, 28, 36, 0.04) 50%, transparent 75%);
+  pointer-events: none;
+}
+
+/* Bottom 50% Solid White Half */
+.loader-half-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-color: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------------
+   CENTRAL STAGE (Centered right at the 50% boundary seam)
+   -------------------------------------------------------------------------- */
+
+.loader-center-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 440px;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+/* SVG Canvas (Y=150 in SVG aligns with 50% center seam) */
+.loader-canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  aspect-ratio: 400 / 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cricket-stage-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   MATHEMATICALLY SYNCHRONIZED BALL BOUNCE & BAT TAP PHYSICS
+   -------------------------------------------------------------------------- */
+
+/* Ball Trajectory: 0.92s seamless juggling loop */
+.cricket-ball-parent {
+  animation: ballVerticalBounce 0.92s cubic-bezier(0.33, 0, 0.67, 1) infinite;
+  will-change: transform;
+}
+
+/* Ball Elastic Squash & Stretch */
+/* Transform-origin is set at the bottom contact point (X: 175px, Y: 152px)
+   so the bottom of the ball stays pinned to the bat face with ZERO gap/overlap! */
+.cricket-ball-squash-box {
+  transform-origin: 175px 152px;
+  animation: ballContactSquash 0.92s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Seam Flight Rotation */
+.cricket-ball-seam {
+  transform-origin: 175px 132px;
+  animation: seamFlightWobble 0.92s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Ball Vertical Motion:
+   - Apex: translateY(-96px) in top black half
+   - Touchdown & Tap: perfectly meets bat at translateY(-11.7px) and follows bat up to -20.2px
+   - Rebound: launched upward with elastic stretch
+*/
+@keyframes ballVerticalBounce {
+  /* Apex (Highest point in top black half) */
+  0% {
+    transform: translateY(-96px);
+    animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.2); /* Gravity acceleration down */
+  }
+
+  /* Rapid descent */
+  32% {
+    transform: translateY(-62px);
+    animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 1);
+  }
+
+  /* Approaching strike zone */
+  40% {
+    transform: translateY(-24px);
+    animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
+  }
+
+  /* TOUCHDOWN ON RISING BAT: exact contact at -11.7px */
+  46% {
+    transform: translateY(-11.7px);
+  }
+
+  /* Driven upward by bat's powerful upward tap stroke */
+  49% {
+    transform: translateY(-20.2px);
+  }
+
+  /* LAUNCH: breaks away from bat upward */
+  52% {
+    transform: translateY(-42px);
+    animation-timing-function: cubic-bezier(0.25, 0.85, 0.45, 1); /* Deceleration against gravity */
+  }
+
+  /* Mid-flight ascent into black half */
+  60% {
+    transform: translateY(-78px);
+  }
+
+  /* Approaching apex */
+  74% {
+    transform: translateY(-94px);
+  }
+
+  /* Floating apex hold */
+  85%, 100% {
+    transform: translateY(-96px);
+    animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.2);
+  }
+}
+
+/* Elastic Squash & Stretch:
+   - Contact compression squashes down from top (bottom remains fixed at bat face)
+   - Launch rebound stretches vertically
+*/
+@keyframes ballContactSquash {
+  0%, 42% {
+    transform: scale(1, 1);
+  }
+  /* First touch */
+  46% {
+    transform: scale(1.1, 0.9);
+  }
+  /* Deepest strike compression */
+  49% {
+    transform: scale(1.24, 0.76);
+  }
+  /* Elastic rebound launch stretch */
+  52% {
+    transform: scale(0.86, 1.18);
+  }
+  /* Relaxing back in flight */
+  60% {
+    transform: scale(0.95, 1.05);
+  }
+  70%, 100% {
+    transform: scale(1, 1);
+  }
+}
+
+/* Realistic Seam Rotation in Flight */
+@keyframes seamFlightWobble {
+  0% {
+    transform: rotate(0deg);
+  }
+  46% {
+    transform: rotate(-18deg);
+  }
+  52% {
+    transform: rotate(14deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   CRICKET BAT ACTIVE JUGGLING TAP & RECOIL MOTION
+   -------------------------------------------------------------------------- */
+
+.cricket-bat-assembly {
+  transform-box: fill-box;
+  transform-origin: 85% 50%; /* Pivots naturally at the rubber handle grip */
+  animation: batTapMotion 0.92s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes batTapMotion {
+  /* Relaxed ready position while ball is high */
+  0% {
+    transform: translateY(6px) rotate(-3.5deg);
+  }
+
+  /* Cocking / loading stroke */
+  32% {
+    transform: translateY(7px) rotate(-4deg);
+  }
+
+  /* Lifting blade up to meet ball */
+  40% {
+    transform: translateY(1px) rotate(-1deg);
+  }
+
+  /* CONTACT: bat strikes up into the falling ball */
+  46% {
+    transform: translateY(-5px) rotate(3deg);
+  }
+
+  /* PEAK TAP STROKE: pushes through with authority */
+  49% {
+    transform: translateY(-9px) rotate(5deg);
+  }
+
+  /* Rebound follow-through */
+  52% {
+    transform: translateY(-5px) rotate(2.5deg);
+  }
+
+  /* Kinetic recoil absorption dip */
+  60% {
+    transform: translateY(8px) rotate(-4.5deg);
+  }
+
+  /* Smooth settling */
+  74% {
+    transform: translateY(5px) rotate(-3deg);
+  }
+
+  /* Settled in ready position */
+  85%, 100% {
+    transform: translateY(6px) rotate(-3.5deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   CONTACT SHADOW & IMPACT SHOCKWAVE
+   -------------------------------------------------------------------------- */
+
+.bat-face-shadow {
+  transform-origin: 175px 152.5px;
+  animation: batFaceShadowPulse 0.92s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes batFaceShadowPulse {
+  0%, 38% {
+    opacity: 0.1;
+    transform: scale(0.35);
+  }
+  /* Dark sharp contact shadow at impact */
+  46%, 50% {
+    opacity: 0.95;
+    transform: scale(1.15);
+  }
+  54% {
+    opacity: 0.35;
+    transform: scale(0.65);
+  }
+  100% {
+    opacity: 0.1;
+    transform: scale(0.35);
+  }
+}
+
+.bat-impact-ring {
+  transform-origin: 175px 152px;
+  animation: impactRingPulse 0.92s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes impactRingPulse {
+  0%, 45% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  /* Contact flash */
+  46% {
+    opacity: 0.95;
+    transform: scale(0.85);
+  }
+  52% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   STATUS TEXT DISPLAY (Positioned in Bottom White Half)
+   -------------------------------------------------------------------------- */
+
+.loader-status-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.35rem;
+}
+
+.loader-status-text {
+  font-family: var(--font-heading, 'Anton', sans-serif);
+  font-size: clamp(1.4rem, 4.8vw, 1.95rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Red Staggered Animated Wave Dots */
+.loader-dots {
+  display: inline-flex;
+  margin-left: 0.08em;
+}
+
+.loader-dots .dot {
+  display: inline-block;
+  color: #EF1C24; /* Signature Sportsaal red accent */
+  animation: loaderDotWave 1.3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.loader-dots .dot-1 {
+  animation-delay: 0s;
+}
+
+.loader-dots .dot-2 {
+  animation-delay: 0.2s;
+}
+
+.loader-dots .dot-3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes loaderDotWave {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+    filter: drop-shadow(0 2px 4px rgba(239, 28, 36, 0.45));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE & MOBILE DEVICE OPTIMIZATIONS
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .loader-center-stage {
+    padding: 0 1rem;
+  }
+
+  .loader-canvas-container {
+    max-width: 320px;
+  }
+
+  .loader-top-ambient-glow {
+    width: 280px;
+    height: 180px;
+  }
+
+  .loader-status-text {
+    font-size: 1.35rem;
+    letter-spacing: 0.16em;
+  }
+}
+

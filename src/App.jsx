@@ -9,10 +9,12 @@ import Testimonials from './sections/Testimonials/Testimonials.jsx';
 import Contact from './sections/Contact/Contact.jsx';
 import Footer from './sections/Footer/Footer.jsx';
 import AtmosphericMist from './components/common/AtmosphericMist/AtmosphericMist.jsx';
+import CustomCricketLoader from './components/common/CustomCricketLoader/CustomCricketLoader.jsx';
 
 export default function App() {
   return (
     <div className="app-root">
+      <CustomCricketLoader />
       <AtmosphericMist />
       <Header />
       <main>
