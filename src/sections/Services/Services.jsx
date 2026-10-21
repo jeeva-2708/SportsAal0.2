@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Services.css';
 import { useStickySection } from '../../hooks/useStickySection';
 
@@ -8,7 +9,7 @@ import tournamentsImg from '../../assets/images/our-services/tournaments.png';
 import coachingImg from '../../assets/images/our-services/coaching-programs.png';
 import eventsImg from '../../assets/images/our-services/event-management.png';
 import technologyImg from '../../assets/images/our-services/sports-technology.png';
-import athleteImg from '../../assets/images/our-services/athlete-management.png';
+import sportswearImg from '../../assets/images/our-work/sportswear-products.webp';
 
 const serviceImages = {
   venue: venueImg,
@@ -16,7 +17,7 @@ const serviceImages = {
   coaching: coachingImg,
   events: eventsImg,
   technology: technologyImg,
-  athlete: athleteImg,
+  sportswear: sportswearImg,
 };
 
 export default function Services() {
@@ -47,7 +48,7 @@ export default function Services() {
         <div className="services-grid">
           
           {/* Card 1: Venue Management */}
-          <div className="service-card">
+          <Link to="/services/venue-management" className="service-card">
             <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.venue})` }}></div>
             <div className="card-gradient-overlay"></div>
             
@@ -67,15 +68,15 @@ export default function Services() {
                 World-class infrastructure managed for performance and experience.
               </p>
 
-              <a href="#venue-management" className="card-link">
+              <div className="card-link">
                 <span>Learn More</span>
                 <span className="link-arrow">→</span>
-              </a>
+              </div>
             </div>
-          </div>
+          </Link>
 
           {/* Card 2: Tournaments */}
-          <div className="service-card">
+          <Link to="/services/cricket-tournaments" className="service-card">
             <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.tournaments})` }}></div>
             <div className="card-gradient-overlay"></div>
 
@@ -90,20 +91,20 @@ export default function Services() {
                 </svg>
               </div>
 
-              <h3 className="card-title">TOURNAMENTS</h3>
+              <h3 className="card-title">CRICKET TOURNAMENTS</h3>
               <p className="card-description">
                 End-to-end tournament management for corporate, amateur and professional events.
               </p>
 
-              <a href="#tournaments" className="card-link">
+              <div className="card-link">
                 <span>Learn More</span>
                 <span className="link-arrow">→</span>
-              </a>
+              </div>
             </div>
-          </div>
+          </Link>
 
           {/* Card 3: Coaching Programs */}
-          <div className="service-card">
+          <Link to="/services/professional-coaching" className="service-card">
             <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.coaching})` }}></div>
             <div className="card-gradient-overlay"></div>
 
@@ -116,20 +117,20 @@ export default function Services() {
                 </svg>
               </div>
 
-              <h3 className="card-title">COACHING PROGRAMS</h3>
+              <h3 className="card-title">PROFESSIONAL COACHING</h3>
               <p className="card-description">
                 Expert coaching for all ages and skill levels to unlock true potential.
               </p>
 
-              <a href="#coaching" className="card-link">
+              <div className="card-link">
                 <span>Learn More</span>
                 <span className="link-arrow">→</span>
-              </a>
+              </div>
             </div>
-          </div>
+          </Link>
 
           {/* Card 4: Event Management */}
-          <div className="service-card">
+          <Link to="/services/event-management" className="service-card">
             <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.events})` }}></div>
             <div className="card-gradient-overlay"></div>
 
@@ -148,15 +149,15 @@ export default function Services() {
                 Seamless planning and execution of sports events that leave a lasting impact.
               </p>
 
-              <a href="#event-management" className="card-link">
+              <div className="card-link">
                 <span>Learn More</span>
                 <span className="link-arrow">→</span>
-              </a>
+              </div>
             </div>
-          </div>
+          </Link>
 
           {/* Card 5: Sports Technology */}
-          <div className="service-card">
+          <Link to="/services/sports-technology" className="service-card">
             <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.technology})` }}></div>
             <div className="card-gradient-overlay"></div>
 
@@ -174,48 +175,45 @@ export default function Services() {
                 Data-driven insights and technology solutions to enhance performance.
               </p>
 
-              <a href="#sports-technology" className="card-link">
+              <div className="card-link">
                 <span>Learn More</span>
                 <span className="link-arrow">→</span>
-              </a>
+              </div>
             </div>
-          </div>
+          </Link>
 
-          {/* Card 6: Athlete Management */}
-          <div className="service-card">
-            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.athlete})` }}></div>
+          {/* Card 6: Sportswear & Products (Replaced Athlete Management) */}
+          <Link to="/services/sportswear-products" className="service-card">
+            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.sportswear})` }}></div>
             <div className="card-gradient-overlay"></div>
 
             <div className="card-content">
               <div className="card-icon">
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
                 </svg>
               </div>
 
-              <h3 className="card-title">ATHLETE MANAGEMENT</h3>
+              <h3 className="card-title">SPORTSWEAR & PRODUCTS</h3>
               <p className="card-description">
-                End-to-end support for athletes to grow, compete and succeed.
+                High-performance technical apparel, custom team kits, and handcrafted professional gear.
               </p>
 
-              <a href="#athlete-management" className="card-link">
+              <div className="card-link">
                 <span>Learn More</span>
                 <span className="link-arrow">→</span>
-              </a>
+              </div>
             </div>
-          </div>
+          </Link>
 
         </div>
 
         {/* Center Bottom Action CTA Button */}
         <div className="services-bottom-cta">
-          <a href="#all-services" className="btn-services-cta">
-            <span>EXPLORE ALL SERVICES</span>
+          <Link to="/services/corporate-events" className="btn-services-cta">
+            <span>EXPLORE CORPORATE & ALL SERVICES</span>
             <span className="cta-arrow">→</span>
-          </a>
+          </Link>
         </div>
 
       </div>

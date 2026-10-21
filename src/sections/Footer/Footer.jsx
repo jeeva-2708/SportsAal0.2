@@ -1,14 +1,30 @@
 import React from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Footer.css';
 import brandLogo from '../../assets/logos/sportsaal-logo.png';
 import { scrollToSection } from '../../utils/navigation';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleNavClick = (e, targetId) => {
     e.preventDefault();
-    scrollToSection(targetId);
+    if (location.pathname === '/') {
+      scrollToSection(targetId);
+    } else {
+      navigate('/' + targetId);
+    }
+  };
+
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      scrollToSection('#hero');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
@@ -23,9 +39,9 @@ export default function Footer() {
           {/* Column 1: Brand Info & Socials */}
           <div className="footer-col footer-col-brand">
             <a 
-              href="#hero" 
+              href="/" 
               className="footer-brand-logo" 
-              onClick={(e) => handleNavClick(e, '#hero')}
+              onClick={handleLogoClick}
               aria-label="Sportsaal Home"
             >
               <img 
@@ -108,22 +124,22 @@ export default function Footer() {
             <div className="footer-title-bar" aria-hidden="true" />
             <ul className="footer-nav-list">
               <li>
-                <a href="#hero" onClick={(e) => handleNavClick(e, '#hero')}>Home</a>
+                <a href="/#hero" onClick={(e) => handleNavClick(e, '#hero')}>Home</a>
               </li>
               <li>
-                <a href="#about" onClick={(e) => handleNavClick(e, '#about')}>About Us</a>
+                <a href="/#about" onClick={(e) => handleNavClick(e, '#about')}>About Us</a>
               </li>
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Services</a>
+                <a href="/#services" onClick={(e) => handleNavClick(e, '#services')}>Services</a>
               </li>
               <li>
-                <a href="#work" onClick={(e) => handleNavClick(e, '#work')}>Our Work</a>
+                <a href="/#work" onClick={(e) => handleNavClick(e, '#work')}>Our Work</a>
               </li>
               <li>
-                <a href="#testimonials" onClick={(e) => handleNavClick(e, '#testimonials')}>Testimonials</a>
+                <a href="/#testimonials" onClick={(e) => handleNavClick(e, '#testimonials')}>Testimonials</a>
               </li>
               <li>
-                <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')}>Contact Us</a>
+                <a href="/#contact" onClick={(e) => handleNavClick(e, '#contact')}>Contact Us</a>
               </li>
             </ul>
           </div>
@@ -134,25 +150,25 @@ export default function Footer() {
             <div className="footer-title-bar" aria-hidden="true" />
             <ul className="footer-nav-list">
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Corporate Events</a>
+                <Link to="/services/corporate-events">Corporate Events</Link>
               </li>
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Ground Booking</a>
+                <Link to="/services/venue-management">Venue Management</Link>
               </li>
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Live Streaming</a>
+                <Link to="/services/cricket-tournaments">Cricket Tournaments</Link>
               </li>
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Tournaments</a>
+                <Link to="/services/professional-coaching">Professional Coaching</Link>
               </li>
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Sportswear & Products</a>
+                <Link to="/services/event-management">Event Management</Link>
               </li>
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Coaching</a>
+                <Link to="/services/sports-technology">Sports Technology</Link>
               </li>
               <li>
-                <a href="#services" onClick={(e) => handleNavClick(e, '#services')}>Sports Technology</a>
+                <Link to="/services/sportswear-products">Sportswear & Products</Link>
               </li>
             </ul>
           </div>

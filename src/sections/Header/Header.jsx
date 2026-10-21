@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
 import logoDarkImg from '../../assets/logos/sportsaal-logo.png';
 import { scrollToSection } from '../../utils/navigation';
 
-
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -180,10 +182,22 @@ export default function Header() {
   };
 
   const handleNavClick = (e, href) => {
-    if (href && href.startsWith('#')) {
-      e.preventDefault();
-      targetSectionRef.current = href;
-      handleCloseMenu();
+    e.preventDefault();
+    handleCloseMenu();
+    if (location.pathname === '/') {
+      scrollToSection(href);
+    } else {
+      navigate('/' + href);
+    }
+  };
+
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    if (mobileMenuOpen) handleCloseMenu();
+    if (location.pathname === '/') {
+      scrollToSection('#hero');
+    } else {
+      navigate('/');
     }
   };
 
@@ -194,21 +208,21 @@ export default function Header() {
       <div className={`container header-container${isScrolled ? ' is-scrolled' : ''}`}>
         {/* Brand Logo */}
         <a 
-          href="#hero" 
+          href="/" 
           className="brand-logo" 
           aria-label="Sportsaal Home"
-          onClick={(e) => { e.preventDefault(); scrollToSection('#hero'); }}
+          onClick={handleLogoClick}
         >
           <img src={currentLogo} alt="SPORTSAAL" className="brand-logo-img" />
         </a>
 
         {/* Desktop Navigation Menu */}
         <nav className="desktop-nav-menu">
-          <a href="#hero" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#hero'); }}>Home</a>
-          <a href="#about" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#about'); }}>About Us</a>
-          <a href="#services" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#services'); }}>Services</a>
-          <a href="#work" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#work'); }}>Our Work</a>
-          <a href="#contact" className="nav-link" onClick={(e) => { e.preventDefault(); scrollToSection('#contact'); }}>Contact Us</a>
+          <a href="/#hero" className="nav-link" onClick={(e) => handleNavClick(e, '#hero')}>Home</a>
+          <a href="/#about" className="nav-link" onClick={(e) => handleNavClick(e, '#about')}>About Us</a>
+          <a href="/#services" className="nav-link" onClick={(e) => handleNavClick(e, '#services')}>Services</a>
+          <a href="/#work" className="nav-link" onClick={(e) => handleNavClick(e, '#work')}>Our Work</a>
+          <a href="/#contact" className="nav-link" onClick={(e) => handleNavClick(e, '#contact')}>Contact Us</a>
         </nav>
 
         {/* Header Actions */}
@@ -274,7 +288,7 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className={`mobile-fullscreen-menu ${isClosing ? 'closing' : 'opening'}`}>
           <div className="mobile-menu-top">
-            <a href="#" className="mobile-menu-logo-link" onClick={(e) => { e.preventDefault(); handleCloseMenu(); }}>
+            <a href="/" className="mobile-menu-logo-link" onClick={handleLogoClick}>
               <img src={logoDarkImg} alt="SPORTSAAL" className="mobile-menu-logo" />
             </a>
             <button
