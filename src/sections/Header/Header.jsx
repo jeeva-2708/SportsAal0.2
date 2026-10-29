@@ -119,8 +119,6 @@ export default function Header() {
     }
   };
 
-  const currentLogo = theme === 'light' ? logoLightImg : logoDarkImg;
-
   return (
     <header className={`site-header${isScrolled ? ' is-scrolled' : ''}`}>
       <div className={`container header-container${isScrolled ? ' is-scrolled' : ''}`}>
