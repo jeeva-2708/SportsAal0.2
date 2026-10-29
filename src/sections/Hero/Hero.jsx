@@ -30,8 +30,8 @@ const sportsaalServices = [
   'EVENT MANAGEMENT',
   'SPORTS TECHNOLOGY',
   'LIVE STREAMING',
-  'TURF & GROUND BOOKINGS',
-  'ATHLETIC CONDITIONING',
+  'GROUND BOOKINGS',
+  'SPORTSWEAR',
 ];
 
 export default function Hero() {
