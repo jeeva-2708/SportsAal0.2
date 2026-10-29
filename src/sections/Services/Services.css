@@ -1,18 +1,18 @@
 /* ==========================================================================
    Sportsaal 3.0 - Services Section (Video-Matched Focus Sphere & Carousel)
    Exact Match to Reference Video (Connect Sphere 0:02 - 0:05):
-   - Eyebrow: WHAT WE OFFER
-   - Title: WOULD BE USEFUL FOR
-   - Square dark border cards in idle state
-   - Active state transforms into vibrant red circle sphere lens with tags,
-     connector pin line with node, number, red title, and 1-line description
-   - Carousel slider when content exceeds viewport
+   - Compact height that fits cleanly on screen without excessive vertical space
+   - Exact Video Colors: Electric Blue Circle Sphere (#0D7CFF) & Vivid Orange Accents (#FF6600)
+   - Zero red color
+   - Interactive Click Transformation: Card morphs into the blue sphere,
+     orange pin drop connector, number, orange title, and 1-line description
+   - Carousel slider for 8 core services with 4 visible on desktop
    ========================================================================== */
 
 .services-section-v3 {
   position: relative;
   background-color: #050505;
-  padding: 6.5rem 0 7rem;
+  padding: 3rem 0 3.5rem;
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   box-sizing: border-box;
@@ -22,22 +22,22 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1420px;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  padding: 0 clamp(1.2rem, 3.5vw, 3.5rem);
   box-sizing: border-box;
 }
 
 /* --------------------------------------------------------------------------
-   Header Row (Title + Carousel Arrows)
+   Header Row (Title + Carousel Arrows) - Compact and Clean
    -------------------------------------------------------------------------- */
 
 .services-header-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 3.5rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -49,19 +49,19 @@
 
 .services-eyebrow {
   font-family: 'Barlow', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  margin-bottom: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.45rem;
 }
 
 .services-headline {
   font-family: 'Anton', sans-serif !important;
   font-weight: 400 !important;
-  font-size: clamp(2.4rem, 5.2vw, 4.4rem);
-  line-height: 1.02;
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  line-height: 1.05;
   letter-spacing: 0.02em;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -72,44 +72,44 @@
 .services-carousel-nav {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .carousel-page-indicator {
   font-family: 'Barlow', monospace;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.65);
-  padding: 0 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0 0.4rem;
   user-select: none;
 }
 
 .carousel-btn {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #0C0C0C;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #0B0B0B;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .carousel-btn:hover:not(:disabled) {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  box-shadow: 0 0 20px rgba(255, 43, 43, 0.45);
+  background-color: #0D7CFF;
+  border-color: #0D7CFF;
+  box-shadow: 0 0 18px rgba(13, 124, 255, 0.45);
   transform: scale(1.05);
 }
 
 .carousel-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.28;
   cursor: not-allowed;
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 /* --------------------------------------------------------------------------
@@ -120,80 +120,85 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: 0.5rem 0 1rem;
+  padding: 0.25rem 0 0.5rem;
 }
 
 .services-carousel-track {
   display: flex;
   width: 100%;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
 .services-carousel-slide {
-  padding: 0 10px;
+  padding: 0 8px;
   box-sizing: border-box;
   flex-shrink: 0;
 }
 
 /* --------------------------------------------------------------------------
-   The Video-Matched Card (Idle Box -> Active Sphere Transformation)
+   The Compact Video-Matched Card (Idle Box -> Active Sphere Transformation)
    -------------------------------------------------------------------------- */
 
 .service-video-card {
   position: relative;
   width: 100%;
-  height: 480px;
-  border-radius: 12px;
+  height: 350px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  user-select: none;
 }
 
-/* State 1: Inactive/Idle Card (Clean dark bordered square box with centered title) */
+/* State 1: Inactive Card (Dark bordered square box with centered title, matching video) */
 .card-idle-view {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background-color: #0A0A0A;
+  height: 220px;
+  background-color: #080808;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1.25rem;
+  padding: 1.5rem 1rem;
   box-sizing: border-box;
   opacity: 1;
-  transition: opacity 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.3s ease, border-color 0.25s ease, transform 0.25s ease;
   z-index: 1;
 }
 
 .card-idle-title {
   font-family: 'Anton', sans-serif !important;
-  font-size: clamp(1.4rem, 2vw, 1.85rem);
+  font-size: clamp(1.25rem, 1.7vw, 1.6rem);
   line-height: 1.15;
   color: #FFFFFF;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   margin: 0;
-  transition: color 0.3s ease;
+  transition: color 0.25s ease;
 }
 
 .service-video-card:hover .card-idle-view {
   border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-3px);
 }
 
 /* Hide Idle View When Active */
 .service-video-card.is-active .card-idle-view {
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
-/* State 2: Active Card (Sphere Lens + Connector Pin + Number + Title + Desc) */
+/* State 2: Active Card (Shown ONLY on click, exactly as in video) */
 .card-active-view {
   position: relative;
   width: 100%;
@@ -202,42 +207,48 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 0.5rem;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  transform: translateY(6px);
   z-index: 2;
 }
 
 .service-video-card.is-active .card-active-view {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
 }
 
-/* Vibrant Red Circle Sphere (Matching Video Circle Focus) */
+/* Vibrant Electric Blue Circle Sphere (Exact Video Color #0D7CFF) */
 .card-active-sphere {
-  width: clamp(200px, 16vw, 230px);
-  height: clamp(200px, 16vw, 230px);
+  width: 165px;
+  height: 165px;
   border-radius: 50%;
-  background: var(--color-primary);
-  box-shadow: 0 0 50px rgba(255, 43, 43, 0.55);
+  background: #0D7CFF;
+  box-shadow: 0 0 35px rgba(13, 124, 255, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1.1rem;
   box-sizing: border-box;
-  animation: spherePulse 3s ease-in-out infinite;
-  transition: transform 0.35s ease;
+  margin: 0 auto;
 }
 
-@keyframes spherePulse {
-  0%, 100% {
-    box-shadow: 0 0 45px rgba(255, 43, 43, 0.5);
+/* Fluid Spring Expansion Animation when clicked */
+.service-video-card.is-active .card-active-sphere {
+  animation: videoSphereIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes videoSphereIn {
+  0% {
+    transform: scale(0.65) translateY(-8px);
+    opacity: 0;
   }
-  50% {
-    box-shadow: 0 0 65px rgba(255, 43, 43, 0.75);
+  60% {
+    transform: scale(1.05) translateY(2px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
   }
 }
 
@@ -246,27 +257,42 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.35rem;
   text-align: center;
   user-select: none;
 }
 
 .sphere-tag-item {
   font-family: 'Barlow', sans-serif;
-  font-size: clamp(0.82rem, 1vw, 0.95rem);
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: #FFFFFF;
   line-height: 1.25;
 }
 
-/* Pin Connector Line with Small Node below Sphere */
+/* Orange Vertical Pin Connector Line with Small Node below Sphere (Exact Video Mechanism) */
 .card-pin-connector {
   position: relative;
   width: 1px;
-  height: 36px;
-  background: rgba(255, 43, 43, 0.7);
-  margin: 0.65rem auto 0.45rem;
+  height: 24px;
+  background: #FF6600;
+  margin: 0.5rem auto 0.35rem;
+}
+
+.service-video-card.is-active .card-pin-connector {
+  animation: videoPinDrop 0.35s ease 0.15s both;
+}
+
+@keyframes videoPinDrop {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  100% {
+    height: 24px;
+    opacity: 1;
+  }
 }
 
 .connector-line {
@@ -280,45 +306,61 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  border: 1.5px solid var(--color-primary);
+  border: 1.5px solid #FF6600;
   background-color: #050505;
 }
 
-/* Bottom Card Details */
+/* Bottom Card Details (Orange Title & 1-line Description) */
 .card-bottom-info {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.service-video-card.is-active .card-bottom-info {
+  animation: videoTextUp 0.35s ease 0.2s both;
+}
+
+@keyframes videoTextUp {
+  0% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .card-number {
   font-family: 'Barlow', monospace;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
+/* Title in Vivid Orange #FF6600 (Matching video) */
 .card-active-title {
   font-family: 'Anton', sans-serif !important;
-  font-size: clamp(1.35rem, 1.8vw, 1.65rem);
+  font-size: 1.35rem;
   line-height: 1.15;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  margin: 0 0 0.45rem;
+  margin: 0 0 0.35rem;
 }
 
 .card-title-link {
-  color: var(--color-primary);
+  color: #FF6600;
   text-decoration: none;
-  transition: color 0.25s ease;
+  transition: color 0.2s ease;
 }
 
 .card-title-link:hover {
@@ -327,10 +369,10 @@
 
 .card-active-desc {
   font-family: 'Barlow', sans-serif;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.72);
-  max-width: 260px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.68);
+  max-width: 230px;
   margin: 0;
 }
 
@@ -339,10 +381,14 @@
    -------------------------------------------------------------------------- */
 
 @media (max-width: 991px) {
+  .services-section-v3 {
+    padding: 2.5rem 0 3rem;
+  }
+
   .services-header-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: 1.2rem;
   }
 
   .services-carousel-nav {
@@ -350,29 +396,33 @@
   }
 
   .service-video-card {
-    height: 450px;
+    height: 340px;
   }
 }
 
 @media (max-width: 767px) {
   .services-section-v3 {
-    padding: 4.5rem 0 5rem;
+    padding: 2.2rem 0 2.8rem;
   }
 
   .services-headline {
-    font-size: 2.2rem;
+    font-size: 1.85rem;
   }
 
   .service-video-card {
-    height: 440px;
+    height: 330px;
+  }
+
+  .card-idle-view {
+    height: 200px;
   }
 
   .card-active-sphere {
-    width: 190px;
-    height: 190px;
+    width: 150px;
+    height: 150px;
   }
 
   .card-idle-title {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
   }
 }

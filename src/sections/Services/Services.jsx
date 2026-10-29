@@ -168,8 +168,7 @@ export default function Services() {
                 >
                   <div
                     className={`service-video-card ${isActive ? 'is-active' : ''}`}
-                    onMouseEnter={() => setActiveCardId(service.id)}
-                    onClick={() => setActiveCardId(service.id)}
+                    onClick={() => setActiveCardId(isActive ? null : service.id)}
                   >
                     {/* State 1: Inactive Card (Dark bordered box with centered title, matching video) */}
                     <div className="card-idle-view">
