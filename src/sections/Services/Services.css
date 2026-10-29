@@ -1,320 +1,378 @@
-.services-section {
-  min-height: auto;
-  background-color: var(--bg-primary);
-  display: flex;
-  align-items: center;
-  padding: 6.5rem 0;
-  overflow: visible;
-  border-top: 1px solid var(--border-subtle);
-  transition: background-color 0.3s ease;
+/* ==========================================================================
+   Sportsaal 3.0 - Services Section (Video-Matched Focus Sphere & Carousel)
+   Exact Match to Reference Video (Connect Sphere 0:02 - 0:05):
+   - Eyebrow: WHAT WE OFFER
+   - Title: WOULD BE USEFUL FOR
+   - Square dark border cards in idle state
+   - Active state transforms into vibrant red circle sphere lens with tags,
+     connector pin line with node, number, red title, and 1-line description
+   - Carousel slider when content exceeds viewport
+   ========================================================================== */
+
+.services-section-v3 {
+  position: relative;
+  background-color: #050505;
+  padding: 6.5rem 0 7rem;
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
 }
 
-
-.services-container {
+.services-wrapper {
+  position: relative;
+  z-index: 2;
   width: 100%;
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  box-sizing: border-box;
 }
 
-/* Centered Section Header */
-.services-header {
+/* --------------------------------------------------------------------------
+   Header Row (Title + Carousel Arrows)
+   -------------------------------------------------------------------------- */
+
+.services-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.services-header-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 4rem;
+  align-items: flex-start;
 }
 
-.services-tag {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 1.15rem;
-}
-
-.services-tag-line {
-  display: inline-block;
-  width: 28px;
-  height: 2px;
-  background-color: var(--color-primary);
-  border-radius: 2px;
-}
-
-.services-tag-text {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
+.services-eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.22em;
-  color: var(--color-primary);
   text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 0.75rem;
 }
 
-.services-title,
-.services-title *,
-.services-title .title-navy,
-.services-title .title-red {
+.services-headline {
   font-family: 'Anton', sans-serif !important;
   font-weight: 400 !important;
-  font-style: normal !important;
-}
-
-.services-title {
-  font-size: clamp(2.8rem, 4.4vw, 4.4rem);
-  line-height: 0.95 !important;
-  letter-spacing: 0.01em !important;
+  font-size: clamp(2.4rem, 5.2vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  color: #FFFFFF;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin: 0;
 }
 
-.title-navy {
-  color: var(--text-headline-navy);
-  transition: color 0.3s ease;
-}
-
-.title-red {
-  color: var(--color-primary);
-}
-
-.services-description {
-  font-family: 'Barlow', 'Archivo', sans-serif !important;
-  font-size: 1.1rem;
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  max-width: 660px;
-  margin: 0 auto;
-  transition: color 0.3s ease;
-}
-
-/* 3x2 Service Cards Grid */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.75rem;
-  margin-bottom: 3.5rem;
-}
-
-/* Service Card - Full Bleed Image with Bottom Title Only (No Shadow, No Overlay Color) */
-.service-card {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  min-height: 250px;
+/* Carousel Navigation Controls */
+.services-carousel-nav {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  text-decoration: none;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.carousel-page-indicator {
+  font-family: 'Barlow', monospace;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.65);
+  padding: 0 0.5rem;
+  user-select: none;
+}
+
+.carousel-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #0C0C0C;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  border: 1px solid var(--border-subtle);
-  background: transparent;
-  box-shadow: none !important;
-  transition: transform var(--transition-normal), border-color var(--transition-normal);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-theme="light"] .service-card {
-  border: 1px solid rgba(18, 52, 91, 0.12);
-  box-shadow: none !important;
-}
-
-.service-card:hover {
-  transform: translateY(-4px);
+.carousel-btn:hover:not(:disabled) {
+  background-color: var(--color-primary);
   border-color: var(--color-primary);
-  box-shadow: none !important;
+  box-shadow: 0 0 20px rgba(255, 43, 43, 0.45);
+  transform: scale(1.05);
 }
 
-[data-theme="light"] .service-card:hover {
-  border-color: var(--color-primary);
-  box-shadow: none !important;
+.carousel-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Background Image: 100% Full Bleed, NO overlay color, NO shadow, NO mask */
-.card-bg-image {
+/* --------------------------------------------------------------------------
+   Carousel Viewport & Track
+   -------------------------------------------------------------------------- */
+
+.services-carousel-viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 0.5rem 0 1rem;
+}
+
+.services-carousel-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.services-carousel-slide {
+  padding: 0 10px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   The Video-Matched Card (Idle Box -> Active Sphere Transformation)
+   -------------------------------------------------------------------------- */
+
+.service-video-card {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* State 1: Inactive/Idle Card (Clean dark bordered square box with centered title) */
+.card-idle-view {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: cover;
-  background-position: center;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: #0A0A0A;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  box-sizing: border-box;
+  opacity: 1;
+  transition: opacity 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
   z-index: 1;
 }
 
-.service-card:hover .card-bg-image {
-  transform: scale(1.05);
-}
-
-/* Card Content: Anchored at Left Bottom */
-.card-content {
-  position: relative;
-  z-index: 2;
-  padding: 1.5rem 1.65rem;
-  width: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
-}
-
-/* Card Title: Crisp typography directly on image */
-.card-title {
+.card-idle-title {
   font-family: 'Anton', sans-serif !important;
-  font-weight: 400 !important;
-  font-size: 1.35rem;
-  line-height: 1.15 !important;
-  letter-spacing: 0.04em;
+  font-size: clamp(1.4rem, 2vw, 1.85rem);
+  line-height: 1.15;
   color: #FFFFFF;
+  text-align: center;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
   margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.6);
-  transition: color 0.25s ease, transform 0.25s ease;
+  transition: color 0.3s ease;
 }
 
-.card-title-arrow {
-  color: var(--color-primary);
-  font-family: var(--font-body);
-  font-size: 1.15rem;
-  transition: transform 0.25s ease;
+.service-video-card:hover .card-idle-view {
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
-.service-card:hover .card-title {
-  color: var(--color-primary);
+/* Hide Idle View When Active */
+.service-video-card.is-active .card-idle-view {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
 }
 
-.service-card:hover .card-title-arrow {
-  transform: translateX(4px);
-}
-
-/* Bottom Action CTA Button */
-.services-bottom-cta {
-  display: flex;
-  justify-content: center;
+/* State 2: Active Card (Sphere Lens + Connector Pin + Number + Title + Desc) */
+.card-active-view {
+  position: relative;
   width: 100%;
-}
-
-.btn-services-cta {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  background-color: var(--color-primary);
-  text-decoration: none;
-  padding: 1rem 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(245, 45, 45, 0.4);
-  display: inline-flex;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.65rem;
-  transition: all var(--transition-normal);
-  border: 1px solid var(--color-primary);
-  cursor: pointer;
+  justify-content: flex-start;
+  padding-top: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(6px);
+  z-index: 2;
 }
 
-.btn-services-cta:hover {
-  background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(245, 45, 45, 0.6);
+.service-video-card.is-active .card-active-view {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
-.cta-arrow {
-  font-family: var(--font-body);
-  font-size: 1.1rem;
-  transition: transform 0.2s ease;
+/* Vibrant Red Circle Sphere (Matching Video Circle Focus) */
+.card-active-sphere {
+  width: clamp(200px, 16vw, 230px);
+  height: clamp(200px, 16vw, 230px);
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 50px rgba(255, 43, 43, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  animation: spherePulse 3s ease-in-out infinite;
+  transition: transform 0.35s ease;
 }
 
-.btn-services-cta:hover .cta-arrow {
-  transform: translateX(5px);
-}
-
-/* Reduced Motion Compliance */
-@media (prefers-reduced-motion: reduce) {
-  .services-section {
-    position: relative !important;
-    top: auto !important;
-    box-shadow: none !important;
+@keyframes spherePulse {
+  0%, 100% {
+    box-shadow: 0 0 45px rgba(255, 43, 43, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 65px rgba(255, 43, 43, 0.75);
   }
 }
 
-/* ==========================================================================
-   Responsive Breakpoints for Services Section
-   ========================================================================== */
-
-@media (max-width: 1200px) {
-  .services-grid {
-    gap: 1.25rem;
-  }
-
-  .card-content {
-    padding: 1.25rem 1.35rem;
-  }
-
-  .card-title {
-    font-size: 1.2rem;
-  }
+.sphere-tags-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  text-align: center;
+  user-select: none;
 }
+
+.sphere-tag-item {
+  font-family: 'Barlow', sans-serif;
+  font-size: clamp(0.82rem, 1vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #FFFFFF;
+  line-height: 1.25;
+}
+
+/* Pin Connector Line with Small Node below Sphere */
+.card-pin-connector {
+  position: relative;
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 43, 43, 0.7);
+  margin: 0.65rem auto 0.45rem;
+}
+
+.connector-line {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.connector-node {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-primary);
+  background-color: #050505;
+}
+
+/* Bottom Card Details */
+.card-bottom-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 0.35rem;
+}
+
+.card-number {
+  font-family: 'Barlow', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.card-active-title {
+  font-family: 'Anton', sans-serif !important;
+  font-size: clamp(1.35rem, 1.8vw, 1.65rem);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0 0 0.45rem;
+}
+
+.card-title-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.card-title-link:hover {
+  color: #FFFFFF;
+}
+
+.card-active-desc {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 260px;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Breakpoints
+   -------------------------------------------------------------------------- */
 
 @media (max-width: 991px) {
-  .services-section {
-    z-index: 3;
-    min-height: auto;
-    padding: 5rem 0;
-  }
-
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .services-header-row {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 1.5rem;
   }
 
-  .services-header {
-    margin-bottom: 3rem;
+  .services-carousel-nav {
+    align-self: flex-end;
+  }
+
+  .service-video-card {
+    height: 450px;
   }
 }
 
 @media (max-width: 767px) {
-  .services-section {
-    z-index: 3;
-    min-height: auto;
-    padding: 5rem 0;
+  .services-section-v3 {
+    padding: 4.5rem 0 5rem;
   }
 
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    margin-bottom: 2.5rem;
+  .services-headline {
+    font-size: 2.2rem;
   }
 
-  .service-card {
-    min-height: 220px;
+  .service-video-card {
+    height: 440px;
   }
 
-  .card-content {
-    padding: 1.25rem 1.25rem;
+  .card-active-sphere {
+    width: 190px;
+    height: 190px;
   }
 
-  .btn-services-cta {
-    width: 100%;
-    justify-content: center;
-    padding: 0.9rem 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .services-title {
-    font-size: clamp(2.2rem, 9vw, 2.8rem);
-  }
-
-  .services-description {
-    font-size: 0.95rem;
-  }
-
-  .card-content {
-    padding: 1.15rem 1rem;
-  }
-
-  .card-title {
-    font-size: 1.12rem;
+  .card-idle-title {
+    font-size: 1.5rem;
   }
 }
