@@ -1,52 +1,54 @@
 /* ==========================================================================
-   Sportsaal 3.0 - About Section (Minimalist Video-Matched Layout)
-   Inspired by Reference Video (Connect Sphere 0:02 - 0:05):
-   - Pure obsidian background (#050505) with ZERO red background gradients
-   - Minimal typography with Anton display headline & 2-line mission
-   - 4 sleek interactive role cards with animated circular focus bubble
-   - Streamlined horizontal statistics ticker
+   Sportsaal 3.0 - About Section (Ultra-Minimalist Brand Statement)
+   Pure luxury athletic aesthetic:
+   - Zero clutter, zero cards, zero heavy content
+   - Giant Anton display typography
+   - Crisp 2-sentence brand mission
+   - Minimalist metric nodes with red accents
+   - 100% deep obsidian dark mode (#050505)
    ========================================================================== */
 
-.about-section-v3 {
+.about-section-minimal {
   position: relative;
   background-color: #050505;
-  padding: 5.5rem 0 6rem;
+  padding: clamp(5.5rem, 11vh, 9rem) 1.5rem;
   overflow: hidden;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.about-wrapper {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 1420px;
-  margin: 0 auto;
-  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
 }
 
-/* --------------------------------------------------------------------------
-   Header & Intro Statement (Clean, Breathable, No Text Walls)
-   -------------------------------------------------------------------------- */
-
-.about-header-container {
+.about-minimal-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 880px;
-  margin: 0 auto 3.8rem;
+  box-sizing: border-box;
 }
 
-.about-badge-tag {
+/* 1. Eyebrow Badge */
+.about-minimal-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: rgba(255, 43, 43, 0.1);
-  border: 1px solid rgba(255, 43, 43, 0.28);
+  gap: 0.55rem;
+  background-color: rgba(255, 43, 43, 0.08);
+  border: 1px solid rgba(255, 43, 43, 0.25);
   padding: 0.35rem 1rem;
   border-radius: 9999px;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.8rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-primary);
 }
 
 .badge-dot {
@@ -57,295 +59,144 @@
   box-shadow: 0 0 8px var(--color-primary);
 }
 
-.badge-text {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-}
-
-.about-headline {
+/* 2. Massive Editorial Headline */
+.about-minimal-headline {
   font-family: 'Anton', sans-serif !important;
   font-weight: 400 !important;
-  font-size: clamp(2.4rem, 5vw, 4.2rem);
-  line-height: 1.05;
+  font-size: clamp(2.6rem, 6.2vw, 5.2rem);
+  line-height: 1.02;
   letter-spacing: 0.02em;
   color: #FFFFFF;
   text-transform: uppercase;
-  margin: 0 0 1rem;
+  margin: 0 0 1.6rem;
+  max-width: 960px;
 }
 
 .headline-red {
   color: var(--color-primary);
 }
 
-.about-subheadline {
+/* 3. Crisp Brand Statement */
+.about-minimal-description {
   font-family: 'Barlow', sans-serif;
-  font-size: clamp(1rem, 1.35vw, 1.15rem);
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.65);
-  margin: 0;
-  max-width: 680px;
+  font-size: clamp(1.05rem, 1.45vw, 1.25rem);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.68);
+  margin: 0 auto 3rem;
+  max-width: 760px;
 }
 
-/* --------------------------------------------------------------------------
-   4 Minimalist Interactive Cards with Video Focus Bubble (0:02 - 0:05)
-   -------------------------------------------------------------------------- */
-
-.about-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(1rem, 1.6vw, 1.5rem);
-  margin-bottom: 4rem;
-}
-
-.about-role-card {
-  position: relative;
-  background-color: #0A0A0A;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1.8rem 1.4rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 340px;
-  cursor: pointer;
-  box-sizing: border-box;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
-}
-
-.about-role-card:hover,
-.about-role-card.is-active {
-  border-color: rgba(255, 43, 43, 0.45);
-  background-color: #0E0E0E;
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85);
-}
-
-/* Top Row: Number & Status Dot */
-.card-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.card-num {
-  font-family: 'Anton', sans-serif;
-  font-size: 1.15rem;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.4);
-  transition: color 0.3s ease;
-}
-
-.about-role-card:hover .card-num,
-.about-role-card.is-active .card-num {
-  color: var(--color-primary);
-}
-
-.card-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-}
-
-.about-role-card:hover .card-dot,
-.about-role-card.is-active .card-dot {
-  background-color: var(--color-primary);
-  box-shadow: 0 0 8px var(--color-primary);
-}
-
-/* Role Title & Subtitle */
-.card-role-title {
-  font-family: 'Anton', sans-serif !important;
-  font-size: 1.45rem;
-  line-height: 1.15;
-  letter-spacing: 0.03em;
-  color: #FFFFFF;
-  text-transform: uppercase;
-  margin: 0 0 0.35rem;
-}
-
-.card-role-sub {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 1.25rem;
-}
-
-/* Animated Focus Bubble Lens (Connect Sphere Video 0:02 - 0:05) */
-.card-focus-bubble {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem 0.5rem;
-  margin: 0.5rem 0;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  transition: all 0.35s ease;
-}
-
-.about-role-card:hover .card-focus-bubble,
-.about-role-card.is-active .card-focus-bubble {
-  background: rgba(255, 43, 43, 0.04);
-  border-color: rgba(255, 43, 43, 0.3);
-}
-
-.bubble-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.bubble-tag-pill {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.75);
-  background-color: #121212;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.3rem 0.75rem;
-  border-radius: 9999px;
-  width: 85%;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.about-role-card:hover .bubble-tag-pill,
-.about-role-card.is-active .bubble-tag-pill {
-  border-color: rgba(255, 43, 43, 0.25);
-  color: #FFFFFF;
-}
-
-/* Bottom Action Link */
-.card-explore-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 1rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  font-family: 'Anton', sans-serif !important;
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.55);
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-}
-
-.explore-arrow {
-  font-family: var(--font-body);
-  font-size: 1.1rem;
-  transition: transform 0.25s ease;
-}
-
-.about-role-card:hover .card-explore-btn,
-.about-role-card.is-active .card-explore-btn {
-  color: var(--color-primary);
-  border-top-color: rgba(255, 43, 43, 0.3);
-}
-
-.about-role-card:hover .explore-arrow,
-.about-role-card.is-active .explore-arrow {
-  transform: translateX(4px);
-}
-
-/* --------------------------------------------------------------------------
-   Minimal Horizontal Statistics Bar (Anton Typography, Zero Clutter)
-   -------------------------------------------------------------------------- */
-
-.about-minimal-stats {
+/* 4. Minimal High-Impact Numbers */
+.about-minimal-metrics {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: clamp(1.2rem, 3.5vw, 3rem);
-  padding: 1.75rem 2rem;
-  border-radius: 12px;
-  background: #080808;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.4rem 2.2rem;
+  border-radius: 9999px;
+  background-color: #0A0A0A;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 2.5rem;
 }
 
-.min-stat-node {
+.metric-box {
   display: inline-flex;
   align-items: baseline;
   gap: 0.6rem;
 }
 
-.min-stat-val {
+.metric-number {
   font-family: 'Anton', sans-serif !important;
-  font-size: clamp(2.2rem, 3.6vw, 3.2rem);
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
   line-height: 1;
   color: #FFFFFF;
   letter-spacing: 0.02em;
 }
 
-.min-stat-lbl {
+.metric-label {
   font-family: 'Barlow', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
 }
 
-.min-stat-sep {
+.metric-dot {
   font-family: 'Anton', sans-serif !important;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--color-primary);
   user-select: none;
+}
+
+/* 5. Single Sleek Action Link */
+.about-minimal-cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: 'Anton', sans-serif !important;
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 43, 43, 0.35);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.link-arrow {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  transition: transform 0.25s ease;
+}
+
+.about-arrow-link:hover {
+  border-bottom-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.about-arrow-link:hover .link-arrow {
+  transform: translateX(6px);
 }
 
 /* --------------------------------------------------------------------------
    Responsive Breakpoints
    -------------------------------------------------------------------------- */
 
-@media (max-width: 1100px) {
-  .about-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-  }
-}
-
 @media (max-width: 767px) {
-  .about-section-v3 {
-    padding: 4rem 0 4.5rem;
+  .about-section-minimal {
+    padding: 4.5rem 1.25rem;
   }
 
-  .about-header-container {
-    margin-bottom: 2.5rem;
+  .about-minimal-headline {
+    font-size: 2.4rem;
+    margin-bottom: 1.25rem;
   }
 
-  .about-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
+  .about-minimal-description {
+    font-size: 1.02rem;
+    margin-bottom: 2.2rem;
   }
 
-  .about-role-card {
-    min-height: auto;
-    padding: 1.5rem 1.2rem;
-  }
-
-  .about-minimal-stats {
+  .about-minimal-metrics {
     flex-direction: column;
-    gap: 1.2rem;
-    padding: 1.5rem 1rem;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .min-stat-sep {
+  .metric-dot {
     display: none;
   }
 }
