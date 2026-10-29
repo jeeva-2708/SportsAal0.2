@@ -87,17 +87,6 @@ export default function Hero() {
   const splitY = splitP * 50; // 0px -> 50px
   const splitRotate = splitP * 2.8; // subtle fan angle
 
-  // Portal fade & scale
-  let portalOpacity = 0;
-  let portalScale = 0.8;
-  if (p > 0.08 && p <= 0.78) {
-    portalOpacity = Math.min(1, (p - 0.08) / 0.22);
-    portalScale = 0.8 + Math.min(0.28, (p - 0.08) * 0.4);
-  } else if (p > 0.78) {
-    portalOpacity = Math.max(0, 1 - (p - 0.78) / 0.22);
-    portalScale = 1.08 + (p - 0.78) * 0.15;
-  }
-
   // Bottom cluster (Marquee + Button) fade out during split
   const bottomOpacity = Math.max(0, 1 - p * 2.6);
   const bottomTranslateY = p * 45;
@@ -105,10 +94,6 @@ export default function Hero() {
   return (
     <section className="hero-scroll-wrapper" id="hero" ref={wrapperRef}>
       <div className="hero-sticky-frame">
-        {/* Ambient Radial Athletic Lighting */}
-        <div className="hero-ambient-glow" aria-hidden="true"></div>
-        <div className="hero-ambient-red" aria-hidden="true"></div>
-
         {/* 1. Slanted Cinema Photo Strip with 4 & 4 Interactive Split */}
         <div className="hero-slanted-viewport">
           <div className="hero-slanted-track">
@@ -130,39 +115,6 @@ export default function Hero() {
                   />
                 </div>
               ))}
-            </div>
-
-            {/* Center Animated Scroll Portal (Revealed between the split halves) */}
-            <div 
-              className="hero-center-portal"
-              style={{
-                opacity: portalOpacity,
-                transform: `translate(-50%, -50%) scale(${portalScale})`,
-                pointerEvents: p > 0.15 && p < 0.85 ? 'auto' : 'none'
-              }}
-              onClick={() => scrollToSection('#about')}
-            >
-              <div className="portal-ring ring-outer" aria-hidden="true"></div>
-              <div className="portal-ring ring-middle" aria-hidden="true"></div>
-              <div className="portal-ring ring-inner" aria-hidden="true"></div>
-              <div className="portal-glow-core" aria-hidden="true"></div>
-
-              <div className="portal-card-content">
-                <div className="portal-tag">
-                  <span className="portal-live-dot"></span>
-                  <span>SPORTSAAL ECOSYSTEM</span>
-                </div>
-                <h3 className="portal-headline">
-                  WHERE PASSION <br />
-                  <span className="portal-accent">MEETS PRECISION</span>
-                </h3>
-                <div className="portal-scroll-prompt">
-                  <span className="prompt-text">SCROLL TO EXPLORE ABOUT</span>
-                  <div className="prompt-arrow-container">
-                    <span className="prompt-arrow">↓</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Right Cluster: Last 4 Photos (Tennis, Goal Celebration, Dunk, Sprint) */}
