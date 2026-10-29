@@ -1,12 +1,16 @@
 /* ==========================================================================
-   Sportsaal 3.0 - Hero Section (Panorama Ribbon + Infinite Marquee)
+   Sportsaal 3.0 - Hero Section (Slanted Cinema Photo Ribbon + Services Marquee)
+   Matches Reference Video (Connect Sphere layout) exactly:
+   - Slanted continuous diagonal photo band
+   - ZERO text overlays on the photos
+   - Running infinite marquee ticker with Sportsaal's actual services
    ========================================================================== */
 
 .hero-section-v3 {
   position: relative;
-  min-height: 92vh;
+  min-height: 94vh;
   background-color: #050505;
-  padding-top: 7rem;
+  padding-top: 6.5rem;
   padding-bottom: 4.5rem;
   overflow: hidden;
   display: flex;
@@ -15,16 +19,16 @@
   justify-content: center;
 }
 
-/* Ambient Radial Glow Lighting */
+/* Ambient Radial Athletic Lighting */
 .hero-ambient-glow {
   position: absolute;
-  top: -15%;
+  top: -10%;
   left: 20%;
   width: 60vw;
   height: 60vw;
   max-width: 800px;
   max-height: 800px;
-  background: radial-gradient(circle, rgba(255, 43, 43, 0.07) 0%, transparent 68%);
+  background: radial-gradient(circle, rgba(255, 43, 43, 0.08) 0%, transparent 68%);
   pointer-events: none;
   z-index: 1;
 }
@@ -43,143 +47,88 @@
 }
 
 /* --------------------------------------------------------------------------
-   1. Multi-Sport Horizontal Panorama Ribbon
+   1. Slanted Cinema Photo Strip (Exact Video Style)
    -------------------------------------------------------------------------- */
 
-.hero-ribbon-viewport {
+.hero-slanted-viewport {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1380px;
+  max-width: 1420px;
   margin: 0 auto;
   overflow-x: auto;
-  overflow-y: hidden;
-  padding: 1.5rem 1.5rem 2rem;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE/Edge */
+  overflow-y: visible;
+  padding: 2.2rem 1rem 2rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Slanted diagonal tilt like the reference video */
+  transform: rotate(-2.8deg);
+  transform-origin: center center;
 }
 
-.hero-ribbon-viewport::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+.hero-slanted-viewport::-webkit-scrollbar {
+  display: none;
 }
 
-.hero-ribbon-track {
+.hero-slanted-track {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.15rem;
+  gap: 0.95rem;
   min-width: max-content;
   padding: 0.5rem 1rem;
 }
 
-/* Portrait Card in Ribbon */
-.hero-ribbon-card {
+/* Pure Photo Frame (NO badges, NO text overlay, clean cinematic action photos) */
+.hero-photo-frame {
   position: relative;
-  width: 172px;
-  height: 275px;
-  border-radius: 14px;
+  width: clamp(160px, 13.5vw, 192px);
+  height: clamp(265px, 22.5vw, 318px);
+  border-radius: 6px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.09);
   background-color: #0E0E0E;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
   cursor: pointer;
   flex-shrink: 0;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.3s ease;
 }
 
-/* Staggered Vertical Wave Like the Video */
-.hero-card-1 { transform: translateY(-10px); }
-.hero-card-2 { transform: translateY(8px); }
-.hero-card-3 { transform: translateY(-12px); }
-.hero-card-4 { transform: translateY(6px); }
-.hero-card-5 { transform: translateY(-10px); }
-.hero-card-6 { transform: translateY(10px); }
-.hero-card-7 { transform: translateY(-6px); }
-
-/* Card Image */
-.hero-ribbon-img {
+.hero-photo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
   display: block;
-  filter: contrast(1.04) brightness(0.96);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  filter: contrast(1.05) brightness(0.96);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
 }
 
-/* Card Gradient & Badges Overlay */
-.hero-ribbon-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top, 
-    rgba(5, 5, 5, 0.92) 0%, 
-    rgba(5, 5, 5, 0.4) 38%, 
-    transparent 70%
-  );
-  padding: 0.95rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.hero-ribbon-badge {
-  font-family: var(--font-body);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  background: rgba(14, 14, 14, 0.75);
-  backdrop-filter: blur(8px);
-  padding: 0.3rem 0.6rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.hero-ribbon-sport {
-  font-family: 'Anton', sans-serif !important;
-  font-weight: 400 !important;
-  font-size: 1.15rem;
-  letter-spacing: 0.04em;
-  color: #FFFFFF;
-  text-transform: uppercase;
-  line-height: 1;
-  transition: color 0.25s ease;
-}
-
-/* Card Interactive Hover */
-.hero-ribbon-card:hover {
-  transform: translateY(-18px) scale(1.04) !important;
+/* Subtle Interactive Hover Lift */
+.hero-photo-frame:hover {
+  transform: translateY(-10px) scale(1.04);
   border-color: var(--color-primary);
-  box-shadow: 0 22px 45px rgba(255, 43, 43, 0.35), 0 0 20px var(--color-primary-glow);
+  box-shadow: 0 22px 48px rgba(255, 43, 43, 0.32), 0 0 25px rgba(255, 43, 43, 0.2);
   z-index: 10;
 }
 
-.hero-ribbon-card:hover .hero-ribbon-img {
-  transform: scale(1.1);
+.hero-photo-frame:hover .hero-photo-img {
+  transform: scale(1.08);
   filter: contrast(1.08) brightness(1.04);
 }
 
-.hero-ribbon-card:hover .hero-ribbon-sport {
-  color: var(--color-primary);
-}
-
 /* --------------------------------------------------------------------------
-   2. Giant Infinite Running Marquee Ticker
+   2. Giant Running Marquee Ticker (Sportsaal Services)
    -------------------------------------------------------------------------- */
 
 .hero-marquee-wrapper {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 100%;
   overflow: hidden;
-  margin-top: 3rem;
+  margin-top: 3.25rem;
   margin-bottom: 2.75rem;
   white-space: nowrap;
   user-select: none;
@@ -191,7 +140,7 @@
 .hero-marquee-track {
   display: inline-flex;
   align-items: center;
-  animation: heroMarqueeScroll 26s linear infinite;
+  animation: heroMarqueeScroll 28s linear infinite;
   will-change: transform;
 }
 
@@ -259,7 +208,7 @@
   color: #FFFFFF;
   background-color: var(--color-primary);
   text-decoration: none;
-  padding: 1.1rem 3.25rem;
+  padding: 1.1rem 3.4rem;
   border-radius: 9999px;
   box-shadow: 0 0 35px rgba(255, 43, 43, 0.45);
   border: 1px solid var(--color-primary);
@@ -292,14 +241,18 @@
    -------------------------------------------------------------------------- */
 
 @media (max-width: 1200px) {
-  .hero-ribbon-card {
-    width: 155px;
-    height: 250px;
+  .hero-slanted-viewport {
+    transform: rotate(-2.2deg);
+  }
+
+  .hero-photo-frame {
+    width: 160px;
+    height: 265px;
   }
 
   .hero-marquee-wrapper {
-    margin-top: 2.25rem;
-    margin-bottom: 2rem;
+    margin-top: 2.5rem;
+    margin-bottom: 2.2rem;
   }
 }
 
@@ -310,22 +263,23 @@
     min-height: auto;
   }
 
-  .hero-ribbon-viewport {
+  .hero-slanted-viewport {
+    transform: rotate(-1.8deg);
     justify-content: flex-start;
-    padding: 1rem;
+    padding: 1rem 0.5rem;
   }
 
-  .hero-ribbon-track {
+  .hero-slanted-track {
     justify-content: flex-start;
   }
 
-  .hero-ribbon-card {
+  .hero-photo-frame {
     width: 145px;
-    height: 235px;
+    height: 240px;
   }
 
   .hero-pill-cta {
-    padding: 1rem 2.65rem;
+    padding: 1rem 2.75rem;
     font-size: 1.05rem;
   }
 }
@@ -336,15 +290,16 @@
     padding-bottom: 3rem;
   }
 
-  .hero-ribbon-card {
-    width: 135px;
-    height: 215px;
-    border-radius: 12px;
+  .hero-slanted-viewport {
+    transform: rotate(0deg); /* Neutral angle on narrow mobile screens */
+    margin-top: 0.5rem;
   }
 
-  /* Reduce vertical stagger amplitude on small screens */
-  .hero-card-1, .hero-card-3, .hero-card-5, .hero-card-7 { transform: translateY(-4px); }
-  .hero-card-2, .hero-card-4, .hero-card-6 { transform: translateY(4px); }
+  .hero-photo-frame {
+    width: 135px;
+    height: 220px;
+    border-radius: 5px;
+  }
 
   .hero-marquee-wrapper {
     margin-top: 2rem;

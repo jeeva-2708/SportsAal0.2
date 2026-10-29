@@ -1,7 +1,7 @@
 import React from 'react';
 import './Hero.css';
 
-// Multi-Sport Panorama Ribbon Assets
+// Multi-Sport Cinema Ribbon Photos (Fresh Action Shots)
 import cricketBatsmanImg from '../../assets/images/hero-ribbon/cricket-batsman.jpg';
 import footballActionImg from '../../assets/images/hero-ribbon/football-action.jpg';
 import badmintonActionImg from '../../assets/images/hero-ribbon/badminton-action.jpg';
@@ -10,26 +10,26 @@ import tennisActionImg from '../../assets/images/hero-ribbon/tennis-action.jpg';
 import footballCelebrateImg from '../../assets/images/hero-ribbon/football-celebrate.jpg';
 import athleteSprintImg from '../../assets/images/hero-ribbon/athlete-sprint.jpg';
 
-const ribbonCards = [
-  { id: 'cricket', title: 'CRICKET', image: cricketBatsmanImg, badge: 'PRO LEAGUE' },
-  { id: 'football', title: 'FOOTBALL', image: footballActionImg, badge: 'TURF ARENAS' },
-  { id: 'badminton', title: 'BADMINTON', image: badmintonActionImg, badge: 'SHUTTLE COURTS' },
-  { id: 'stadiums', title: 'VENUES', image: cricketStadiumImg, badge: 'INFRASTRUCTURE' },
-  { id: 'tennis', title: 'TENNIS', image: tennisActionImg, badge: 'SYNTHETIC COURTS' },
-  { id: 'tournaments', title: 'TOURNAMENTS', image: footballCelebrateImg, badge: 'CUPS & LEAGUES' },
-  { id: 'athletics', title: 'ATHLETICS', image: athleteSprintImg, badge: 'SPEED & S&C' },
+const ribbonPhotos = [
+  { id: 'photo-1', src: cricketBatsmanImg, alt: 'Cricket Batting Action' },
+  { id: 'photo-2', src: footballActionImg, alt: 'Football Turf Match' },
+  { id: 'photo-3', src: badmintonActionImg, alt: 'Badminton Smash' },
+  { id: 'photo-4', src: cricketStadiumImg, alt: 'Sports Arena Infrastructure' },
+  { id: 'photo-5', src: tennisActionImg, alt: 'Tennis Court Rally' },
+  { id: 'photo-6', src: footballCelebrateImg, alt: 'Tournament Match' },
+  { id: 'photo-7', src: athleteSprintImg, alt: 'Athletic Conditioning' },
 ];
 
-const marqueeWords = [
-  'CRICKET',
-  'FOOTBALL',
-  'BADMINTON',
-  'TENNIS',
-  'TOURNAMENTS',
-  'PRO VENUES',
+// Actual Sportsaal Services (What we provide, NOT image/sport names)
+const sportsaalServices = [
+  'VENUE MANAGEMENT',
+  'CRICKET TOURNAMENTS',
+  'PROFESSIONAL COACHING',
+  'EVENT MANAGEMENT',
+  'SPORTS TECHNOLOGY',
   'LIVE STREAMING',
-  'ELITE COACHING',
-  'ATHLETIC SPRINT',
+  'TURF & GROUND BOOKINGS',
+  'ATHLETIC CONDITIONING',
 ];
 
 export default function Hero() {
@@ -39,35 +39,28 @@ export default function Hero() {
       <div className="hero-ambient-glow"></div>
       <div className="hero-ambient-red"></div>
 
-      {/* 1. Multi-Sport Horizontal Panorama Ribbon */}
-      <div className="hero-ribbon-viewport">
-        <div className="hero-ribbon-track">
-          {ribbonCards.map((card, index) => (
-            <div 
-              key={card.id} 
-              className={`hero-ribbon-card hero-card-${index + 1}`}
-            >
+      {/* 1. Slanted Cinema Photo Strip (Exact Video Style: Diagonal continuous ribbon, ZERO text over photos) */}
+      <div className="hero-slanted-viewport">
+        <div className="hero-slanted-track">
+          {ribbonPhotos.map((item) => (
+            <div key={item.id} className="hero-photo-frame">
               <img 
-                src={card.image} 
-                alt={card.title} 
-                className="hero-ribbon-img" 
+                src={item.src} 
+                alt={item.alt} 
+                className="hero-photo-img" 
                 loading="eager" 
               />
-              <div className="hero-ribbon-overlay">
-                <span className="hero-ribbon-badge">{card.badge}</span>
-                <span className="hero-ribbon-sport">{card.title}</span>
-              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 2. Giant Running Marquee Ticker */}
+      {/* 2. Giant Running Marquee Ticker (Showing Actual Sportsaal Services) */}
       <div className="hero-marquee-wrapper" aria-hidden="true">
         <div className="hero-marquee-track">
-          {[...marqueeWords, ...marqueeWords, ...marqueeWords].map((word, idx) => (
+          {[...sportsaalServices, ...sportsaalServices, ...sportsaalServices].map((service, idx) => (
             <span key={idx} className="hero-marquee-item">
-              <span className="marquee-text">{word}</span>
+              <span className="marquee-text">{service}</span>
               <span className="marquee-dot">•</span>
             </span>
           ))}

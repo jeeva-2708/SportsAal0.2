@@ -132,29 +132,23 @@ export default function Header() {
           <img src={logoDarkImg} alt="SPORTSAAL" className="brand-logo-img" />
         </a>
 
-        {/* Desktop Navigation Menu */}
+        {/* Desktop Navigation Menu (Video Style) */}
         <nav className="desktop-nav-menu">
-          <a href="/#hero" className="nav-link" onClick={(e) => handleNavClick(e, '#hero')}>Home</a>
-          <a href="/#about" className="nav-link" onClick={(e) => handleNavClick(e, '#about')}>About Us</a>
-          <a href="/#services" className="nav-link" onClick={(e) => handleNavClick(e, '#services')}>Services</a>
-          <a href="/#work" className="nav-link" onClick={(e) => handleNavClick(e, '#work')}>Our Work</a>
-          <a href="/#contact" className="nav-link" onClick={(e) => handleNavClick(e, '#contact')}>Contact Us</a>
+          <a href="/#services" className="nav-link" onClick={(e) => handleNavClick(e, '#services')}>SERVICES</a>
+          <a href="/services/cricket-tournaments" className="nav-link" onClick={(e) => handleNavClick(e, '/services/cricket-tournaments')}>EVENTS</a>
+          <a href="/services/venue-management" className="nav-link" onClick={(e) => handleNavClick(e, '/services/venue-management')}>VENUES</a>
+          <a href="/#about" className="nav-link" onClick={(e) => handleNavClick(e, '#about')}>ABOUT US</a>
+          <a href="/#contact" className="nav-link" onClick={(e) => handleNavClick(e, '#contact')}>CONTACT US</a>
         </nav>
 
-        {/* Header Actions */}
+        {/* Header Actions: Clean Outline Pill CTA like the video SAVE MY SPOT */}
         <div className="header-actions">
           <a 
             href="#contact" 
-            className="btn-header-cta"
+            className="btn-header-outline-pill"
             onClick={(e) => { e.preventDefault(); scrollToSection('#contact'); }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="btn-calendar-icon">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8"  y1="2" x2="8"  y2="6" />
-              <line x1="3"  y1="10" x2="21" y2="10" />
-            </svg>
-            <span>Book a Venue</span>
+            <span>BOOK A VENUE</span>
           </a>
 
           {/* Circular Mobile Toggle (visible when menu is closed) */}
