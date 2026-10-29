@@ -121,7 +121,7 @@ export default function Header() {
 
   return (
     <header className={`site-header${isScrolled ? ' is-scrolled' : ''}`}>
-      <div className={`container header-container${isScrolled ? ' is-scrolled' : ''}`}>
+      <div className={`header-fullwidth-container${isScrolled ? ' is-scrolled' : ''}`}>
         {/* Brand Logo */}
         <a 
           href="/" 

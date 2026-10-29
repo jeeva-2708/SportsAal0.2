@@ -8,6 +8,7 @@ import badmintonActionImg from '../../assets/images/hero-ribbon/badminton-action
 import cricketStadiumImg from '../../assets/images/hero-ribbon/cricket-stadium.jpg';
 import tennisActionImg from '../../assets/images/hero-ribbon/tennis-action.jpg';
 import footballCelebrateImg from '../../assets/images/hero-ribbon/football-celebrate.jpg';
+import basketballDunkImg from '../../assets/images/hero-ribbon/basketball-dunk.jpg';
 import athleteSprintImg from '../../assets/images/hero-ribbon/athlete-sprint.jpg';
 
 const ribbonPhotos = [
@@ -16,8 +17,9 @@ const ribbonPhotos = [
   { id: 'photo-3', src: badmintonActionImg, alt: 'Badminton Smash' },
   { id: 'photo-4', src: cricketStadiumImg, alt: 'Sports Arena Infrastructure' },
   { id: 'photo-5', src: tennisActionImg, alt: 'Tennis Court Rally' },
-  { id: 'photo-6', src: footballCelebrateImg, alt: 'Tournament Match' },
-  { id: 'photo-7', src: athleteSprintImg, alt: 'Athletic Conditioning' },
+  { id: 'photo-6', src: footballCelebrateImg, alt: 'Goal Celebration Action' },
+  { id: 'photo-7', src: basketballDunkImg, alt: 'Basketball Slam Dunk' },
+  { id: 'photo-8', src: athleteSprintImg, alt: 'Athletic Conditioning' },
 ];
 
 // Actual Sportsaal Services (What we provide, NOT image/sport names)
