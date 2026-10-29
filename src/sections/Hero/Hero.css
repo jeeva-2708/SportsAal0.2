@@ -297,25 +297,26 @@
 
 @media (max-width: 767px) {
   .hero-section-v3 {
-    padding-top: 5.5rem;
-    padding-bottom: 3rem;
+    padding-top: 5rem;
+    padding-bottom: 2rem;
   }
 
   .hero-slanted-viewport {
-    transform: translateX(-50%) rotate(0deg); /* Neutral angle on mobile */
+    transform: translateX(-50%) rotate(-2.2deg); /* Slightly slanted on mobile matching desktop */
     overflow-x: auto;
     justify-content: flex-start;
-    margin-top: 0.5rem;
+    margin-top: 0;
+    padding: 1.5rem 0 1.2rem;
   }
 
   .hero-slanted-track {
     justify-content: flex-start;
-    padding: 0 1rem;
+    padding: 0 1.25rem;
   }
 
   .hero-photo-frame {
-    width: 135px;
-    height: 220px;
+    width: 140px;
+    height: 230px;
     border-radius: 5px;
   }
 
