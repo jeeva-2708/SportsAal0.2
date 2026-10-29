@@ -132,12 +132,12 @@ export default function Header() {
           <img src={logoDarkImg} alt="SPORTSAAL" className="brand-logo-img" />
         </a>
 
-        {/* Desktop Navigation Menu (Video Style) */}
+        {/* Desktop Navigation Menu (ABOUT First) */}
         <nav className="desktop-nav-menu">
+          <a href="/#about" className="nav-link" onClick={(e) => handleNavClick(e, '#about')}>ABOUT</a>
           <a href="/#services" className="nav-link" onClick={(e) => handleNavClick(e, '#services')}>SERVICES</a>
           <a href="/services/cricket-tournaments" className="nav-link" onClick={(e) => handleNavClick(e, '/services/cricket-tournaments')}>EVENTS</a>
           <a href="/services/venue-management" className="nav-link" onClick={(e) => handleNavClick(e, '/services/venue-management')}>VENUES</a>
-          <a href="/#about" className="nav-link" onClick={(e) => handleNavClick(e, '#about')}>ABOUT US</a>
           <a href="/#contact" className="nav-link" onClick={(e) => handleNavClick(e, '#contact')}>CONTACT US</a>
         </nav>
 
@@ -187,10 +187,10 @@ export default function Header() {
 
           <nav className="mobile-nav-links">
             {[
-              { label: 'HOME', href: '#hero' },
-              { label: 'ABOUT US', href: '#about' },
+              { label: 'ABOUT', href: '#about' },
               { label: 'SERVICES', href: '#services' },
-              { label: 'OUR WORK', href: '#work' },
+              { label: 'EVENTS', href: '/services/cricket-tournaments' },
+              { label: 'VENUES', href: '/services/venue-management' },
               { label: 'CONTACT US', href: '#contact' },
             ].map((item, i) => (
               <a
