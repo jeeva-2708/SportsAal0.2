@@ -24,10 +24,10 @@
   justify-content: space-between;
   width: 100%;
   max-width: 100%;
-  padding: 1.15rem clamp(1.75rem, 4.5vw, 4.5rem);
+  padding: 0.95rem clamp(1.75rem, 4.5vw, 4.5rem);
 }
 
-/* Brand Logo (Proportioned bold presence matching reference screenshot) */
+/* Brand Logo (Small, refined & elegant - exact match to the video logo) */
 .brand-logo {
   display: flex;
   align-items: center;
@@ -40,23 +40,17 @@
 }
 
 .brand-logo-img {
-  height: clamp(38px, 3.8vw, 48px);
+  height: 22px;
+  max-height: 24px;
   width: auto;
   object-fit: contain;
 }
-
 
 /* Desktop Navigation Menu */
 .desktop-nav-menu {
   display: flex;
   align-items: center;
-  gap: 2.25rem;
-}
-
-.desktop-nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 2.75rem;
+  gap: 2.5rem;
 }
 
 .nav-link {
