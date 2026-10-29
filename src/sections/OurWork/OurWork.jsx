@@ -51,7 +51,7 @@ const projects = [
   },
   {
     id: 'sports-technology',
-    title: 'SPORTS TECHNOLOGY',
+    title: 'SPORTS TECHNOLOGY & LIVE STREAMING',
     subtitle: 'Smarter Insights. Better Performance.',
     image: sportsTechnologyImg,
   },

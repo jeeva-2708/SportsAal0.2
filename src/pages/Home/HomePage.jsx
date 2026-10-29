@@ -27,7 +27,7 @@ export default function HomePage() {
       <Hero />
       <About />
       <Services />
-      <OurWork />
+      {/* Temporarily hidden as requested: <OurWork /> */}
       <TrustedBy />
       <Testimonials />
       <Contact />

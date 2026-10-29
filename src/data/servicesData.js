@@ -374,7 +374,7 @@ export const servicesData = {
 
   'sports-technology': {
     slug: 'sports-technology',
-    title: 'SPORTS TECHNOLOGY',
+    title: 'SPORTS TECHNOLOGY & LIVE STREAMING',
     tagline: 'SMARTER INSIGHTS. DATA-DRIVEN PERFORMANCE.',
     category: 'DIGITAL INNOVATION & ANALYTICS',
     heroImage: technologyImg,
@@ -523,6 +523,6 @@ export const allServicesList = [
   { slug: 'cricket-tournaments', title: 'Cricket Tournaments', path: '/services/cricket-tournaments' },
   { slug: 'professional-coaching', title: 'Professional Coaching', path: '/services/professional-coaching' },
   { slug: 'event-management', title: 'Event Management', path: '/services/event-management' },
-  { slug: 'sports-technology', title: 'Sports Technology', path: '/services/sports-technology' },
+  { slug: 'sports-technology', title: 'Sports Technology & Live Streaming', path: '/services/sports-technology' },
   { slug: 'sportswear-products', title: 'Sportswear & Products', path: '/services/sportswear-products' },
 ];

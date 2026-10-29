@@ -22,7 +22,7 @@
   border-radius: 14px;
   box-shadow: none;
   border: 1px solid transparent;
-  padding: 0.75rem 1.75rem;
+  padding: 0.75rem clamp(1.25rem, 2.5vw, 2rem);
   margin-top: 0.25rem;
   backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(0px);
@@ -66,7 +66,7 @@
 
 .nav-link {
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--header-nav-link);
   text-decoration: none;
@@ -134,12 +134,12 @@
 /* Header CTA Button */
 .btn-header-cta {
   font-family: var(--font-body);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--header-cta-text);
   background-color: var(--header-cta-bg);
   text-decoration: none;
-  padding: 0.65rem 1.35rem;
+  padding: 0.7rem 1.45rem;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(243, 47, 47, 0.35);
   transition: all var(--transition-normal);
@@ -205,14 +205,14 @@
 /* Squeeze nav spacing gracefully on intermediate laptops (1151px - 1300px) */
 @media (min-width: 1151px) and (max-width: 1300px) {
   .desktop-nav-menu {
-    gap: 1.5rem;
+    gap: 1.65rem;
   }
   .nav-link {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
   }
   .btn-header-cta {
-    padding: 0.55rem 1.15rem;
-    font-size: 0.825rem;
+    padding: 0.65rem 1.3rem;
+    font-size: 0.875rem;
   }
 }
 

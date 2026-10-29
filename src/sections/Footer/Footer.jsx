@@ -1,13 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Footer.css';
-import brandLogo from '../../assets/logos/sportsaal-logo.png';
+import logoDarkImg from '../../assets/logos/sportsaal-logo.png';
+import logoLightImg from '../../assets/logos/sportsaal-logo-light.png';
 import { scrollToSection } from '../../utils/navigation';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [theme, setTheme] = useState(() => {
+    return document.documentElement.getAttribute('data-theme') || 'dark';
+  });
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      setTheme(currentTheme);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const brandLogo = theme === 'light' ? logoLightImg : logoDarkImg;
 
   const handleNavClick = (e, targetId) => {
     e.preventDefault();
@@ -165,7 +186,7 @@ export default function Footer() {
                 <Link to="/services/event-management">Event Management</Link>
               </li>
               <li>
-                <Link to="/services/sports-technology">Sports Technology</Link>
+                <Link to="/services/sports-technology">Sports Technology & Live Streaming</Link>
               </li>
               <li>
                 <Link to="/services/sportswear-products">Sportswear & Products</Link>

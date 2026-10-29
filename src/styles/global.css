@@ -63,7 +63,7 @@ body.nav-menu-open {
 /* Container & Layout Utilities */
 .container {
   width: 100%;
-  max-width: var(--container-max-width);
+  max-width: min(calc(100% - clamp(3rem, 6vw, 6.5rem)), var(--container-max-width));
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--container-padding);
@@ -145,6 +145,10 @@ body.nav-menu-open {
   :root {
     --container-padding: 1.5rem;
     --section-padding-y: var(--section-padding-y-mobile);
+  }
+
+  .container {
+    max-width: 100%;
   }
 }
 

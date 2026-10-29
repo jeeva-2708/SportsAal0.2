@@ -144,10 +144,10 @@
 
 /* Spacing & Layout Tokens */
 :root {
-  --container-max-width: 1280px;
-  --container-padding: 2.5rem;
-  --section-padding-y: 5rem;
-  --section-padding-y-mobile: 3rem;
+  --container-max-width: 1240px;
+  --container-padding: clamp(2rem, 3.5vw, 3.5rem);
+  --section-padding-y: 5.5rem;
+  --section-padding-y-mobile: 3.5rem;
 
   --radius-sm: 4px;
   --radius-md: 8px;

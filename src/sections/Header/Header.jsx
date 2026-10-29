@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
 import logoDarkImg from '../../assets/logos/sportsaal-logo.png';
+import logoLightImg from '../../assets/logos/sportsaal-logo-light.png';
 import { scrollToSection } from '../../utils/navigation';
 
 export default function Header() {
@@ -201,7 +202,7 @@ export default function Header() {
     }
   };
 
-  const currentLogo = logoDarkImg;
+  const currentLogo = theme === 'light' ? logoLightImg : logoDarkImg;
 
   return (
     <header className={`site-header${isScrolled ? ' is-scrolled' : ''}`}>
@@ -289,7 +290,7 @@ export default function Header() {
         <div className={`mobile-fullscreen-menu ${isClosing ? 'closing' : 'opening'}`}>
           <div className="mobile-menu-top">
             <a href="/" className="mobile-menu-logo-link" onClick={handleLogoClick}>
-              <img src={logoDarkImg} alt="SPORTSAAL" className="mobile-menu-logo" />
+              <img src={currentLogo} alt="SPORTSAAL" className="mobile-menu-logo" />
             </a>
             <button
               type="button"
