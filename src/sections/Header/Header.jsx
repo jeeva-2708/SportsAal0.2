@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
 import logoDarkImg from '../../assets/logos/sportsaal-logo.png';
-import logoLightImg from '../../assets/logos/sportsaal-logo-light.png';
 import { scrollToSection } from '../../utils/navigation';
 
 export default function Header() {
@@ -10,10 +9,7 @@ export default function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const toggleBtnRef = useRef(null);
-  const overlayRef = useRef(null);
   const scrollPositionRef = useRef(0);
   const targetSectionRef = useRef(null);
 
@@ -29,85 +25,6 @@ export default function Header() {
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Initialize theme from localStorage or system preference
-  const [theme, setTheme] = useState(() => {
-    const savedTheme = localStorage.getItem('sportsaal_theme');
-    if (savedTheme) return savedTheme;
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-  });
-
-  // Sync data-theme attribute on <html>
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('sportsaal_theme', theme);
-  }, [theme]);
-
-  const toggleTheme = (e) => {
-    if (isAnimating) return;
-
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    const targetEl = (e && e.currentTarget) ? e.currentTarget : toggleBtnRef.current;
-    if (!targetEl) {
-      setTheme(nextTheme);
-      return;
-    }
-
-    // Get button center position for the ripple origin
-    const rect = targetEl.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-
-    // Calculate radius needed to cover the full screen from the click origin
-    const maxDist = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y)
-    );
-
-    // Build and inject the circular ripple overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'theme-transition-overlay';
-    overlay.style.cssText = `
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      pointer-events: none;
-      background: ${nextTheme === 'light' ? '#D9E4EE' : '#050505'};
-      clip-path: circle(0px at ${x}px ${y}px);
-      transition: clip-path 0.55s cubic-bezier(0.4, 0, 0.2, 1);
-    `;
-    document.body.appendChild(overlay);
-    overlayRef.current = overlay;
-    setIsAnimating(true);
-
-    // Trigger expand animation on next frame
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        overlay.style.clipPath = `circle(${maxDist}px at ${x}px ${y}px)`;
-      });
-    });
-
-    // Switch theme mid-animation (at 60% through = ~330ms)
-    const themeTimeout = setTimeout(() => {
-      setTheme(nextTheme);
-    }, 330);
-
-    // Remove overlay after full animation
-    const cleanupTimeout = setTimeout(() => {
-      overlay.style.transition = 'opacity 0.18s ease';
-      overlay.style.opacity = '0';
-      setTimeout(() => {
-        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-        setIsAnimating(false);
-        overlayRef.current = null;
-      }, 180);
-    }, 560);
-
-    return () => {
-      clearTimeout(themeTimeout);
-      clearTimeout(cleanupTimeout);
-    };
-  };
 
   // Prevent background scrolling when mobile/tablet menu is open without losing scroll position
   useEffect(() => {
@@ -214,7 +131,7 @@ export default function Header() {
           aria-label="Sportsaal Home"
           onClick={handleLogoClick}
         >
-          <img src={currentLogo} alt="SPORTSAAL" className="brand-logo-img" />
+          <img src={logoDarkImg} alt="SPORTSAAL" className="brand-logo-img" />
         </a>
 
         {/* Desktop Navigation Menu */}
@@ -228,35 +145,6 @@ export default function Header() {
 
         {/* Header Actions */}
         <div className="header-actions">
-          {/* Light/Dark Mode Theme Switcher Toggle */}
-          <button
-            ref={toggleBtnRef}
-            className={`theme-toggle-btn${isAnimating ? ' animating' : ''}`}
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {theme === 'dark' ? (
-              /* Sun Icon — switch to Light */
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="toggle-icon">
-                <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1"  x2="12" y2="3"  />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22"  y1="4.22"  x2="5.64"  y2="5.64"  />
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                <line x1="1"  y1="12" x2="3"  y2="12" />
-                <line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36" />
-                <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"  />
-              </svg>
-            ) : (
-              /* Moon Icon — switch to Dark */
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="toggle-icon">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-            )}
-          </button>
-
           <a 
             href="#contact" 
             className="btn-header-cta"
@@ -290,7 +178,7 @@ export default function Header() {
         <div className={`mobile-fullscreen-menu ${isClosing ? 'closing' : 'opening'}`}>
           <div className="mobile-menu-top">
             <a href="/" className="mobile-menu-logo-link" onClick={handleLogoClick}>
-              <img src={currentLogo} alt="SPORTSAAL" className="mobile-menu-logo" />
+              <img src={logoDarkImg} alt="SPORTSAAL" className="mobile-menu-logo" />
             </a>
             <button
               type="button"
@@ -326,48 +214,6 @@ export default function Header() {
           </nav>
 
           <div className="mobile-menu-footer">
-            {/* Mobile Navigation Theme Switcher */}
-            <div className="mobile-theme-section">
-              <span className="mobile-theme-title">THEME</span>
-              <div className="mobile-theme-pill-box">
-                <button
-                  type="button"
-                  className={`mobile-theme-pill-btn${theme === 'light' ? ' active' : ''}`}
-                  onClick={(e) => {
-                    if (theme !== 'light') toggleTheme(e);
-                  }}
-                  aria-label="Switch to Light Theme"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pill-icon">
-                    <circle cx="12" cy="12" r="5" />
-                    <line x1="12" y1="1"  x2="12" y2="3"  />
-                    <line x1="12" y1="21" x2="12" y2="23" />
-                    <line x1="4.22"  y1="4.22"  x2="5.64"  y2="5.64"  />
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                    <line x1="1"  y1="12" x2="3"  y2="12" />
-                    <line x1="21" y1="12" x2="23" y2="12" />
-                    <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36" />
-                    <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"  />
-                  </svg>
-                  <span>Light</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`mobile-theme-pill-btn${theme === 'dark' ? ' active' : ''}`}
-                  onClick={(e) => {
-                    if (theme !== 'dark') toggleTheme(e);
-                  }}
-                  aria-label="Switch to Dark Theme"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pill-icon">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                  </svg>
-                  <span>Dark</span>
-                </button>
-              </div>
-            </div>
-
             <div className="mobile-menu-divider"></div>
             <a href="#book" className="mobile-cta-full-red" onClick={(e) => handleNavClick(e, '#book')}>
               <span>BOOK A VENUE</span>

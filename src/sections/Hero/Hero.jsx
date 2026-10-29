@@ -1,95 +1,85 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './Hero.css';
-import darkHeroImg from '../../assets/images/hero-cricket-dark.jpg';
-import lightHeroImg from '../../assets/images/hero-cricket-light.jpg';
+
+// Multi-Sport Panorama Ribbon Assets
+import cricketBatsmanImg from '../../assets/images/hero-ribbon/cricket-batsman.jpg';
+import footballActionImg from '../../assets/images/hero-ribbon/football-action.jpg';
+import badmintonActionImg from '../../assets/images/hero-ribbon/badminton-action.jpg';
+import cricketStadiumImg from '../../assets/images/hero-ribbon/cricket-stadium.jpg';
+import tennisActionImg from '../../assets/images/hero-ribbon/tennis-action.jpg';
+import footballCelebrateImg from '../../assets/images/hero-ribbon/football-celebrate.jpg';
+import athleteSprintImg from '../../assets/images/hero-ribbon/athlete-sprint.jpg';
+
+const ribbonCards = [
+  { id: 'cricket', title: 'CRICKET', image: cricketBatsmanImg, badge: 'PRO LEAGUE' },
+  { id: 'football', title: 'FOOTBALL', image: footballActionImg, badge: 'TURF ARENAS' },
+  { id: 'badminton', title: 'BADMINTON', image: badmintonActionImg, badge: 'SHUTTLE COURTS' },
+  { id: 'stadiums', title: 'VENUES', image: cricketStadiumImg, badge: 'INFRASTRUCTURE' },
+  { id: 'tennis', title: 'TENNIS', image: tennisActionImg, badge: 'SYNTHETIC COURTS' },
+  { id: 'tournaments', title: 'TOURNAMENTS', image: footballCelebrateImg, badge: 'CUPS & LEAGUES' },
+  { id: 'athletics', title: 'ATHLETICS', image: athleteSprintImg, badge: 'SPEED & S&C' },
+];
+
+const marqueeWords = [
+  'CRICKET',
+  'FOOTBALL',
+  'BADMINTON',
+  'TENNIS',
+  'TOURNAMENTS',
+  'PRO VENUES',
+  'LIVE STREAMING',
+  'ELITE COACHING',
+  'ATHLETIC SPRINT',
+];
 
 export default function Hero() {
-  // Synchronously initialize theme from localStorage / document attribute to prevent flash on refresh
-  const [theme, setTheme] = useState(() => {
-    const savedTheme = localStorage.getItem('sportsaal_theme');
-    if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
-    return document.documentElement.getAttribute('data-theme') || 'dark';
-  });
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      setTheme(currentTheme);
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const heroImg = theme === 'light' ? lightHeroImg : darkHeroImg;
-
   return (
-    <section className="hero-section" id="hero">
-      {/* Ambient Radial Glow Effects */}
+    <section className="hero-section-v3" id="hero">
+      {/* Ambient Radial Athletic Lighting */}
       <div className="hero-ambient-glow"></div>
       <div className="hero-ambient-red"></div>
 
-      {/* Hero Visual Background Layer (Cricket Player Canvas) */}
-      <div className="hero-visual-layer">
-        <div className="hero-visual-wrapper">
-          <img 
-            src={heroImg} 
-            alt="Sportsaal Cricket Player" 
-            className="hero-player-img" 
-          />
-          <div className="hero-blend-left"></div>
-          <div className="hero-blend-bottom"></div>
-          <div className="hero-blend-top"></div>
+      {/* 1. Multi-Sport Horizontal Panorama Ribbon */}
+      <div className="hero-ribbon-viewport">
+        <div className="hero-ribbon-track">
+          {ribbonCards.map((card, index) => (
+            <div 
+              key={card.id} 
+              className={`hero-ribbon-card hero-card-${index + 1}`}
+            >
+              <img 
+                src={card.image} 
+                alt={card.title} 
+                className="hero-ribbon-img" 
+                loading="eager" 
+              />
+              <div className="hero-ribbon-overlay">
+                <span className="hero-ribbon-badge">{card.badge}</span>
+                <span className="hero-ribbon-sport">{card.title}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Hero Content Container */}
-      <div className="container hero-container">
-        <div className="hero-content">
-          
-          {/* Subhead Tag */}
-          <div className="hero-tag">
-            <span className="tag-line"></span>
-            <span className="tag-text">SPORTSAAL</span>
-          </div>
-
-          {/* Large Editorial Display Headline in Anton Font */}
-          <h1 className="hero-title">
-            <span className="title-row">
-              <span className="title-navy">COMPLETE</span> <span className="text-red">SPORTS</span>
+      {/* 2. Giant Running Marquee Ticker */}
+      <div className="hero-marquee-wrapper" aria-hidden="true">
+        <div className="hero-marquee-track">
+          {[...marqueeWords, ...marqueeWords, ...marqueeWords].map((word, idx) => (
+            <span key={idx} className="hero-marquee-item">
+              <span className="marquee-text">{word}</span>
+              <span className="marquee-dot">•</span>
             </span>
-            <span className="title-row">
-              <span className="title-navy">SOLUTIONS.</span>
-            </span>
-            <span className="title-row">
-              <span className="title-navy">FROM GROUND</span> <span className="text-red">TO</span>
-            </span>
-            <span className="title-row">
-              <span className="title-navy">GAME DAY.</span>
-            </span>
-          </h1>
-
-          {/* Supporting Paragraph */}
-          <p className="hero-description">
-            Professional cricket events, venues, tournaments, coaching and sports technology — all under one roof.
-          </p>
-
-          {/* Action CTA Buttons */}
-          <div className="hero-cta-group">
-            <a href="#services" className="btn btn-primary">
-              <span>EXPLORE SERVICES</span>
-              <span className="btn-arrow">→</span>
-            </a>
-            <a href="#contact" className="btn btn-outline">
-              <span>CONTACT US</span>
-            </a>
-          </div>
-
+          ))}
         </div>
+      </div>
+
+      {/* 3. Primary Action Callout CTA */}
+      <div className="hero-action-container">
+        <a href="#services" className="hero-pill-cta">
+          <span>EXPLORE SPORTSAAL</span>
+          <span className="pill-arrow">→</span>
+        </a>
       </div>
     </section>
   );

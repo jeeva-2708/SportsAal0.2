@@ -8,18 +8,12 @@
     <meta name="theme-color" content="#0A0A0A" />
     <title>Sportsaal | Premium Sports Infrastructure &amp; Experiences</title>
 
-    <!-- Synchronous Theme Script (Prevents Theme Flash or Wrong Hero Image on Page Refresh) -->
+    <!-- Sportsaal 3.0: Dark Theme Lock -->
     <script>
       (function() {
         try {
-          var savedTheme = localStorage.getItem('sportsaal_theme');
-          if (savedTheme === 'light' || savedTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.documentElement.setAttribute('data-theme', 'light');
-          } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-          }
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('sportsaal_theme', 'dark');
         } catch (e) {}
       })();
     </script>
