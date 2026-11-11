@@ -40,10 +40,7 @@ body.intro-scroll-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Realistic Football & Sneaker Juggling Loader (No Phone Card, Pure Animation)
-   - Displays purely the realistic athletic sneaker and classic soccer ball
-   - Realistic 3D perspective directly matched to reference image
-   - Kinematic juggling: heel-pivoted toe flick, ball launch, parabolic apex & spin
+   Minimalist Pure White "loading...." Preloader
    -------------------------------------------------------------------------- */
 
 .intro-font-loader {
@@ -54,129 +51,51 @@ body.intro-scroll-lock {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  transition: opacity 0.38s ease, transform 0.38s ease;
+  transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
 .intro-font-loader.font-loader-fade-out {
   opacity: 0;
-  transform: scale(0.96);
+  transform: scale(0.98);
   pointer-events: none;
 }
 
-/* Juggling Stage: Floating purely in the center of the dark screen */
-.football-juggle-stage {
-  position: relative;
-  width: clamp(250px, 28vw, 340px);
-  height: clamp(260px, 30vw, 360px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.minimal-loading-text {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Barlow', sans-serif;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  font-weight: 500;
+  color: #FFFFFF;
+  letter-spacing: 0.14em;
   user-select: none;
 }
 
-.football-juggle-svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.95));
+.minimal-loading-dots {
+  display: inline-flex;
+  margin-left: 2px;
 }
 
-/* --------------------------------------------------------------------------
-   Kinematic Juggling Physics (1.25s infinite loop)
-   -------------------------------------------------------------------------- */
-
-/* Ball Juggling Motion:
-   - 0%: Contact on shoe toe
-   - 4%: Squash compression on impact
-   - 14%: Rocket launch upward with stretch
-   - 48%: Parabolic apex float at -112px high with smooth 360deg spin
-   - 88%: Fast downward gravity plunge
-   - 100%: Hits toe and compresses into next loop
-*/
-.realistic-ball-group {
-  transform-origin: 106px 140px;
-  animation: realisticBallJuggle 1.25s infinite;
-  will-change: transform;
+.minimal-loading-dots span {
+  display: inline-block;
+  color: #FFFFFF;
+  animation: minimalLoadingDot 1.2s infinite ease-in-out;
 }
 
-@keyframes realisticBallJuggle {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1.12, 0.88) rotate(0deg);
-    animation-timing-function: cubic-bezier(0.2, 0.85, 0.35, 1);
-  }
-  4% {
-    transform: translate3d(0, 3px, 0) scale(1.16, 0.84) rotate(8deg);
-    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  14% {
-    transform: translate3d(0, -22px, 0) scale(0.9, 1.1) rotate(32deg);
-    animation-timing-function: cubic-bezier(0.22, 0.8, 0.36, 1);
-  }
-  48% {
-    transform: translate3d(0, -104px, 0) scale(1, 1) rotate(175deg);
-    animation-timing-function: cubic-bezier(0.65, 0.05, 0.85, 0.35);
-  }
-  88% {
-    transform: translate3d(0, -14px, 0) scale(0.95, 1.05) rotate(315deg);
-    animation-timing-function: ease-in;
-  }
-  100% {
-    transform: translate3d(0, 0, 0) scale(1.12, 0.88) rotate(360deg);
-  }
-}
+.minimal-loading-dots span:nth-child(1) { animation-delay: 0.0s; }
+.minimal-loading-dots span:nth-child(2) { animation-delay: 0.18s; }
+.minimal-loading-dots span:nth-child(3) { animation-delay: 0.36s; }
+.minimal-loading-dots span:nth-child(4) { animation-delay: 0.54s; }
 
-/* Boot Toe Flick Kinematics:
-   Pivots at the heel (245px 225px), toe snaps up to launch the ball
-*/
-.realistic-shoe-group {
-  transform-origin: 245px 225px;
-  animation: realisticShoeFlick 1.25s ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes realisticShoeFlick {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
+@keyframes minimalLoadingDot {
+  0%, 20% {
+    opacity: 0.2;
   }
-  4% {
-    transform: translate3d(0, 3px, 0) rotate(1.8deg); /* Impact cushion */
+  50% {
+    opacity: 1;
   }
-  14% {
-    transform: translate3d(0, -10px, 0) rotate(-9.5deg); /* Sharp upward toe kick! */
-  }
-  34% {
-    transform: translate3d(0, 0, 0) rotate(0deg); /* Returns to rest */
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-}
-
-/* Dynamic Contact Shadow on Toe Box / Vamp:
-   Expands and darkens upon ball contact, shrinks and fades when ball is airborne
-*/
-.football-contact-shadow {
-  transform-origin: 106px 182px;
-  animation: realisticContactShadow 1.25s ease-in-out infinite;
-  will-change: transform, opacity;
-}
-
-@keyframes realisticContactShadow {
-  0%, 4%, 100% {
-    opacity: 0.85;
-    transform: scale(1.15);
-  }
-  14% {
-    opacity: 0.35;
-    transform: scale(0.7);
-  }
-  48% {
-    opacity: 0.08;
-    transform: scale(0.25);
-  }
-  88% {
-    opacity: 0.6;
-    transform: scale(0.85);
+  80%, 100% {
+    opacity: 0.2;
   }
 }
 
@@ -403,9 +322,8 @@ body.intro-scroll-lock {
 
 /* Responsive tweaks */
 @media (max-width: 767px) {
-  .football-juggle-stage {
-    width: clamp(220px, 70vw, 290px);
-    height: clamp(230px, 72vw, 310px);
+  .minimal-loading-text {
+    font-size: 1.05rem;
   }
   .intro-progress-bar {
     bottom: 2rem;
