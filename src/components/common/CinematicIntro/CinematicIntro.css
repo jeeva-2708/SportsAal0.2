@@ -40,7 +40,11 @@ body.intro-scroll-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Realistic Side-Angle Cricket Preloader Stage (Pure Animation, No Brand Text)
+   Football & Sneaker Juggling Loading Screen (Exact Dribbble Reference Match)
+   - Recreates the split-card loading screen with custom Sportsaal Red color
+   - Top Section: Athletic red stadium field with classic soccer ball and sneaker
+   - Realistic juggling physics: toe flick, parabolic flight, ball spin & squash
+   - Bottom Section: Crisp white card with clean "Loading...." typography
    -------------------------------------------------------------------------- */
 
 .intro-font-loader {
@@ -51,7 +55,7 @@ body.intro-scroll-lock {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.38s ease, transform 0.38s ease;
 }
 
 .intro-font-loader.font-loader-fade-out {
@@ -60,192 +64,195 @@ body.intro-scroll-lock {
   pointer-events: none;
 }
 
-/* Prominent, Realistic 2D Cricket Stage */
-.cricket-tap-loader {
+/* Floating Rounded Device/App Card */
+.football-loader-card {
   position: relative;
-  width: clamp(230px, 30vw, 330px);
-  height: clamp(200px, 27vw, 290px);
+  width: clamp(280px, 24vw, 324px);
+  height: clamp(480px, 66vh, 550px);
+  max-height: 84vh;
+  border-radius: 36px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: #FFFFFF;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85),
+              0 0 50px rgba(220, 38, 38, 0.2),
+              0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateZ(0);
+}
+
+/* 1. Top Section: Athletic Red Field with Football & Sneaker */
+.football-loader-top {
+  position: relative;
+  width: 100%;
+  flex: 1.45;
+  background: linear-gradient(180deg, #E62828 0%, #D31D1D 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  user-select: none;
 }
 
-.cricket-tap-svg {
+.football-loader-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.9));
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
 }
 
 /* --------------------------------------------------------------------------
-   1. Bat Assembly Motion (Side Angle Profile)
-   Handle moves naturally with hand, while the blade BOTTOM moves and flicks to tap!
+   Kinematic Juggling Physics: Ball & Sneaker Synchronization (1.25s Loop)
    -------------------------------------------------------------------------- */
 
-.realistic-side-bat-assembly {
-  transform-origin: 215px 146px;
-  animation: batSideFlickMotion 2.3s ease-in-out infinite;
+/* Ball Juggling Kinematics:
+   - 0%: Contact with toe
+   - 4%: Squash compression on impact
+   - 14%: Rocket launch! Stretching upward
+   - 48%: Parabolic apex float at -112px high with continuous 360deg spin
+   - 88%: Fast downward gravity plunge
+   - 100%: Hits toe and compresses into next loop
+*/
+.football-ball-group {
+  transform-origin: 132px 135px;
+  animation: footballBallJuggle 1.25s infinite;
   will-change: transform;
 }
 
-@keyframes batSideFlickMotion {
-  /* Tap 1: Gentle Wrist Pop */
-  0%, 100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  1.5% {
-    transform: translate3d(0, 2px, 0) rotate(1deg); /* Impact cushion dip */
+@keyframes footballBallJuggle {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.12, 0.88) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.2, 0.85, 0.35, 1);
   }
   4% {
-    transform: translate3d(0, -3px, 0) rotate(-4deg); /* Hand lifts slightly, bottom blade flicks UP! */
-  }
-  8.5% {
-    transform: translate3d(0, 0, 0) rotate(0deg); /* Settles back */
-  }
-
-  /* Tap 2: Medium Upward Strike */
-  22% {
-    transform: translate3d(0, 2.5px, 0) rotate(1.5deg); /* Impact cushion */
-  }
-  25% {
-    transform: translate3d(0, -5.5px, 0) rotate(-7deg); /* Hand lifts, bottom blade swings higher! */
-  }
-  29.5% {
-    transform: translate3d(0, 0, 0) rotate(0deg); /* Settles back */
-  }
-
-  /* Tap 3: High Energetic Pop (Maximum Air Time) */
-  54% {
-    transform: translate3d(0, 3.5px, 0) rotate(2deg); /* Deep impact cushion */
-  }
-  57.5% {
-    transform: translate3d(0, -8.5px, 0) rotate(-11deg); /* Powerful upward snap! */
-  }
-  64% {
-    transform: translate3d(0, 0, 0) rotate(0deg); /* Smooth recovery ready for next loop */
-  }
-}
-
-/* --------------------------------------------------------------------------
-   2. Ball Flight Physics: Progressive Heights (Low -> Med -> High)
-   -------------------------------------------------------------------------- */
-
-.realistic-side-ball-group {
-  transform-origin: 115px 139px;
-  animation: ballSideProgressiveFlight 2.3s infinite;
-  will-change: transform;
-}
-
-@keyframes ballSideProgressiveFlight {
-  /* Tap 1: Low Height (-38px) */
-  0% {
-    transform: translate3d(0, 0, 0) scale(1.14, 0.86) rotate(0deg);
-    animation-timing-function: cubic-bezier(0.2, 0.85, 0.38, 1);
-  }
-  3% {
-    transform: translate3d(0, -5px, 0) scale(0.92, 1.08) rotate(4deg);
+    transform: translate3d(0, 3px, 0) scale(1.16, 0.84) rotate(8deg);
     animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
-  11% {
-    transform: translate3d(0, -38px, 0) scale(1, 1) rotate(10deg);
-    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  14% {
+    transform: translate3d(0, -22px, 0) scale(0.9, 1.1) rotate(32deg);
+    animation-timing-function: cubic-bezier(0.22, 0.8, 0.36, 1);
   }
-  19% {
-    transform: translate3d(0, -4px, 0) scale(0.95, 1.05) rotate(15deg);
-    animation-timing-function: ease-in;
+  48% {
+    transform: translate3d(0, -112px, 0) scale(1, 1) rotate(175deg);
+    animation-timing-function: cubic-bezier(0.65, 0.05, 0.85, 0.35);
   }
-  22% {
-    transform: translate3d(0, 0, 0) scale(1.18, 0.82) rotate(18deg);
-    animation-timing-function: cubic-bezier(0.2, 0.85, 0.38, 1);
-  }
-
-  /* Tap 2: Medium Height (-80px) */
-  25% {
-    transform: translate3d(0, -10px, 0) scale(0.9, 1.1) rotate(24deg);
-    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  38% {
-    transform: translate3d(0, -80px, 0) scale(1, 1) rotate(38deg);
-    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  }
-  51% {
-    transform: translate3d(0, -6px, 0) scale(0.92, 1.08) rotate(52deg);
-    animation-timing-function: ease-in;
-  }
-  54% {
-    transform: translate3d(0, 0, 0) scale(1.22, 0.78) rotate(56deg);
-    animation-timing-function: cubic-bezier(0.2, 0.85, 0.38, 1);
-  }
-
-  /* Tap 3: High Height (-128px) — Ball soars way up into the sky! */
-  57.5% {
-    transform: translate3d(0, -16px, 0) scale(0.86, 1.14) rotate(68deg);
-    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  77% {
-    transform: translate3d(0, -128px, 0) scale(1, 1) rotate(95deg);
-    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  }
-  97% {
-    transform: translate3d(0, -6px, 0) scale(0.9, 1.1) rotate(115deg);
+  88% {
+    transform: translate3d(0, -14px, 0) scale(0.95, 1.05) rotate(315deg);
     animation-timing-function: ease-in;
   }
   100% {
-    transform: translate3d(0, 0, 0) scale(1.14, 0.86) rotate(120deg);
+    transform: translate3d(0, 0, 0) scale(1.12, 0.88) rotate(360deg);
   }
 }
 
-/* --------------------------------------------------------------------------
-   3. Dynamic Shadow on Bat Face beneath Ball
-   -------------------------------------------------------------------------- */
+/* Sneaker Toe Flick Kinematics:
+   Pivots at the heel (235px 230px), toe snaps up to launch the ball
+*/
+.football-shoe-group {
+  transform-origin: 235px 230px;
+  animation: footballShoeKick 1.25s ease-in-out infinite;
+  will-change: transform;
+}
 
-.tap-side-contact-shadow {
-  transform-origin: 115px 155px;
-  animation: sideContactShadowSync 2.3s ease-in-out infinite;
+@keyframes footballShoeKick {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  4% {
+    transform: translate3d(0, 3px, 0) rotate(1.8deg); /* Impact cushion */
+  }
+  14% {
+    transform: translate3d(0, -10px, 0) rotate(-9.5deg); /* Sharp upward toe kick! */
+  }
+  34% {
+    transform: translate3d(0, 0, 0) rotate(0deg); /* Returns to rest */
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+/* Dynamic Contact Shadow on Toe Box:
+   Expands and darkens upon ball contact, shrinks and fades when ball is airborne
+*/
+.football-contact-shadow {
+  transform-origin: 132px 180px;
+  animation: footballContactShadowSync 1.25s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
-@keyframes sideContactShadowSync {
-  0%, 22%, 54%, 100% {
-    opacity: 0.9;
-    transform: scale(1);
+@keyframes footballContactShadowSync {
+  0%, 4%, 100% {
+    opacity: 0.8;
+    transform: scale(1.15);
   }
-  11% {
-    opacity: 0.28;
-    transform: scale(0.55);
+  14% {
+    opacity: 0.35;
+    transform: scale(0.7);
   }
-  38% {
-    opacity: 0.12;
-    transform: scale(0.35);
+  48% {
+    opacity: 0.08;
+    transform: scale(0.25);
   }
-  77% {
-    opacity: 0.03;
-    transform: scale(0.18);
+  88% {
+    opacity: 0.55;
+    transform: scale(0.85);
   }
 }
 
-/* --------------------------------------------------------------------------
-   4. Sweet Spot Impact Shockwave Flash
-   -------------------------------------------------------------------------- */
-
-.tap-side-impact-ring {
-  transform-origin: 115px 154px;
-  animation: sideImpactFlashSync 2.3s ease-out infinite;
-  will-change: transform, opacity;
+/* 2. Bottom Section: White Card with "Loading...." Typography */
+.football-loader-bottom {
+  width: 100%;
+  flex: 1;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  user-select: none;
 }
 
-@keyframes sideImpactFlashSync {
-  0%, 22%, 54% {
-    opacity: 0.95;
-    transform: scale(0.45);
+.football-loader-text {
+  font-family: var(--font-body, 'Barlow', sans-serif);
+  font-size: clamp(18px, 2.2vw, 21px);
+  font-weight: 600;
+  color: #1E232B;
+  letter-spacing: 0.5px;
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.football-loader-dots {
+  display: inline-flex;
+  margin-left: 1px;
+}
+
+.football-loader-dots span {
+  display: inline-block;
+  font-weight: 700;
+  color: #1E232B;
+  animation: footballDotPulse 1.4s infinite ease-in-out;
+}
+
+.football-loader-dots span:nth-child(1) { animation-delay: 0.0s; }
+.football-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+.football-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+.football-loader-dots span:nth-child(4) { animation-delay: 0.6s; }
+
+@keyframes footballDotPulse {
+  0%, 20% {
+    opacity: 0.2;
+    transform: translateY(0);
   }
-  3.5%, 25.5%, 57.5% {
-    opacity: 0;
-    transform: scale(1.65);
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
   }
-  4%, 21.9%, 26%, 53.9%, 58%, 100% {
-    opacity: 0;
-    transform: scale(0.45);
+  80%, 100% {
+    opacity: 0.2;
+    transform: translateY(0);
   }
 }
 
@@ -472,9 +479,13 @@ body.intro-scroll-lock {
 
 /* Responsive tweaks */
 @media (max-width: 767px) {
-  .cricket-tap-loader {
-    width: 240px;
-    height: 215px;
+  .football-loader-card {
+    width: min(290px, 86vw);
+    height: min(480px, 78vh);
+    border-radius: 30px;
+  }
+  .football-loader-bottom {
+    padding: 18px 16px;
   }
   .intro-progress-bar {
     bottom: 2rem;
@@ -492,5 +503,12 @@ body.intro-scroll-lock {
     right: 1.25rem;
     padding: 0.35rem 0.85rem;
     font-size: 0.7rem;
+  }
+}
+
+@media (max-height: 560px) {
+  .football-loader-card {
+    height: min(400px, 86vh);
+    width: 260px;
   }
 }

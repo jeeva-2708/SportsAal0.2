@@ -5,11 +5,11 @@ import './CinematicIntro.css';
  * CinematicIntro
  *
  * 1. Initial Loading Screen:
- *    - Realistic 2D Cricket Bat (SIDE ANGLE profile showing striking face, thick spine swell & toe)
- *    - Organic biomechanics: the handle moves naturally with hand flex, while the bottom of the bat
- *      flicks up with dynamic wrist action to tap the ball into the air
- *    - Progressive bounce heights on each tap (Low -> Medium -> High air time)
- *    - No text on screen, pure realistic athletic loader
+ *    - Exact Football Juggling Loading Screen inspired by reference
+ *    - Styled with Sportsaal's signature athletic red and dark Obsidian accents
+ *    - Classic 3D black & white soccer ball juggling above a sleek athletic sneaker
+ *    - Real-time juggling kinematics: heel-pivoted toe flick, ball launch, parabolic apex & spin
+ *    - Clean lower card with modern "Loading...." micro-animated typography
  *    - Monitors document.fonts.ready to guarantee 'Anton' and 'Barlow' are ready
  *
  * 2. 5-second cinematic typography sequence:
@@ -133,228 +133,217 @@ export default function CinematicIntro({ onComplete }) {
       aria-modal="true"
       aria-label="Sportsaal Introduction"
     >
-      {/* Loading Screen: Realistic Side-Angle Cricket Bat Tapping Ball */}
+      {/* Loading Screen: Football & Sneaker Juggling Loader */}
       {!fontsLoaded && (
         <div className={`intro-font-loader ${loaderFading ? 'font-loader-fade-out' : ''}`}>
-          <div className="cricket-tap-loader" aria-hidden="true">
-            <svg
-              viewBox="0 0 320 280"
-              className="cricket-tap-svg"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                {/* 3D Realistic Cricket Ball Shader */}
-                <radialGradient id="cricketBallShaderReal" cx="30%" cy="28%" r="72%">
-                  <stop offset="0%" stopColor="#FF7A80" />
-                  <stop offset="28%" stopColor="#EF232C" />
-                  <stop offset="68%" stopColor="#BA141C" />
-                  <stop offset="100%" stopColor="#4A0508" />
-                </radialGradient>
+          <div className="football-loader-card" aria-hidden="true">
+            {/* Top Section: Red Athletic Pitch with Football and Sneaker */}
+            <div className="football-loader-top">
+              <svg
+                viewBox="0 0 320 330"
+                className="football-loader-svg"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  {/* Realistic 3D Soccer Ball Sphere Gradient */}
+                  <radialGradient id="soccerBall3DGrad" cx="35%" cy="32%" r="68%">
+                    <stop offset="0%" stopColor="#FFFFFF" />
+                    <stop offset="60%" stopColor="#F8FAFC" />
+                    <stop offset="85%" stopColor="#E2E8F0" />
+                    <stop offset="100%" stopColor="#CBD5E1" />
+                  </radialGradient>
 
-                {/* English Willow Wood Profile Shader (Side View) */}
-                <linearGradient id="willowProfileWood" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FFFDF8" />
-                  <stop offset="12%" stopColor="#F8F2E4" />
-                  <stop offset="55%" stopColor="#EADECA" />
-                  <stop offset="85%" stopColor="#D5C5A8" />
-                  <stop offset="100%" stopColor="#AC9974" />
-                </linearGradient>
+                  {/* Dark Leather Panel Gradient */}
+                  <linearGradient id="soccerPanelDark" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#22252A" />
+                    <stop offset="100%" stopColor="#111317" />
+                  </linearGradient>
 
-                {/* Spine Bottom Depth Bevel */}
-                <linearGradient id="willowSpineShadow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#877553" />
-                  <stop offset="55%" stopColor="#5E4E32" />
-                  <stop offset="100%" stopColor="#352B19" />
-                </linearGradient>
+                  {/* Sneaker Sole Gradient */}
+                  <linearGradient id="sneakerSoleGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2A2F38" />
+                    <stop offset="40%" stopColor="#1A1C22" />
+                    <stop offset="100%" stopColor="#0E1014" />
+                  </linearGradient>
 
-                {/* Side Edge Branding Sticker */}
-                <linearGradient id="sideEdgeDecalGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#FF3333" />
-                  <stop offset="60%" stopColor="#DC1414" />
-                  <stop offset="100%" stopColor="#990B0B" />
-                </linearGradient>
+                  {/* Sneaker Racing Wave Gradient */}
+                  <linearGradient id="sneakerWaveGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#FDE047" />
+                    <stop offset="50%" stopColor="#FBBF24" />
+                    <stop offset="100%" stopColor="#F59E0B" />
+                  </linearGradient>
 
-                {/* Cane Handle Rubber Grip */}
-                <linearGradient id="handleRubberGrip" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#F87171" />
-                  <stop offset="35%" stopColor="#EF4444" />
-                  <stop offset="75%" stopColor="#B91C1C" />
-                  <stop offset="100%" stopColor="#680C0C" />
-                </linearGradient>
+                  {/* Dynamic Contact Shadow */}
+                  <radialGradient id="footballContactShadowGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="rgba(0, 0, 0, 0.55)" />
+                    <stop offset="60%" stopColor="rgba(0, 0, 0, 0.2)" />
+                    <stop offset="100%" stopColor="transparent" />
+                  </radialGradient>
+                </defs>
 
-                {/* Dynamic Contact Shadow on Bat Face */}
-                <radialGradient id="contactShadowSide" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="rgba(0, 0, 0, 0.88)" />
-                  <stop offset="60%" stopColor="rgba(0, 0, 0, 0.3)" />
-                  <stop offset="100%" stopColor="transparent" />
-                </radialGradient>
+                {/* SNEAKER GROUP (Pivots at heel, toe flicks upward to kick) */}
+                <g className="football-shoe-group">
+                  {/* Contact Shadow on Shoe Toe */}
+                  <ellipse
+                    className="football-contact-shadow"
+                    cx="132"
+                    cy="180"
+                    rx="16"
+                    ry="5"
+                    fill="url(#footballContactShadowGrad)"
+                  />
 
-                {/* Sweet Spot Impact Shockwave */}
-                <radialGradient id="sweetSpotImpactBurst" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="rgba(255, 43, 43, 0.95)" />
-                  <stop offset="50%" stopColor="rgba(255, 43, 43, 0.35)" />
-                  <stop offset="100%" stopColor="transparent" />
-                </radialGradient>
-              </defs>
+                  {/* 1. Sneaker Dark Sculpted Sole */}
+                  <path
+                    d="M 80 218 C 95 240 135 252 185 252 C 220 252 245 246 252 238 C 255 234 253 228 246 226 C 230 230 200 234 160 234 C 120 234 95 224 80 218 Z"
+                    fill="url(#sneakerSoleGrad)"
+                  />
+                  {/* Sole Midsole Speed Accent Line */}
+                  <path
+                    d="M 86 218 C 115 228 160 232 244 227"
+                    stroke="#FFFFFF"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    opacity="0.85"
+                  />
 
-              {/* Ambient Ground Shadow */}
-              <ellipse cx="150" cy="225" rx="105" ry="8" fill="rgba(0, 0, 0, 0.55)" />
+                  {/* 2. Sneaker Upper Body (Matching Red Theme) */}
+                  <path
+                    d="M 80 218 C 78 206 88 194 108 190 C 125 186 145 178 162 168 C 168 164 175 166 178 172 C 184 180 196 186 212 184 C 225 182 235 188 238 198 C 242 210 246 222 244 228 C 200 234 150 234 105 226 L 80 218 Z"
+                    fill="#DC2626"
+                    stroke="#991B1B"
+                    strokeWidth="1.2"
+                    strokeLinejoin="round"
+                  />
 
-              {/* SIDE-ANGLE CRICKET BAT ASSEMBLY: Dynamic Hand & Wrist Motion */}
-              <g className="realistic-side-bat-assembly">
-                {/* Contact Shadow on the flat striking face */}
-                <ellipse
-                  className="tap-side-contact-shadow"
-                  cx="115"
-                  cy="155.5"
-                  rx="18"
-                  ry="4.5"
-                  fill="url(#contactShadowSide)"
-                />
+                  {/* 3. Toe Protector / Mudguard */}
+                  <path
+                    d="M 80 218 C 78 210 86 200 98 198 L 102 210 C 94 212 86 218 80 218 Z"
+                    fill="#991B1B"
+                    opacity="0.8"
+                  />
 
-                {/* Impact Shockwave Ring on Contact */}
-                <ellipse
-                  className="tap-side-impact-ring"
-                  cx="115"
-                  cy="154"
-                  rx="24"
-                  ry="6.5"
-                  stroke="#FF2B2B"
-                  strokeWidth="2"
-                />
+                  {/* 4. Dynamic Side Waves / Racing Swoosh (Yellow & White) */}
+                  <path
+                    d="M 106 205 C 135 194 168 214 196 226 C 214 234 230 226 236 212 L 234 218 C 224 234 206 238 190 230 C 162 216 132 202 106 209 Z"
+                    fill="url(#sneakerWaveGrad)"
+                  />
+                  <path
+                    d="M 115 199 C 142 190 172 208 198 220 C 214 228 226 222 232 208"
+                    stroke="#FFFFFF"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
 
-                {/* 1. Spine Under-Bevel (Bottom edge thickness seen from side) */}
-                <path
-                  d="M 60 174 Q 115 194 186 160 L 186 163 Q 115 198 60 178 Z"
-                  fill="url(#willowSpineShadow)"
-                />
+                  {/* 5. Diagonal Laces (Yellow Bars along Tongue) */}
+                  <line x1="125" y1="198" x2="135" y2="193" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="133" y1="191" x2="143" y2="186" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="141" y1="184" x2="151" y2="179" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="149" y1="177" x2="159" y2="172" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="157" y1="170" x2="167" y2="165" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
 
-                {/* 2. Main Cricket Bat Side Profile: Flat striking face on top, iconic curved spine swell below */}
-                <path
-                  d="M 60 155 L 186 148 C 188 148 190 149.5 190 151.5 L 188 159 C 187 160 185 160.5 183 160.5 Q 115 192 60 174 C 54 172 50 167 50 162 C 50 158 54 155 60 155 Z"
-                  fill="url(#willowProfileWood)"
-                  stroke="#1E1A14"
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                />
+                  {/* 6. Ankle Collar Opening */}
+                  <path
+                    d="M 178 172 C 185 180 198 184 214 182 C 220 181 224 185 222 190 C 210 193 194 190 182 178 Z"
+                    fill="#181A20"
+                    stroke="#FFFFFF"
+                    strokeWidth="0.8"
+                    opacity="0.6"
+                  />
+                </g>
 
-                {/* 3. Authentic Wood Grain Curves on Willow Profile */}
-                <path
-                  d="M 66 160 Q 115 168 180 154"
-                  stroke="#CDB790"
-                  strokeWidth="0.8"
-                  opacity="0.55"
-                />
-                <path
-                  d="M 62 165 Q 115 178 182 157"
-                  stroke="#CDB790"
-                  strokeWidth="0.8"
-                  opacity="0.55"
-                />
-                <path
-                  d="M 60 170 Q 115 185 176 160"
-                  stroke="#CDB790"
-                  strokeWidth="0.8"
-                  opacity="0.55"
-                />
+                {/* SOCCER BALL GROUP (Juggles upward with realistic spin and bounce) */}
+                <g className="football-ball-group">
+                  {/* Sphere Base with 3D Shader */}
+                  <circle
+                    cx="132"
+                    cy="135"
+                    r="30"
+                    fill="url(#soccerBall3DGrad)"
+                    stroke="#18181B"
+                    strokeWidth="2"
+                  />
 
-                {/* 4. Protective Toe Guard at the Bottom Tip */}
-                <path
-                  d="M 60 155 C 53 155 49 158 49 162 C 49 167 53 172 60 174 L 68 171.5 C 62 169.5 59 166 59 162 C 59 158.5 62 155 68 155 Z"
-                  fill="#18181B"
-                  stroke="#09090B"
-                  strokeWidth="0.8"
-                />
+                  {/* Central Black Pentagon */}
+                  <polygon
+                    points="132,123 143.4,131.3 139,144.7 125,144.7 120.6,131.3"
+                    fill="url(#soccerPanelDark)"
+                    stroke="#18181B"
+                    strokeWidth="1.5"
+                    strokeLinejoin="round"
+                  />
 
-                {/* 5. Authentic Side Edge Branding Tape (Red & Silver athletic decal) */}
-                <path
-                  d="M 72 161 Q 115 170 176 155 L 174 157.5 Q 115 172.5 70 163.5 Z"
-                  fill="url(#sideEdgeDecalGrad)"
-                  stroke="#990B0B"
-                  strokeWidth="0.5"
-                />
-                <path
-                  d="M 78 162.5 Q 115 171 168 156.5"
-                  stroke="#FFFFFF"
-                  strokeWidth="0.9"
-                  opacity="0.85"
-                />
+                  {/* 5 Seams Radiating from Center Pentagon */}
+                  <line x1="132" y1="123" x2="132" y2="107" stroke="#18181B" strokeWidth="1.8" />
+                  <line x1="143.4" y1="131.3" x2="156" y2="124" stroke="#18181B" strokeWidth="1.8" />
+                  <line x1="139" y1="144.7" x2="150" y2="157" stroke="#18181B" strokeWidth="1.8" />
+                  <line x1="125" y1="144.7" x2="114" y2="157" stroke="#18181B" strokeWidth="1.8" />
+                  <line x1="120.6" y1="131.3" x2="108" y2="124" stroke="#18181B" strokeWidth="1.8" />
 
-                {/* 6. Shoulder Splice Joint */}
-                <path
-                  d="M 186 148 L 196 144 L 195 156 L 186 160 Z"
-                  fill="#78716C"
-                  stroke="#44403C"
-                  strokeWidth="0.8"
-                />
+                  {/* 5 Outer Truncated Pentagons */}
+                  {/* Top Pentagon */}
+                  <path
+                    d="M 124 106 L 132 107 L 140 106 A 30 30 0 0 0 124 106 Z"
+                    fill="url(#soccerPanelDark)"
+                    stroke="#18181B"
+                    strokeWidth="1.5"
+                  />
+                  {/* Upper-Right Pentagon */}
+                  <path
+                    d="M 156 124 L 152 115 A 30 30 0 0 1 161 133 L 156 124 Z"
+                    fill="url(#soccerPanelDark)"
+                    stroke="#18181B"
+                    strokeWidth="1.5"
+                  />
+                  {/* Lower-Right Pentagon */}
+                  <path
+                    d="M 150 157 L 157 149 A 30 30 0 0 1 144 163 L 150 157 Z"
+                    fill="url(#soccerPanelDark)"
+                    stroke="#18181B"
+                    strokeWidth="1.5"
+                  />
+                  {/* Lower-Left Pentagon */}
+                  <path
+                    d="M 114 157 L 120 163 A 30 30 0 0 1 107 149 L 114 157 Z"
+                    fill="url(#soccerPanelDark)"
+                    stroke="#18181B"
+                    strokeWidth="1.5"
+                  />
+                  {/* Upper-Left Pentagon */}
+                  <path
+                    d="M 108 124 L 103 133 A 30 30 0 0 1 112 115 L 108 124 Z"
+                    fill="url(#soccerPanelDark)"
+                    stroke="#18181B"
+                    strokeWidth="1.5"
+                  />
 
-                {/* 7. Angled Cane Handle with Textured Rubber Grip */}
-                <rect
-                  x="195"
-                  y="142"
-                  width="56"
-                  height="11"
-                  rx="5.5"
-                  transform="rotate(-5 195 142)"
-                  fill="url(#handleRubberGrip)"
-                  stroke="#7F1D1D"
-                  strokeWidth="1.2"
-                />
+                  {/* Specular 3D Gloss Curve */}
+                  <ellipse
+                    cx="123"
+                    cy="122"
+                    rx="8"
+                    ry="4.5"
+                    transform="rotate(-30 123 122)"
+                    fill="#FFFFFF"
+                    opacity="0.5"
+                  />
+                </g>
+              </svg>
+            </div>
 
-                {/* Handle Chevron Grip Wrap Ribs */}
-                <line x1="205" y1="140" x2="204" y2="152" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
-                <line x1="214" y1="139" x2="213" y2="151" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
-                <line x1="223" y1="138" x2="222" y2="150" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
-                <line x1="232" y1="137" x2="231" y2="149" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
-                <line x1="241" y1="136" x2="240" y2="148" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
-
-                {/* Handle Top Rubber End Cap */}
-                <circle cx="251" cy="143" r="5" fill="#18181B" stroke="#3F3F46" strokeWidth="1" />
-              </g>
-
-              {/* REALISTIC BOUNCING CRICKET BALL: Progressive Heights (Low -> Med -> High) */}
-              <g className="realistic-side-ball-group">
-                {/* 3D Radial Sphere Leather Cricket Ball */}
-                <circle
-                  cx="115"
-                  cy="139"
-                  r="14"
-                  fill="url(#cricketBallShaderReal)"
-                  stroke="#3B0507"
-                  strokeWidth="1.2"
-                />
-
-                {/* Hand-Stitched White Seam Line with Cross-Stitches */}
-                <path
-                  d="M 104 131 C 111 134 119 141 126 147"
-                  stroke="#FFFFFF"
-                  strokeWidth="1.6"
-                  strokeDasharray="2.5 1.6"
-                  strokeLinecap="round"
-                  opacity="0.95"
-                />
-                <path
-                  d="M 105.5 132.5 C 112.5 135.5 120.5 142.5 127.5 148.5"
-                  stroke="#FFFFFF"
-                  strokeWidth="1"
-                  strokeDasharray="1.6 2.2"
-                  strokeLinecap="round"
-                  opacity="0.75"
-                />
-
-                {/* Realistic Specular Gloss Gleam */}
-                <ellipse
-                  cx="110"
-                  cy="133"
-                  rx="3.8"
-                  ry="2.2"
-                  transform="rotate(-28 110 133)"
-                  fill="#FFFFFF"
-                  opacity="0.65"
-                />
-              </g>
-            </svg>
+            {/* Bottom Section: White Card with "Loading...." */}
+            <div className="football-loader-bottom">
+              <p className="football-loader-text">
+                Loading
+                <span className="football-loader-dots">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       )}
