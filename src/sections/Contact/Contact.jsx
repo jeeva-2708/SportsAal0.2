@@ -150,7 +150,7 @@ export default function Contact() {
   return (
     <section
       ref={sectionRef}
-      className="contact-section stacked-section stacked-section-7"
+      className="contact-section stacked-section stacked-section-6"
       id="contact"
       aria-label="Contact Us - Let's Talk Cricket"
     >

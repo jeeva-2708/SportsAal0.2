@@ -161,7 +161,7 @@ export default function TrustedBy() {
   };
 
   return (
-    <section className="trusted-by-section stacked-section stacked-section-5" id="partners" aria-label="Trusted By Partners">
+    <section className="trusted-by-section stacked-section stacked-section-4" id="partners" aria-label="Trusted By Partners">
       <div className="container trusted-by-container">
         
         {/* Contained stadium card wrapper (1040px max-width, not full-width) */}

@@ -130,7 +130,7 @@ export default function Testimonials() {
   return (
     <section
       ref={sectionRef}
-      className="testimonials-section stacked-section stacked-section-6"
+      className="testimonials-section stacked-section stacked-section-5"
       id="testimonials"
       aria-label="What Our Clients Say"
       onKeyDown={handleKeyDown}

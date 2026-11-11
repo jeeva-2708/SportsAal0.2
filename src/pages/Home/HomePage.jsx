@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import Hero from '../../sections/Hero/Hero.jsx';
 import About from '../../sections/About/About.jsx';
 import Services from '../../sections/Services/Services.jsx';
-import UpcomingEvents from '../../sections/UpcomingEvents/UpcomingEvents.jsx';
 import TrustedBy from '../../sections/TrustedBy/TrustedBy.jsx';
 import Testimonials from '../../sections/Testimonials/Testimonials.jsx';
 import Contact from '../../sections/Contact/Contact.jsx';
@@ -27,7 +26,6 @@ export default function HomePage({ introComplete }) {
       <Hero introComplete={introComplete} />
       <About />
       <Services />
-      <UpcomingEvents />
       <TrustedBy />
       <Testimonials />
       <Contact />

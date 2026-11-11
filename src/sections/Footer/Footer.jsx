@@ -49,7 +49,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="footer-section stacked-section stacked-section-8" id="footer" aria-label="Site Footer">
+    <footer className="footer-section stacked-section stacked-section-7" id="footer" aria-label="Site Footer">
       {/* Subtle top stadium ambient lighting effect */}
       <div className="footer-ambient-glow" aria-hidden="true" />
 
