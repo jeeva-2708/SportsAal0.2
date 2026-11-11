@@ -1,428 +1,358 @@
 /* ==========================================================================
-   Sportsaal 3.0 - Services Section (Video-Matched Focus Sphere & Carousel)
-   Exact Match to Reference Video (Connect Sphere 0:02 - 0:05):
-   - Compact height that fits cleanly on screen without excessive vertical space
-   - Exact Video Colors: Electric Blue Circle Sphere (#0D7CFF) & Vivid Orange Accents (#FF6600)
-   - Zero red color
-   - Interactive Click Transformation: Card morphs into the blue sphere,
-     orange pin drop connector, number, orange title, and 1-line description
-   - Carousel slider for 8 core services with 4 visible on desktop
+   Services Section - 3x2 Grid Cards (Restored Original Card Architecture)
    ========================================================================== */
 
-.services-section-v3 {
-  position: relative;
-  background-color: #050505;
-  padding: clamp(4.5rem, 7vh, 6rem) 0 clamp(4.5rem, 7.5vh, 6.5rem);
-  overflow: hidden;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  box-sizing: border-box;
-}
-
-.services-wrapper {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 1380px;
-  margin: 0 auto;
-  padding: 0 clamp(1.5rem, 4vw, 4rem);
-  box-sizing: border-box;
-}
-
-/* --------------------------------------------------------------------------
-   Header Row (Title + Carousel Arrows) - Compact and Clean
-   -------------------------------------------------------------------------- */
-
-.services-header-row {
+.services-section {
+  min-height: auto;
+  background-color: var(--bg-primary, #050505);
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: center;
+  padding: 6.5rem 0;
+  overflow: visible;
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  transition: background-color 0.3s ease;
 }
 
-.services-header-text {
+.services-container {
+  width: 100%;
+}
+
+/* Centered Section Header */
+.services-header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 4rem;
 }
 
-.services-eyebrow {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.76rem;
+.services-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.15rem;
+}
+
+.services-tag-line {
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  background-color: var(--color-primary, #FF2B2B);
+  border-radius: 2px;
+}
+
+.services-tag-text {
+  font-family: var(--font-body, 'Barlow', sans-serif);
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.22em;
+  color: var(--color-primary, #FF2B2B);
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 0.45rem;
 }
 
-.services-headline {
+.services-title,
+.services-title *,
+.services-title .title-navy,
+.services-title .title-red {
   font-family: 'Anton', sans-serif !important;
   font-weight: 400 !important;
-  font-size: clamp(2rem, 3.8vw, 3.2rem);
-  line-height: 1.05;
-  letter-spacing: 0.02em;
-  color: #FFFFFF;
+  font-style: normal !important;
+}
+
+.services-title {
+  font-size: clamp(2.8rem, 4.4vw, 4.4rem);
+  line-height: 0.95 !important;
+  letter-spacing: 0.01em !important;
   text-transform: uppercase;
-  margin: 0;
+  margin-bottom: 1.5rem;
 }
 
-/* Carousel Navigation Controls */
-.services-carousel-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.title-navy {
+  color: var(--text-headline-navy, #FFFFFF);
+  transition: color 0.3s ease;
 }
 
-.carousel-page-indicator {
-  font-family: 'Barlow', monospace;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 0 0.4rem;
-  user-select: none;
+.title-red {
+  color: var(--color-primary, #FF2B2B);
 }
 
-.carousel-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #0B0B0B;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.services-description {
+  font-family: 'Barlow', 'Archivo', sans-serif !important;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-secondary, #A1A1AA);
+  max-width: 660px;
+  margin: 0 auto;
+  transition: color 0.3s ease;
 }
 
-.carousel-btn:hover:not(:disabled) {
-  background-color: #0D7CFF;
-  border-color: #0D7CFF;
-  box-shadow: 0 0 18px rgba(13, 124, 255, 0.45);
-  transform: scale(1.05);
+/* 3x2 Service Cards Grid */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  margin-bottom: 3.5rem;
 }
 
-.carousel-btn:disabled {
-  opacity: 0.28;
-  cursor: not-allowed;
-  border-color: rgba(255, 255, 255, 0.06);
-}
-
-/* --------------------------------------------------------------------------
-   Carousel Viewport & Track
-   -------------------------------------------------------------------------- */
-
-.services-carousel-viewport {
+/* Service Card - Full Bleed Image with Bottom Title & Gradient */
+.service-card {
   position: relative;
-  width: 100%;
+  border-radius: 14px;
   overflow: hidden;
-  padding: 0.25rem 0 0.5rem;
-}
-
-.services-carousel-track {
-  display: flex;
-  width: 100%;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-}
-
-.services-carousel-slide {
-  padding: 0 8px;
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-
-/* --------------------------------------------------------------------------
-   The Compact Video-Matched Card (Idle Box -> Active Sphere Transformation)
-   -------------------------------------------------------------------------- */
-
-.service-video-card {
-  position: relative;
-  width: 100%;
-  height: 350px;
-  border-radius: 10px;
-  cursor: pointer;
-  box-sizing: border-box;
+  min-height: 270px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  user-select: none;
+  justify-content: flex-end;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  background: #111111;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              box-shadow 0.35s ease;
 }
 
-/* State 1: Inactive Card (Dark bordered square box with centered title, matching video) */
-.card-idle-view {
+[data-theme="light"] .service-card {
+  border: 1px solid rgba(18, 52, 91, 0.12);
+  box-shadow: 0 10px 24px rgba(18, 52, 91, 0.08);
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--color-primary, #FF2B2B);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 43, 43, 0.25);
+}
+
+[data-theme="light"] .service-card:hover {
+  border-color: var(--color-primary, #FF2B2B);
+  box-shadow: 0 16px 36px rgba(18, 52, 91, 0.14), 0 0 20px rgba(245, 45, 45, 0.2);
+}
+
+/* Background Image: 100% Full Bleed */
+.card-bg-image {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 220px;
-  background-color: #080808;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem 1rem;
-  box-sizing: border-box;
-  opacity: 1;
-  transition: opacity 0.3s ease, border-color 0.25s ease, transform 0.25s ease;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
   z-index: 1;
 }
 
-.card-idle-title {
+.service-card:hover .card-bg-image {
+  transform: scale(1.06);
+}
+
+/* Gradient Overlay for crystal clear typography legibility */
+.card-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.04) 0%,
+    rgba(0, 0, 0, 0.25) 45%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+
+.service-card:hover .card-gradient-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.04) 0%,
+    rgba(0, 0, 0, 0.18) 40%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
+}
+
+[data-theme="light"] .card-gradient-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(11, 14, 20, 0.05) 0%,
+    rgba(11, 14, 20, 0.35) 45%,
+    rgba(11, 14, 20, 0.88) 100%
+  );
+}
+
+/* Card Content: Anchored at Left Bottom */
+.card-content {
+  position: relative;
+  z-index: 5;
+  padding: 1.6rem 1.75rem;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+/* Card Title: Anton typography */
+.card-title {
   font-family: 'Anton', sans-serif !important;
-  font-size: clamp(1.25rem, 1.7vw, 1.6rem);
-  line-height: 1.15;
+  font-weight: 400 !important;
+  font-size: 1.35rem;
+  line-height: 1.15 !important;
+  letter-spacing: 0.04em;
   color: #FFFFFF;
-  text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   transition: color 0.25s ease;
 }
 
-.service-video-card:hover .card-idle-view {
-  border-color: rgba(255, 255, 255, 0.28);
-  transform: translateY(-3px);
+.card-title-arrow {
+  color: var(--color-primary, #FF2B2B);
+  font-family: var(--font-body, 'Barlow', sans-serif);
+  font-size: 1.25rem;
+  transition: transform 0.25s ease;
 }
 
-/* Hide Idle View When Active */
-.service-video-card.is-active .card-idle-view {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.92);
-}
-
-/* State 2: Active Card (Shown ONLY on click, exactly as in video) */
-.card-active-view {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.service-video-card.is-active .card-active-view {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Vibrant Electric Blue Circle Sphere (Exact Video Color #0D7CFF) */
-.card-active-sphere {
-  width: 165px;
-  height: 165px;
-  border-radius: 50%;
-  background: #0D7CFF;
-  box-shadow: 0 0 35px rgba(13, 124, 255, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.1rem;
-  box-sizing: border-box;
-  margin: 0 auto;
-}
-
-/* Fluid Spring Expansion Animation when clicked */
-.service-video-card.is-active .card-active-sphere {
-  animation: videoSphereIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes videoSphereIn {
-  0% {
-    transform: scale(0.65) translateY(-8px);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.05) translateY(2px);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-}
-
-.sphere-tags-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  text-align: center;
-  user-select: none;
-}
-
-.sphere-tag-item {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.service-card:hover .card-title {
   color: #FFFFFF;
-  line-height: 1.25;
 }
 
-/* Orange Vertical Pin Connector Line with Small Node below Sphere (Exact Video Mechanism) */
-.card-pin-connector {
-  position: relative;
-  width: 1px;
-  height: 24px;
-  background: #FF6600;
-  margin: 0.5rem auto 0.35rem;
+.service-card:hover .card-title-arrow {
+  transform: translateX(5px);
 }
 
-.service-video-card.is-active .card-pin-connector {
-  animation: videoPinDrop 0.35s ease 0.15s both;
-}
-
-@keyframes videoPinDrop {
-  0% {
-    height: 0;
-    opacity: 0;
-  }
-  100% {
-    height: 24px;
-    opacity: 1;
-  }
-}
-
-.connector-line {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.connector-node {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  border: 1.5px solid #FF6600;
-  background-color: #050505;
-}
-
-/* Bottom Card Details (Orange Title & 1-line Description) */
-.card-bottom-info {
+/* Bottom Action CTA Button */
+.services-bottom-cta {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-top: 0.25rem;
+  justify-content: center;
+  width: 100%;
 }
 
-.service-video-card.is-active .card-bottom-info {
-  animation: videoTextUp 0.35s ease 0.2s both;
-}
-
-@keyframes videoTextUp {
-  0% {
-    transform: translateY(8px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.card-number {
-  font-family: 'Barlow', monospace;
-  font-size: 0.72rem;
+.btn-services-cta {
+  font-family: var(--font-body, 'Barlow', sans-serif);
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
-  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-bottom: 0.15rem;
-}
-
-/* Title in Vivid Orange #FF6600 (Matching video) */
-.card-active-title {
-  font-family: 'Anton', sans-serif !important;
-  font-size: 1.35rem;
-  line-height: 1.15;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  margin: 0 0 0.35rem;
-}
-
-.card-title-link {
-  color: #FF6600;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.card-title-link:hover {
   color: #FFFFFF;
+  background-color: var(--color-primary, #FF2B2B);
+  text-decoration: none;
+  padding: 1rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 43, 43, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: all var(--transition-normal, 0.25s ease);
+  border: 1px solid var(--color-primary, #FF2B2B);
+  cursor: pointer;
 }
 
-.card-active-desc {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.78rem;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.68);
-  max-width: 230px;
-  margin: 0;
+.btn-services-cta:hover {
+  background-color: var(--color-primary-hover, #D41F1F);
+  border-color: var(--color-primary-hover, #D41F1F);
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(255, 43, 43, 0.55);
 }
 
-/* --------------------------------------------------------------------------
-   Responsive Breakpoints
-   -------------------------------------------------------------------------- */
+.cta-arrow {
+  font-family: var(--font-body, 'Barlow', sans-serif);
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-services-cta:hover .cta-arrow {
+  transform: translateX(5px);
+}
+
+/* Reduced Motion Compliance */
+@media (prefers-reduced-motion: reduce) {
+  .services-section {
+    position: relative !important;
+    top: auto !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints for Services Section
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+  .services-grid {
+    gap: 1.25rem;
+  }
+
+  .card-content {
+    padding: 1.35rem 1.4rem;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+  }
+}
 
 @media (max-width: 991px) {
-  .services-section-v3 {
-    padding: 2.5rem 0 3rem;
+  .services-section {
+    z-index: 3;
+    min-height: auto;
+    padding: 5rem 0;
   }
 
-  .services-header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.2rem;
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 
-  .services-carousel-nav {
-    align-self: flex-end;
-  }
-
-  .service-video-card {
-    height: 340px;
+  .services-header {
+    margin-bottom: 3rem;
   }
 }
 
 @media (max-width: 767px) {
-  .services-section-v3 {
-    padding: 2.2rem 0 2.8rem;
+  .services-section {
+    z-index: 3;
+    min-height: auto;
+    padding: 4.5rem 0;
   }
 
-  .services-headline {
-    font-size: 1.85rem;
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
   }
 
-  .service-video-card {
-    height: 330px;
+  .service-card {
+    min-height: 230px;
   }
 
-  .card-idle-view {
-    height: 200px;
+  .card-content {
+    padding: 1.25rem 1.25rem;
   }
 
-  .card-active-sphere {
-    width: 150px;
-    height: 150px;
+  .btn-services-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .services-title {
+    font-size: clamp(2.2rem, 9vw, 2.8rem);
   }
 
-  .card-idle-title {
-    font-size: 1.35rem;
+  .services-description {
+    font-size: 0.95rem;
+  }
+
+  .card-content {
+    padding: 1.15rem 1rem;
+  }
+
+  .card-title {
+    font-size: 1.12rem;
   }
 }

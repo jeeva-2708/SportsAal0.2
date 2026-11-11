@@ -1,216 +1,171 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Services.css';
 import { useStickySection } from '../../hooks/useStickySection';
 
-// Sportsaal 3.0 Core Services (What we provide, exactly matching the user request)
-const servicesData = [
-  {
-    id: 'venue-management',
-    num: '001',
-    title: 'Venue Management',
-    slug: '/services/venue-management',
-    tags: ['Full Grounds', 'Night Floodlights', 'Arena Maintenance', 'Slot Booking'],
-    desc: 'Turnkey venue operations, sports infrastructure, and automated slot scheduling.',
-  },
-  {
-    id: 'cricket-tournaments',
-    num: '002',
-    title: 'Cricket Tournaments',
-    slug: '/services/cricket-tournaments',
-    tags: ['Corporate Leagues', 'Certified Umpires', 'Prize Operations', 'Live Digital Scoring'],
-    desc: 'End-to-end tournament execution for corporates, clubs, and state championships.',
-  },
-  {
-    id: 'professional-coaching',
-    num: '003',
-    title: 'Professional Coaching',
-    slug: '/services/professional-coaching',
-    tags: ['BCCI Certified', 'Grassroots to Elite', 'Video Biomechanics', 'Personal Mentorship'],
-    desc: 'Elite athletic coaching academies with customized technical training modules.',
-  },
-  {
-    id: 'event-management',
-    num: '004',
-    title: 'Event Management',
-    slug: '/services/event-management',
-    tags: ['Opening Ceremonies', 'Stage & Sound', 'VIP Hospitality', 'Sports PR'],
-    desc: 'Full-scale corporate sports festivals, annual meets, and stadium exhibitions.',
-  },
-  {
-    id: 'sports-technology',
-    num: '005',
-    title: 'Sports Technology',
-    slug: '/services/sports-technology',
-    tags: ['Speed Radar Guns', 'Smart Wearables', 'Cloud Analytics', 'Digital Scoreboards'],
-    desc: 'Next-generation performance analytics, sensor tracking, and automated scoring.',
-  },
-  {
-    id: 'live-streaming',
-    num: '006',
-    title: 'Live Streaming',
-    slug: '/services/live-streaming',
-    tags: ['Multi-Cam 1080p', 'Slow-Mo Replays', 'Live Commentary', 'Social Broadcast'],
-    desc: 'Broadcast-grade multi-camera production with live graphic score overlays.',
-  },
-  {
-    id: 'ground-bookings',
-    num: '007',
-    title: 'Ground Bookings',
-    slug: '/services/venue-management',
-    tags: ['Instant Confirmation', 'Flexible Slots', 'Floodlit Grounds', 'Practice Nets'],
-    desc: 'Real-time online booking for South India’s top cricket arenas and turf grounds.',
-  },
-  {
-    id: 'sportswear',
-    num: '008',
-    title: 'Sportswear & Kits',
-    slug: '/services/sportswear-products',
-    tags: ['Custom Team Jerseys', 'Sublimation Print', 'Breathable Fabrics', 'Full Gear Sets'],
-    desc: 'Pro-grade athletic apparel, custom corporate kits, and tournament gear.',
-  },
-];
+// Dark Theme Images
+import venueDarkImg from '../../assets/images/our-services/venue-management.png';
+import tournamentsDarkImg from '../../assets/images/our-services/tournaments.png';
+import coachingDarkImg from '../../assets/images/our-services/coaching-programs.png';
+import eventsDarkImg from '../../assets/images/our-services/event-management.png';
+import technologyDarkImg from '../../assets/images/our-services/sports-technology.png';
+import sportswearDarkImg from '../../assets/images/our-work/sportswear-products.webp';
+
+// Light Theme Images
+import venueLightImg from '../../assets/images/our-services/venue-management-light.jpg';
+import tournamentsLightImg from '../../assets/images/our-services/tournaments-light.jpg';
+import coachingLightImg from '../../assets/images/our-services/coaching-programs-light.jpg';
+import eventsLightImg from '../../assets/images/our-services/event-management-light.png';
+import technologyLightImg from '../../assets/images/our-services/sports-technology-light.webp';
+import sportswearLightImg from '../../assets/images/our-services/sportswear-products-light.webp';
 
 export default function Services() {
   const sectionRef = useStickySection();
-  const [activeCardId, setActiveCardId] = useState('venue-management');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(4);
-  const trackRef = useRef(null);
 
-  // Responsive calculation of visible cards per carousel view
+  // Track theme to dynamically serve light vs dark theme images
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('sportsaal_theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
+    return document.documentElement.getAttribute('data-theme') || 'dark';
+  });
+
   useEffect(() => {
-    const updateItemsPerPage = () => {
-      const width = window.innerWidth;
-      if (width < 768) {
-        setItemsPerPage(1);
-      } else if (width < 1150) {
-        setItemsPerPage(2);
-      } else {
-        setItemsPerPage(4);
-      }
-    };
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      setTheme(currentTheme);
+    });
 
-    updateItemsPerPage();
-    window.addEventListener('resize', updateItemsPerPage);
-    return () => window.removeEventListener('resize', updateItemsPerPage);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
   }, []);
 
-  const maxIndex = Math.max(0, servicesData.length - itemsPerPage);
+  const isLight = theme === 'light';
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  const serviceImages = {
+    venue: isLight ? venueLightImg : venueDarkImg,
+    tournaments: isLight ? tournamentsLightImg : tournamentsDarkImg,
+    coaching: isLight ? coachingLightImg : coachingDarkImg,
+    events: isLight ? eventsLightImg : eventsDarkImg,
+    technology: isLight ? technologyLightImg : technologyDarkImg,
+    sportswear: isLight ? sportswearLightImg : sportswearDarkImg,
   };
 
   return (
-    <section ref={sectionRef} className="services-section-v3 stacked-section stacked-section-3" id="services">
-      <div className="services-wrapper">
-        {/* Section Header Matching Reference Video */}
-        <div className="services-header-row">
-          <div className="services-header-text">
-            <span className="services-eyebrow">WHAT WE OFFER</span>
-            <h2 className="services-headline">WOULD BE USEFUL FOR</h2>
+    <section ref={sectionRef} className="services-section stacked-section stacked-section-3" id="services">
+      <div className="container services-container">
+        
+        {/* Centered Section Header */}
+        <div className="services-header">
+          <div className="services-tag">
+            <span className="services-tag-line"></span>
+            <span className="services-tag-text">OUR SERVICES</span>
           </div>
 
-          {/* Carousel Navigation Controls (Arrows + Page Pill) */}
-          <div className="services-carousel-nav">
-            <button
-              type="button"
-              className="carousel-btn prev"
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              aria-label="Previous services"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
+          <h2 className="services-title">
+            <span className="title-navy">COMPLETE SOLUTIONS.</span>{' '}
+            <span className="title-red">BUILT FOR SPORT.</span>
+          </h2>
 
-            <span className="carousel-page-indicator">
-              0{Math.floor(currentIndex / itemsPerPage) + 1} / 0{Math.ceil(servicesData.length / itemsPerPage)}
-            </span>
-
-            <button
-              type="button"
-              className="carousel-btn next"
-              onClick={handleNext}
-              disabled={currentIndex >= maxIndex}
-              aria-label="Next services"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
+          <p className="services-description">
+            From world-class venues to professional tournaments and expert coaching, we deliver end-to-end sports solutions tailored to your goals.
+          </p>
         </div>
 
-        {/* Carousel Viewport */}
-        <div className="services-carousel-viewport">
-          <div
-            ref={trackRef}
-            className="services-carousel-track"
-            style={{
-              transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
-            }}
-          >
-            {servicesData.map((service) => {
-              const isActive = activeCardId === service.id;
+        {/* 3x2 Service Cards Grid */}
+        <div className="services-grid">
+          
+          {/* Card 1: Venue Management */}
+          <Link to="/services/venue-management" className="service-card">
+            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.venue})` }}></div>
+            <div className="card-gradient-overlay"></div>
+            
+            <div className="card-content">
+              <h3 className="card-title">
+                VENUE MANAGEMENT
+                <span className="card-title-arrow">→</span>
+              </h3>
+            </div>
+          </Link>
 
-              return (
-                <div
-                  key={service.id}
-                  className="services-carousel-slide"
-                  style={{ flex: `0 0 ${100 / itemsPerPage}%` }}
-                >
-                  <div
-                    className={`service-video-card ${isActive ? 'is-active' : ''}`}
-                    onClick={() => setActiveCardId(isActive ? null : service.id)}
-                  >
-                    {/* State 1: Inactive Card (Dark bordered box with centered title, matching video) */}
-                    <div className="card-idle-view">
-                      <h3 className="card-idle-title">{service.title}</h3>
-                    </div>
+          {/* Card 2: Tournaments */}
+          <Link to="/services/cricket-tournaments" className="service-card">
+            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.tournaments})` }}></div>
+            <div className="card-gradient-overlay"></div>
 
-                    {/* State 2: Active Card (Circle Sphere Lens + Connector Pin + 001 + Red Title + 1-line Description) */}
-                    <div className="card-active-view">
-                      {/* Vibrant Red Circle Sphere with Stacked Tags inside */}
-                      <div className="card-active-sphere">
-                        <div className="sphere-tags-stack">
-                          {service.tags.map((tag, tIdx) => (
-                            <span key={tIdx} className="sphere-tag-item">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+            <div className="card-content">
+              <h3 className="card-title">
+                CRICKET TOURNAMENTS
+                <span className="card-title-arrow">→</span>
+              </h3>
+            </div>
+          </Link>
 
-                      {/* Delicate Vertical Pin Line with Circle Node below sphere */}
-                      <div className="card-pin-connector">
-                        <span className="connector-line"></span>
-                        <span className="connector-node"></span>
-                      </div>
+          {/* Card 3: Coaching Programs */}
+          <Link to="/services/professional-coaching" className="service-card">
+            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.coaching})` }}></div>
+            <div className="card-gradient-overlay"></div>
 
-                      {/* Bottom Info: Number, Title, 1-Line Description */}
-                      <div className="card-bottom-info">
-                        <span className="card-number">{service.num}</span>
-                        <h4 className="card-active-title">
-                          <Link to={service.slug} className="card-title-link">
-                            {service.title}
-                          </Link>
-                        </h4>
-                        <p className="card-active-desc">{service.desc}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+            <div className="card-content">
+              <h3 className="card-title">
+                PROFESSIONAL COACHING
+                <span className="card-title-arrow">→</span>
+              </h3>
+            </div>
+          </Link>
+
+          {/* Card 4: Event Management */}
+          <Link to="/services/event-management" className="service-card">
+            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.events})` }}></div>
+            <div className="card-gradient-overlay"></div>
+
+            <div className="card-content">
+              <h3 className="card-title">
+                EVENT MANAGEMENT
+                <span className="card-title-arrow">→</span>
+              </h3>
+            </div>
+          </Link>
+
+          {/* Card 5: Sports Technology */}
+          <Link to="/services/sports-technology" className="service-card">
+            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.technology})` }}></div>
+            <div className="card-gradient-overlay"></div>
+
+            <div className="card-content">
+              <h3 className="card-title">
+                SPORTS TECHNOLOGY & LIVE STREAMING
+                <span className="card-title-arrow">→</span>
+              </h3>
+            </div>
+          </Link>
+
+          {/* Card 6: Sportswear & Products */}
+          <Link to="/services/sportswear-products" className="service-card">
+            <div className="card-bg-image" style={{ backgroundImage: `url(${serviceImages.sportswear})` }}></div>
+            <div className="card-gradient-overlay"></div>
+
+            <div className="card-content">
+              <h3 className="card-title">
+                SPORTSWEAR & PRODUCTS
+                <span className="card-title-arrow">→</span>
+              </h3>
+            </div>
+          </Link>
+
         </div>
+
+        {/* Center Bottom Action CTA Button */}
+        <div className="services-bottom-cta">
+          <Link to="/services/venue-management" className="btn-services-cta">
+            <span>ALL SERVICES</span>
+            <span className="cta-arrow">→</span>
+          </Link>
+        </div>
+
       </div>
     </section>
   );
