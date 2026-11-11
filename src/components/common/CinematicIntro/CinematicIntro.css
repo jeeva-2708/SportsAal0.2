@@ -1,5 +1,6 @@
 /* ==========================================================================
    Sportsaal 3.0 - Cinematic 5-Second Phrase Intro Overlay
+   - Small font-preloader screen to eliminate FOUT (Flash of Unstyled Text)
    - Strictly Single Color: Bold White / Clean Cool Slate Gray
    - 3D Background-to-Foreground Motion (Text emerges from deep z-space)
    - Atmospheric Dark Background with subtle ambient pulse
@@ -34,6 +35,96 @@ body.intro-scroll-lock {
   transform: scale(1.03);
   pointer-events: none;
   visibility: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Small Font Preloader Screen (Guarantees fonts are ready before text appears)
+   -------------------------------------------------------------------------- */
+
+.intro-font-loader {
+  position: absolute;
+  inset: 0;
+  background-color: #050505;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  z-index: 100;
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+
+.intro-font-loader.font-loader-fade-out {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+.font-loader-spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 43, 43, 0.15);
+  border-top-color: var(--color-primary, #FF2B2B);
+  animation: fontLoaderSpin 0.75s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+  box-shadow: 0 0 18px rgba(255, 43, 43, 0.35);
+}
+
+@keyframes fontLoaderSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.font-loader-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.font-loader-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+
+.font-loader-bar-track {
+  width: 72px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.font-loader-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  background: var(--color-primary, #FF2B2B);
+  border-radius: 9999px;
+  box-shadow: 0 0 8px var(--color-primary, #FF2B2B);
+  animation: fontLoaderPulseBar 1s ease-in-out infinite alternate;
+}
+
+@keyframes fontLoaderPulseBar {
+  0% {
+    left: 0%;
+    width: 30%;
+  }
+  100% {
+    left: 70%;
+    width: 30%;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -99,8 +190,7 @@ body.intro-scroll-lock {
   animation: emergeFromDeepBackground 1.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Keyframe: Text emerges from deep background (scale 0.55, blurry, low opacity) 
-   to prominent foreground (scale 1.05, sharp, bright single-color white) */
+/* Keyframe: Text emerges from deep background to prominent foreground */
 @keyframes emergeFromDeepBackground {
   0% {
     opacity: 0;
@@ -280,4 +370,3 @@ body.intro-scroll-lock {
     font-size: 0.7rem;
   }
 }
-

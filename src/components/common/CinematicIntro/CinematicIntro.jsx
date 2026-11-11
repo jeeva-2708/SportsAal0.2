@@ -4,11 +4,15 @@ import './CinematicIntro.css';
 /**
  * CinematicIntro
  *
- * 5-second cinematic typography preloader:
- * - 2 bold monochromatic phrases emerging from background to foreground in 3D
- * - Final punch with SPORTSAAL brand reveal
- * - All fonts are strictly single-color (crisp white / light gray)
- * - Completes in ~5.0s and triggers hero train entrance animation
+ * 1. Initial Small Loading Screen:
+ *    - Displays a sleek, minimalist dark loader while checking document.fonts.ready
+ *    - Guarantees custom fonts ('Anton', 'Barlow') are 100% loaded and ready
+ *    - Completely eliminates FOUT (Flash of Unstyled Text)
+ *
+ * 2. 5-second cinematic typography sequence:
+ *    - 2 bold monochromatic phrases emerging from background to foreground in 3D
+ *    - Final punch with SPORTSAAL brand reveal
+ *    - Completes smoothly and triggers hero train entrance
  */
 
 const PHRASES = [
@@ -31,40 +35,81 @@ const PHRASES = [
 ];
 
 export default function CinematicIntro({ onComplete }) {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [loaderFading, setLoaderFading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
+  // 1. Initial Font Preloader: Ensures Anton & Barlow are rendered before text appears
   useEffect(() => {
-    // Lock scroll during intro
     document.body.classList.add('intro-scroll-lock');
 
-    // 5-second timeline with 2 phrases + SPORTSAAL brand punch:
-    // Step 0: 0.0s - 1.8s (Phrase 1)
-    // Step 1: 1.8s - 3.5s (Phrase 2)
-    // Step 2: 3.5s - 4.7s (Brand Reveal: SPORTSAAL)
-    // Fade out: 4.7s - 5.05s (Smooth dissolve into Hero train)
-    const t1 = setTimeout(() => setCurrentStep(1), 1800);
-    const t2 = setTimeout(() => setCurrentStep(2), 3500);
+    const startTime = performance.now();
+    const minDisplayDuration = 700; // brief, smooth preloader
+    const safetyLimit = 2200;       // safety fallback
+
+    const fontPromises = [];
+    if (typeof document !== 'undefined' && document.fonts) {
+      if (document.fonts.ready) {
+        fontPromises.push(document.fonts.ready);
+      }
+      if (document.fonts.load) {
+        fontPromises.push(document.fonts.load('400 32px "Anton"'));
+        fontPromises.push(document.fonts.load('400 16px "Barlow"'));
+        fontPromises.push(document.fonts.load('700 16px "Barlow"'));
+      }
+    }
+
+    const dismissPreloader = () => {
+      const elapsed = performance.now() - startTime;
+      const remainingTime = Math.max(0, minDisplayDuration - elapsed);
+
+      setTimeout(() => {
+        setLoaderFading(true);
+        setTimeout(() => {
+          setFontsLoaded(true);
+        }, 320);
+      }, remainingTime);
+    };
+
+    const fallbackTimer = setTimeout(dismissPreloader, safetyLimit);
+
+    Promise.allSettled(fontPromises).then(() => {
+      clearTimeout(fallbackTimer);
+      dismissPreloader();
+    });
+
+    return () => {
+      clearTimeout(fallbackTimer);
+    };
+  }, []);
+
+  // 2. Cinematic Typography Sequence: Starts only after fonts are 100% loaded
+  useEffect(() => {
+    if (!fontsLoaded) return;
+
+    // Phrase 1 (1.75s) -> Phrase 2 (1.7s) -> Brand punch (1.2s) -> Smooth fade out
+    const t1 = setTimeout(() => setCurrentStep(1), 1750);
+    const t2 = setTimeout(() => setCurrentStep(2), 3450);
 
     const tFade = setTimeout(() => {
       setIsFadingOut(true);
-    }, 4700);
+    }, 4650);
 
     const tEnd = setTimeout(() => {
       setIsVisible(false);
       document.body.classList.remove('intro-scroll-lock');
       if (onComplete) onComplete();
-    }, 5050);
+    }, 5000);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(tFade);
       clearTimeout(tEnd);
-      document.body.classList.remove('intro-scroll-lock');
     };
-  }, [onComplete]);
+  }, [fontsLoaded, onComplete]);
 
   const handleSkip = () => {
     setIsFadingOut(true);
@@ -77,8 +122,6 @@ export default function CinematicIntro({ onComplete }) {
 
   if (!isVisible) return null;
 
-  const activePhrase = PHRASES[currentStep];
-
   return (
     <div 
       className={`cinematic-intro-overlay ${isFadingOut ? 'intro-fade-out' : ''}`}
@@ -86,38 +129,59 @@ export default function CinematicIntro({ onComplete }) {
       aria-modal="true"
       aria-label="Sportsaal Introduction"
     >
-      {/* Background Cinematic Atmosphere: Deep obsidian with subtle light sweep */}
+      {/* Small Font Preloader Screen */}
+      {!fontsLoaded && (
+        <div className={`intro-font-loader ${loaderFading ? 'font-loader-fade-out' : ''}`}>
+          <div className="font-loader-spinner" />
+          <div className="font-loader-brand">
+            <span className="font-loader-title">SPORTSAAL</span>
+            <div className="font-loader-bar-track">
+              <div className="font-loader-bar-fill" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Background Cinematic Atmosphere */}
       <div className="intro-bg-ambient" aria-hidden="true">
         <div className="intro-light-pulse" />
-        <div className="intro-grid-mesh" />
       </div>
 
-      {/* 3D Depth Stage: Text emerges from background to foreground */}
-      <div className="intro-depth-stage">
-        <div key={activePhrase.id} className="intro-phrase-card">
-          {activePhrase.isBrand ? (
-            <div className="intro-brand-block">
-              <h1 className="intro-brand-title">{activePhrase.line1}</h1>
-              <p className="intro-brand-subtitle">{activePhrase.line2}</p>
-            </div>
-          ) : (
-            <div className="intro-phrase-block">
-              <h2 className="intro-phrase-line intro-phrase-line1">{activePhrase.line1}</h2>
-              <h2 className="intro-phrase-line intro-phrase-line2">{activePhrase.line2}</h2>
-            </div>
-          )}
+      {/* 3D Depth Stage: Text emerges from background to foreground with loaded fonts */}
+      {fontsLoaded && (
+        <div className="intro-depth-stage">
+          {(() => {
+            const activePhrase = PHRASES[currentStep];
+            return (
+              <div key={activePhrase.id} className="intro-phrase-card">
+                {activePhrase.isBrand ? (
+                  <div className="intro-brand-block">
+                    <h1 className="intro-brand-title">{activePhrase.line1}</h1>
+                    <p className="intro-brand-subtitle">{activePhrase.line2}</p>
+                  </div>
+                ) : (
+                  <div className="intro-phrase-block">
+                    <h2 className="intro-phrase-line intro-phrase-line1">{activePhrase.line1}</h2>
+                    <h2 className="intro-phrase-line intro-phrase-line2">{activePhrase.line2}</h2>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
-      </div>
+      )}
 
-      {/* Progress Dots Indicator */}
-      <div className="intro-progress-bar" aria-hidden="true">
-        {PHRASES.map((p, idx) => (
-          <span 
-            key={p.id} 
-            className={`intro-dot ${idx === currentStep ? 'is-active' : ''} ${idx < currentStep ? 'is-passed' : ''}`} 
-          />
-        ))}
-      </div>
+      {/* Progress Dots Indicator (Active once phrases begin) */}
+      {fontsLoaded && (
+        <div className="intro-progress-bar" aria-hidden="true">
+          {PHRASES.map((p, idx) => (
+            <span 
+              key={p.id} 
+              className={`intro-dot ${idx === currentStep ? 'is-active' : ''} ${idx < currentStep ? 'is-passed' : ''}`} 
+            />
+          ))}
+        </div>
+      )}
 
       {/* Subtle Skip button */}
       <button 

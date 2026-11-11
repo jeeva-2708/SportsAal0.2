@@ -25,7 +25,7 @@ export default function HomePage({ introComplete }) {
   return (
     <main>
       <Hero introComplete={introComplete} />
-      {/* About section is now dynamically integrated into the scroll experience with #about anchor */}
+      <About />
       <Services />
       {/* Temporarily hidden as requested: <OurWork /> */}
       <TrustedBy />

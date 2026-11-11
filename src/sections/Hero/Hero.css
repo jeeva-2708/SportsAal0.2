@@ -1,40 +1,19 @@
 /* ==========================================================================
-   Sportsaal 3.0 - Hero & About Integrated Scroll Experience
-   - Initial State: Full-width slanted photo ribbon (NEVER stacked initially)
-   - Scrolling Phase 1: Cards glide right and stack in deck (ONLY during scroll)
-   - Scrolling Phase 2: Card 0 glides to left About dock, Stack fades completely to 0
-   - Scrolling Phase 3: Redesigned Luxury Athletic About Editorial reveals on right
-   - ZERO text on the image
-   - 100% Mobile Responsive (tight, energetic spacing with zero dead gaps)
+   Sportsaal 3.0 - Hero Section (Slanted Multi-Sport Cinema Ribbon)
+   Pure luxury athletic dark aesthetic:
+   - Full-width slanted photo band (-2.8deg desktop / -2.2deg mobile)
+   - ZERO text overlays on the photos (pure pristine action photography)
+   - Running infinite marquee ticker with Sportsaal's actual services
+   - Compact bold CTA button ("EXPLORE SPORTSAAL", no arrow mark)
+   - 100% Mobile Responsive with zero dead gaps
    ========================================================================== */
 
-/* Outer Scroll Distance: 300vh allows smooth, buttery-smooth pixel tracking */
-.hero-scroll-wrapper {
+.hero-section-v3 {
   position: relative;
   width: 100%;
-  height: 300vh;
-  background-color: #050505;
-}
-
-/* Scroll Anchor for Header/Footer 'ABOUT' Link */
-.about-scroll-anchor {
-  position: absolute;
-  top: 72%;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-/* Pinned Sticky Stage Frame */
-.hero-sticky-frame {
-  position: sticky;
-  top: 0;
   height: 100vh;
   height: 100dvh;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 600px;
   background-color: #050505;
   overflow: hidden;
   display: flex;
@@ -46,10 +25,10 @@
 }
 
 /* --------------------------------------------------------------------------
-   1. Multi-Sport Cards Stage
+   1. Multi-Sport Cinema Ribbon Track
    -------------------------------------------------------------------------- */
 
-.hero-cards-stage-viewport {
+.hero-ribbon-viewport {
   position: absolute;
   inset: 0;
   width: 100vw;
@@ -59,13 +38,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: rotate(-2.8deg);
   transform-origin: center center;
-  will-change: transform;
-  transition: transform 0.05s linear;
   z-index: 10;
 }
 
-.hero-cards-stage-track {
+.hero-ribbon-track {
   position: relative;
   width: 100vw;
   height: 100vh;
@@ -76,7 +54,7 @@
 }
 
 /* Base Card Style */
-.hero-photo-frame.dynamic-scroll-card {
+.hero-photo-frame {
   position: absolute;
   top: 48%;
   left: 50%;
@@ -90,7 +68,7 @@
   border: 1px solid rgba(255, 255, 255, 0.10);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
   cursor: pointer;
-  will-change: transform, opacity;
+  will-change: transform;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
@@ -112,13 +90,6 @@
 .hero-photo-frame.train-settled:hover .hero-photo-img {
   transform: scale(1.06);
   filter: contrast(1.08) brightness(1.04);
-}
-
-/* Docked Featured Card in About View on Left - Pure Image, ZERO text */
-.hero-photo-frame.is-docked-about-card {
-  border-radius: 14px !important;
-  border-color: rgba(255, 43, 43, 0.55) !important;
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(255, 43, 43, 0.28) !important;
 }
 
 /* Train Entrance Sequence: Slides into each individual card's ribbon position */
@@ -159,8 +130,6 @@
   flex-direction: column;
   align-items: center;
   z-index: 25;
-  will-change: transform, opacity;
-  transition: opacity 0.12s linear;
 }
 
 .hero-marquee-wrapper {
@@ -236,7 +205,6 @@
   align-items: center;
   flex-shrink: 0;
   margin-bottom: 0.25rem;
-  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .hero-pill-cta {
@@ -267,270 +235,40 @@
 }
 
 /* --------------------------------------------------------------------------
-   3. New Redesigned About Section (Luxury Athletic Editorial Layout)
-   -------------------------------------------------------------------------- */
-
-.about-editorial-panel {
-  position: absolute;
-  right: clamp(2rem, 5.5vw, 7.5rem);
-  top: 50%;
-  transform: translateY(-50%);
-  width: min(92vw, 580px);
-  z-index: 60;
-  box-sizing: border-box;
-  will-change: transform, opacity;
-  transition: opacity 0.08s linear;
-}
-
-.about-editorial-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-}
-
-/* Minimal Brand Tag */
-.about-v4-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  background-color: rgba(255, 43, 43, 0.08);
-  border: 1px solid rgba(255, 43, 43, 0.28);
-  padding: 0.38rem 1rem;
-  border-radius: 9999px;
-  margin-bottom: 1.15rem;
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-}
-
-.v4-badge-pulse {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--color-primary);
-  box-shadow: 0 0 8px var(--color-primary);
-}
-
-/* Headline */
-.about-v4-headline {
-  font-family: 'Anton', sans-serif !important;
-  font-weight: 400 !important;
-  font-size: clamp(2.3rem, 4.2vw, 3.8rem);
-  line-height: 1.04;
-  letter-spacing: 0.02em;
-  color: #FFFFFF;
-  text-transform: uppercase;
-  margin: 0 0 1.15rem;
-}
-
-.v4-headline-accent {
-  color: var(--color-primary);
-}
-
-/* Narrative */
-.about-v4-narrative {
-  font-family: 'Barlow', sans-serif;
-  font-size: clamp(0.95rem, 1.22vw, 1.1rem);
-  line-height: 1.68;
-  color: rgba(255, 255, 255, 0.74);
-  margin: 0 0 1.5rem;
-  max-width: 540px;
-}
-
-/* 4-Item Capability Matrix Grid */
-.about-v4-matrix {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.95rem;
-  width: 100%;
-  max-width: 530px;
-  margin-bottom: 1.4rem;
-}
-
-.v4-matrix-item {
-  background: #0B0B0B;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 10px;
-  padding: 0.95rem 1.15rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.v4-matrix-item:hover {
-  border-color: rgba(255, 43, 43, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-}
-
-.matrix-number {
-  font-family: 'Anton', sans-serif !important;
-  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
-  color: #FFFFFF;
-  line-height: 1;
-  margin-bottom: 0.3rem;
-}
-
-.matrix-label {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: #FFFFFF;
-  text-transform: uppercase;
-  margin-bottom: 0.2rem;
-}
-
-.matrix-sub {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.64rem;
-  color: rgba(255, 255, 255, 0.45);
-  line-height: 1.25;
-}
-
-/* Feature Highlight Tags Row */
-.about-v4-tags-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.6rem;
-  max-width: 530px;
-}
-
-.v4-pillar-pill {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.3rem 0.75rem;
-  border-radius: 9999px;
-  transition: all 0.2s ease;
-}
-
-.v4-pillar-pill:hover {
-  color: #FFFFFF;
-  border-color: rgba(255, 43, 43, 0.35);
-  background: rgba(255, 43, 43, 0.08);
-}
-
-/* Action Buttons Row */
-.about-v4-action-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.v4-services-btn {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  background-color: var(--color-primary);
-  text-decoration: none;
-  padding: 0.82rem 2rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  box-shadow: 0 0 30px rgba(255, 43, 43, 0.4);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.v4-services-btn:hover {
-  background-color: var(--color-primary-hover);
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 0 45px rgba(255, 43, 43, 0.7);
-}
-
-.v4-arrow {
-  font-size: 1.1rem;
-  transition: transform 0.25s ease;
-}
-
-.v4-services-btn:hover .v4-arrow {
-  transform: translateX(4px);
-}
-
-.v4-ghost-btn {
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  text-decoration: none;
-  padding: 0.82rem 1.85rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.v4-ghost-btn:hover {
-  border-color: rgba(255, 255, 255, 0.85);
-  background-color: rgba(255, 255, 255, 0.06);
-  transform: translateY(-2px);
-}
-
-/* --------------------------------------------------------------------------
-   4. Mobile Responsive Architecture (Zero Dead Gap, Fluid Vertical Rhythm)
+   3. Mobile Responsive Architecture (Tight Vertical Spacing, No Dead Void)
    -------------------------------------------------------------------------- */
 
 @media (max-width: 991px) {
-  .hero-scroll-wrapper {
-    height: 290vh;
+  .hero-ribbon-viewport {
+    transform: rotate(-2.2deg);
   }
 
-  .about-editorial-panel {
-    right: 2.5vw;
-    width: min(92vw, 460px);
-  }
-
-  .about-v4-headline {
-    font-size: clamp(2rem, 3.8vw, 3rem);
+  .hero-photo-frame {
+    width: clamp(140px, 16vw, 175px);
+    height: clamp(230px, 26vw, 280px);
+    margin-top: -135px;
+    margin-left: -80px;
   }
 }
 
 @media (max-width: 767px) {
-  .hero-scroll-wrapper {
-    height: 270vh;
-  }
-
-  .hero-sticky-frame {
+  .hero-section-v3 {
     justify-content: center;
   }
 
-  /* Center the cards track slightly higher on mobile to close the vertical gap */
-  .hero-cards-stage-viewport {
-    top: 0;
-    height: 100vh;
+  .hero-ribbon-viewport {
+    transform: rotate(-2.0deg);
   }
 
-  /* Mobile Card: Proportional, pure crisp photography */
-  .hero-photo-frame.dynamic-scroll-card {
+  .hero-photo-frame {
     width: 140px;
     height: 235px;
     margin-top: -125px;
     margin-left: -70px;
   }
 
-  /* Mobile Bottom Cluster: Positioned tightly beneath the cards ribbon */
   .hero-bottom-cluster {
-    bottom: clamp(2rem, 6vh, 4rem);
+    bottom: clamp(2.2rem, 6.5vh, 4.2rem);
     padding-bottom: 0;
   }
 
@@ -545,94 +283,5 @@
   .hero-pill-cta {
     font-size: 0.78rem;
     padding: 0.55rem 1.7rem;
-  }
-
-  /* Mobile About Panel: Positioned cleanly below the docked top card */
-  .about-editorial-panel {
-    right: 50%;
-    transform: translate(50%, 0);
-    top: auto;
-    bottom: 1.5rem;
-    width: calc(100% - 2rem);
-    max-width: 390px;
-  }
-
-  .about-editorial-content {
-    align-items: center;
-    text-align: center;
-  }
-
-  .about-v4-badge {
-    margin-bottom: 0.75rem;
-    padding: 0.3rem 0.8rem;
-    font-size: 0.68rem;
-  }
-
-  .about-v4-headline {
-    font-size: 1.7rem;
-    line-height: 1.05;
-    margin-bottom: 0.6rem;
-  }
-
-  .about-v4-narrative {
-    font-size: 0.82rem;
-    line-height: 1.48;
-    margin-bottom: 0.85rem;
-    max-width: 100%;
-  }
-
-  .about-v4-matrix {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.55rem;
-    margin-bottom: 0.95rem;
-    width: 100%;
-  }
-
-  .v4-matrix-item {
-    padding: 0.6rem 0.7rem;
-    align-items: center;
-    text-align: center;
-  }
-
-  .matrix-number {
-    font-size: 1.25rem;
-    margin-bottom: 0.15rem;
-  }
-
-  .matrix-label {
-    font-size: 0.58rem;
-    margin-bottom: 0.1rem;
-  }
-
-  .matrix-sub {
-    font-size: 0.54rem;
-  }
-
-  .about-v4-tags-row {
-    justify-content: center;
-    gap: 0.35rem;
-    margin-bottom: 1rem;
-  }
-
-  .v4-pillar-pill {
-    font-size: 0.58rem;
-    padding: 0.22rem 0.55rem;
-  }
-
-  .about-v4-action-row {
-    flex-direction: row;
-    justify-content: center;
-    gap: 0.65rem;
-    width: 100%;
-  }
-
-  .v4-services-btn {
-    padding: 0.7rem 1.4rem;
-    font-size: 0.76rem;
-  }
-
-  .v4-ghost-btn {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.76rem;
   }
 }
