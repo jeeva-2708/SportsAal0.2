@@ -27,6 +27,13 @@ export const ADMIN_DEFAULTS = {
   password: process.env.ADMIN_DEFAULT_PASSWORD || 'ChangeMe@2026',
 };
 
+export function hasDatabaseCredentials() {
+  return Boolean(
+    (process.env.DATABASE_URL && process.env.DATABASE_URL.trim().length > 0) ||
+      (typeof process.env.PGPASSWORD === 'string' && process.env.PGPASSWORD.length > 0)
+  );
+}
+
 export function getDatabaseConfig(overrideDatabase = null) {
   if (process.env.DATABASE_URL && !overrideDatabase) {
     return {
@@ -50,3 +57,4 @@ export function getDatabaseConfig(overrideDatabase = null) {
         : undefined,
   };
 }
+

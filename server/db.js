@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
-import { getDatabaseConfig } from './config.js';
+import { getDatabaseConfig, hasDatabaseCredentials } from './config.js';
 
 const { Pool, Client } = pg;
 
@@ -15,7 +15,16 @@ pool.on('error', (err) => {
   console.error('Unexpected PostgreSQL pool error:', err.message);
 });
 
+function assertCredentialsConfigured() {
+  if (!hasDatabaseCredentials()) {
+    throw new Error(
+      'Missing PostgreSQL password: set PGPASSWORD (or DATABASE_URL) in SportsAal0.2/.env (not .env.example) and restart.'
+    );
+  }
+}
+
 export async function query(text, params = []) {
+  assertCredentialsConfigured();
   return pool.query(text, params);
 }
 
@@ -24,6 +33,7 @@ export async function query(text, params = []) {
  * Safely skipped if connecting via a managed single-DB connectionString (DATABASE_URL).
  */
 export async function ensureDatabaseExists() {
+  assertCredentialsConfigured();
   if (process.env.DATABASE_URL) return;
 
   const targetDb = process.env.PGDATABASE || 'sportsaal';
@@ -54,5 +64,7 @@ export async function initSchema() {
 }
 
 export async function testConnection() {
+  assertCredentialsConfigured();
   await pool.query('SELECT 1');
 }
+
