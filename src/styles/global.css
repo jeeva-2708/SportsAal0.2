@@ -77,9 +77,9 @@ body.nav-menu-open {
 
 /* Premium Section Stacking Infrastructure */
 .stacked-section {
-  position: sticky;
-  top: min(0px, calc(100vh - var(--section-height, 100vh)));
-  top: min(0px, calc(100dvh - var(--section-height, 100dvh)));
+  position: sticky !important;
+  top: min(0px, calc(100vh - var(--section-height, 100vh))) !important;
+  top: min(0px, calc(100dvh - var(--section-height, 100dvh))) !important;
   min-height: 100vh;
   background-color: var(--bg-primary);
   box-shadow: var(--section-stack-shadow);

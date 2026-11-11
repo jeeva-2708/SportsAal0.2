@@ -1,11 +1,14 @@
 import React from 'react';
 import './About.css';
+import { useStickySection } from '../../hooks/useStickySection.js';
 import { scrollToSection } from '../../utils/navigation.js';
 import cricketBatsmanImg from '../../assets/images/hero-ribbon/cricket-batsman.jpg';
 
 export default function About() {
+  const sectionRef = useStickySection();
+
   return (
-    <section className="about-section-luxury" id="about">
+    <section ref={sectionRef} className="about-section-luxury stacked-section stacked-section-2" id="about">
       <div className="about-luxury-container">
         {/* Left Column: Pure High-Impact Athletic Photography (ZERO text on image) */}
         <div className="about-visual-column">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Hero.css';
+import { useStickySection } from '../../hooks/useStickySection.js';
 import { scrollToSection } from '../../utils/navigation.js';
 
 // Multi-Sport Cinema Ribbon Photos
@@ -35,6 +36,7 @@ const sportsaalServices = [
 ];
 
 export default function Hero({ introComplete = false }) {
+  const sectionRef = useStickySection();
   const [trainSettled, setTrainSettled] = useState(() => introComplete);
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -62,7 +64,7 @@ export default function Hero({ introComplete = false }) {
   }, [introComplete, trainSettled]);
 
   return (
-    <section className="hero-section-v3" id="hero">
+    <section ref={sectionRef} className="hero-section-v3 stacked-section stacked-section-1" id="hero">
       {/* 1. Multi-Sport Cinema Ribbon (Pure slanted photo ribbon) */}
       <div className="hero-ribbon-viewport">
         <div className="hero-ribbon-track">

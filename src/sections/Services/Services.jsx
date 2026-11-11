@@ -107,7 +107,7 @@ export default function Services() {
   };
 
   return (
-    <section ref={sectionRef} className="services-section-v3" id="services">
+    <section ref={sectionRef} className="services-section-v3 stacked-section stacked-section-3" id="services">
       <div className="services-wrapper">
         {/* Section Header Matching Reference Video */}
         <div className="services-header-row">

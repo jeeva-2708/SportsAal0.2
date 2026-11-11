@@ -75,7 +75,7 @@ export default function UpcomingEvents() {
   const activeEvent = UPCOMING_EVENTS[activeEventIndex];
 
   return (
-    <section ref={sectionRef} className="upcoming-events-section" id="events">
+    <section ref={sectionRef} className="upcoming-events-section stacked-section stacked-section-4" id="events">
       <div className="events-container">
         {/* Section Header */}
         <div className="events-header-row">
