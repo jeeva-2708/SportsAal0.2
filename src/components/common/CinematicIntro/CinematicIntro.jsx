@@ -133,217 +133,218 @@ export default function CinematicIntro({ onComplete }) {
       aria-modal="true"
       aria-label="Sportsaal Introduction"
     >
-      {/* Loading Screen: Football & Sneaker Juggling Loader */}
+      {/* Loading Screen: Realistic Soccer Ball & Sneaker Juggling (Pure Animation, No Phone Box) */}
       {!fontsLoaded && (
         <div className={`intro-font-loader ${loaderFading ? 'font-loader-fade-out' : ''}`}>
-          <div className="football-loader-card" aria-hidden="true">
-            {/* Top Section: Red Athletic Pitch with Football and Sneaker */}
-            <div className="football-loader-top">
-              <svg
-                viewBox="0 0 320 330"
-                className="football-loader-svg"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  {/* Realistic 3D Soccer Ball Sphere Gradient */}
-                  <radialGradient id="soccerBall3DGrad" cx="35%" cy="32%" r="68%">
-                    <stop offset="0%" stopColor="#FFFFFF" />
-                    <stop offset="60%" stopColor="#F8FAFC" />
-                    <stop offset="85%" stopColor="#E2E8F0" />
-                    <stop offset="100%" stopColor="#CBD5E1" />
-                  </radialGradient>
+          <div className="football-juggle-stage" aria-hidden="true">
+            <svg
+              viewBox="0 0 360 380"
+              className="football-juggle-svg"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                {/* 3D Realistic Soccer Ball Shading */}
+                <radialGradient id="soccerBallSphereGrad" cx="32%" cy="28%" r="72%">
+                  <stop offset="0%" stopColor="#FFFFFF" />
+                  <stop offset="58%" stopColor="#F8FAFC" />
+                  <stop offset="85%" stopColor="#E2E8F0" />
+                  <stop offset="100%" stopColor="#CBD5E1" />
+                </radialGradient>
 
-                  {/* Dark Leather Panel Gradient */}
-                  <linearGradient id="soccerPanelDark" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#22252A" />
-                    <stop offset="100%" stopColor="#111317" />
-                  </linearGradient>
+                {/* Soccer Leather Dark Panel */}
+                <linearGradient id="soccerDarkPanelGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#252830" />
+                  <stop offset="100%" stopColor="#121317" />
+                </linearGradient>
 
-                  {/* Sneaker Sole Gradient */}
-                  <linearGradient id="sneakerSoleGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2A2F38" />
-                    <stop offset="40%" stopColor="#1A1C22" />
-                    <stop offset="100%" stopColor="#0E1014" />
-                  </linearGradient>
+                {/* Realistic Sneaker Upper Red Gradient */}
+                <linearGradient id="sneakerUpperRealGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#FF3838" />
+                  <stop offset="35%" stopColor="#E52020" />
+                  <stop offset="75%" stopColor="#B81414" />
+                  <stop offset="100%" stopColor="#8A0C0C" />
+                </linearGradient>
 
-                  {/* Sneaker Racing Wave Gradient */}
-                  <linearGradient id="sneakerWaveGrad" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#FDE047" />
-                    <stop offset="50%" stopColor="#FBBF24" />
-                    <stop offset="100%" stopColor="#F59E0B" />
-                  </linearGradient>
+                {/* Sneaker Wedge Sole Gradient */}
+                <linearGradient id="sneakerSoleRealGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#2E3440" />
+                  <stop offset="45%" stopColor="#1C2028" />
+                  <stop offset="100%" stopColor="#0F1115" />
+                </linearGradient>
 
-                  {/* Dynamic Contact Shadow */}
-                  <radialGradient id="footballContactShadowGrad" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="rgba(0, 0, 0, 0.55)" />
-                    <stop offset="60%" stopColor="rgba(0, 0, 0, 0.2)" />
-                    <stop offset="100%" stopColor="transparent" />
-                  </radialGradient>
-                </defs>
+                {/* Golden Yellow Accent Gradient */}
+                <linearGradient id="sneakerGoldGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#FFE066" />
+                  <stop offset="50%" stopColor="#FFD166" />
+                  <stop offset="100%" stopColor="#F59E0B" />
+                </linearGradient>
 
-                {/* SNEAKER GROUP (Pivots at heel, toe flicks upward to kick) */}
-                <g className="football-shoe-group">
-                  {/* Contact Shadow on Shoe Toe */}
-                  <ellipse
-                    className="football-contact-shadow"
-                    cx="132"
-                    cy="180"
-                    rx="16"
-                    ry="5"
-                    fill="url(#footballContactShadowGrad)"
-                  />
+                {/* Dynamic Contact Shadow */}
+                <radialGradient id="ballContactShadowGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="rgba(0, 0, 0, 0.7)" />
+                  <stop offset="55%" stopColor="rgba(0, 0, 0, 0.25)" />
+                  <stop offset="100%" stopColor="transparent" />
+                </radialGradient>
+              </defs>
 
-                  {/* 1. Sneaker Dark Sculpted Sole */}
-                  <path
-                    d="M 80 218 C 95 240 135 252 185 252 C 220 252 245 246 252 238 C 255 234 253 228 246 226 C 230 230 200 234 160 234 C 120 234 95 224 80 218 Z"
-                    fill="url(#sneakerSoleGrad)"
-                  />
-                  {/* Sole Midsole Speed Accent Line */}
-                  <path
-                    d="M 86 218 C 115 228 160 232 244 227"
-                    stroke="#FFFFFF"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    opacity="0.85"
-                  />
+              {/* Ground Shadow */}
+              <ellipse cx="180" cy="326" rx="115" ry="10" fill="rgba(0, 0, 0, 0.65)" />
 
-                  {/* 2. Sneaker Upper Body (Matching Red Theme) */}
-                  <path
-                    d="M 80 218 C 78 206 88 194 108 190 C 125 186 145 178 162 168 C 168 164 175 166 178 172 C 184 180 196 186 212 184 C 225 182 235 188 238 198 C 242 210 246 222 244 228 C 200 234 150 234 105 226 L 80 218 Z"
-                    fill="#DC2626"
-                    stroke="#991B1B"
-                    strokeWidth="1.2"
-                    strokeLinejoin="round"
-                  />
+              {/* SNEAKER ASSEMBLY (3D Isometric Profile matching reference image) */}
+              <g className="realistic-shoe-group">
+                {/* Dynamic Ball Contact Shadow on Toe Box */}
+                <ellipse
+                  className="football-contact-shadow"
+                  cx="128"
+                  cy="252"
+                  rx="18"
+                  ry="6"
+                  fill="url(#ballContactShadowGrad)"
+                />
 
-                  {/* 3. Toe Protector / Mudguard */}
-                  <path
-                    d="M 80 218 C 78 210 86 200 98 198 L 102 210 C 94 212 86 218 80 218 Z"
-                    fill="#991B1B"
-                    opacity="0.8"
-                  />
+                {/* 1. Sculpted Outsole (Wedge running sole with curved toe rocker) */}
+                <path
+                  d="M 75 282 C 72 286 73 293 78 297 C 92 309 125 317 175 317 C 225 317 265 309 284 295 C 291 289 289 281 283 275 C 277 271 268 274 252 277 C 215 283 155 285 105 283 L 75 282 Z"
+                  fill="url(#sneakerSoleRealGrad)"
+                  stroke="#0A0B0E"
+                  strokeWidth="1.2"
+                />
 
-                  {/* 4. Dynamic Side Waves / Racing Swoosh (Yellow & White) */}
-                  <path
-                    d="M 106 205 C 135 194 168 214 196 226 C 214 234 230 226 236 212 L 234 218 C 224 234 206 238 190 230 C 162 216 132 202 106 209 Z"
-                    fill="url(#sneakerWaveGrad)"
-                  />
-                  <path
-                    d="M 115 199 C 142 190 172 208 198 220 C 214 228 226 222 232 208"
-                    stroke="#FFFFFF"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                  />
+                {/* Midsole Accent Line */}
+                <path
+                  d="M 80 282 C 110 286 160 288 278 276"
+                  stroke="#FFFFFF"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  opacity="0.8"
+                />
 
-                  {/* 5. Diagonal Laces (Yellow Bars along Tongue) */}
-                  <line x1="125" y1="198" x2="135" y2="193" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="133" y1="191" x2="143" y2="186" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="141" y1="184" x2="151" y2="179" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="149" y1="177" x2="159" y2="172" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="157" y1="170" x2="167" y2="165" stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" />
+                {/* 2. Main Sneaker Upper (Red 3D Contours) */}
+                <path
+                  d="M 75 282 C 74 270 85 254 110 248 C 130 244 158 230 182 212 C 188 206 195 208 198 214 C 205 224 220 234 242 232 C 255 230 268 238 274 250 C 278 260 280 270 278 274 C 240 280 160 284 75 282 Z"
+                  fill="url(#sneakerUpperRealGrad)"
+                  stroke="#7A0A0A"
+                  strokeWidth="1.2"
+                  strokeLinejoin="round"
+                />
 
-                  {/* 6. Ankle Collar Opening */}
-                  <path
-                    d="M 178 172 C 185 180 198 184 214 182 C 220 181 224 185 222 190 C 210 193 194 190 182 178 Z"
-                    fill="#181A20"
-                    stroke="#FFFFFF"
-                    strokeWidth="0.8"
-                    opacity="0.6"
-                  />
-                </g>
+                {/* 3. Ankle Collar 3D Opening */}
+                <path
+                  d="M 198 214 C 208 226 226 235 248 232 C 258 230 266 224 262 218 C 248 210 224 206 204 210 Z"
+                  fill="#0D0E11"
+                  stroke="#FFFFFF"
+                  strokeWidth="0.8"
+                  opacity="0.55"
+                />
 
-                {/* SOCCER BALL GROUP (Juggles upward with realistic spin and bounce) */}
-                <g className="football-ball-group">
-                  {/* Sphere Base with 3D Shader */}
-                  <circle
-                    cx="132"
-                    cy="135"
-                    r="30"
-                    fill="url(#soccerBall3DGrad)"
-                    stroke="#18181B"
-                    strokeWidth="2"
-                  />
+                {/* 4. Signature Yellow Toe Cap (Directly from reference image) */}
+                <path
+                  d="M 75 282 C 74 272 82 258 104 252 C 108 256 112 264 108 272 C 98 278 86 282 75 282 Z"
+                  fill="url(#sneakerGoldGrad)"
+                  stroke="#D97706"
+                  strokeWidth="0.8"
+                />
 
-                  {/* Central Black Pentagon */}
-                  <polygon
-                    points="132,123 143.4,131.3 139,144.7 125,144.7 120.6,131.3"
-                    fill="url(#soccerPanelDark)"
-                    stroke="#18181B"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
+                {/* 5. Signature Yellow Racing Wave Swoosh */}
+                <path
+                  d="M 105 272 C 135 258 165 275 198 278 C 225 280 252 268 268 252 C 265 258 250 274 225 282 C 190 284 150 274 105 272 Z"
+                  fill="url(#sneakerGoldGrad)"
+                />
+                {/* Secondary Wave Pinstripe Accent */}
+                <path
+                  d="M 115 264 C 142 252 170 268 200 272 C 224 274 246 264 260 250"
+                  stroke="#FFFFFF"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
 
-                  {/* 5 Seams Radiating from Center Pentagon */}
-                  <line x1="132" y1="123" x2="132" y2="107" stroke="#18181B" strokeWidth="1.8" />
-                  <line x1="143.4" y1="131.3" x2="156" y2="124" stroke="#18181B" strokeWidth="1.8" />
-                  <line x1="139" y1="144.7" x2="150" y2="157" stroke="#18181B" strokeWidth="1.8" />
-                  <line x1="125" y1="144.7" x2="114" y2="157" stroke="#18181B" strokeWidth="1.8" />
-                  <line x1="120.6" y1="131.3" x2="108" y2="124" stroke="#18181B" strokeWidth="1.8" />
+                {/* 6. Parallel Eyestay Laces (Yellow bars directly matching reference) */}
+                <line x1="118" y1="252" x2="128" y2="244" stroke="#FFD166" strokeWidth="3.2" strokeLinecap="round" />
+                <line x1="132" y1="244" x2="142" y2="236" stroke="#FFD166" strokeWidth="3.2" strokeLinecap="round" />
+                <line x1="146" y1="236" x2="156" y2="228" stroke="#FFD166" strokeWidth="3.2" strokeLinecap="round" />
+                <line x1="160" y1="228" x2="170" y2="220" stroke="#FFD166" strokeWidth="3.2" strokeLinecap="round" />
+                <line x1="174" y1="220" x2="184" y2="212" stroke="#FFD166" strokeWidth="3.2" strokeLinecap="round" />
+                <line x1="188" y1="212" x2="198" y2="204" stroke="#FFD166" strokeWidth="3.2" strokeLinecap="round" />
+              </g>
 
-                  {/* 5 Outer Truncated Pentagons */}
-                  {/* Top Pentagon */}
-                  <path
-                    d="M 124 106 L 132 107 L 140 106 A 30 30 0 0 0 124 106 Z"
-                    fill="url(#soccerPanelDark)"
-                    stroke="#18181B"
-                    strokeWidth="1.5"
-                  />
-                  {/* Upper-Right Pentagon */}
-                  <path
-                    d="M 156 124 L 152 115 A 30 30 0 0 1 161 133 L 156 124 Z"
-                    fill="url(#soccerPanelDark)"
-                    stroke="#18181B"
-                    strokeWidth="1.5"
-                  />
-                  {/* Lower-Right Pentagon */}
-                  <path
-                    d="M 150 157 L 157 149 A 30 30 0 0 1 144 163 L 150 157 Z"
-                    fill="url(#soccerPanelDark)"
-                    stroke="#18181B"
-                    strokeWidth="1.5"
-                  />
-                  {/* Lower-Left Pentagon */}
-                  <path
-                    d="M 114 157 L 120 163 A 30 30 0 0 1 107 149 L 114 157 Z"
-                    fill="url(#soccerPanelDark)"
-                    stroke="#18181B"
-                    strokeWidth="1.5"
-                  />
-                  {/* Upper-Left Pentagon */}
-                  <path
-                    d="M 108 124 L 103 133 A 30 30 0 0 1 112 115 L 108 124 Z"
-                    fill="url(#soccerPanelDark)"
-                    stroke="#18181B"
-                    strokeWidth="1.5"
-                  />
+              {/* SOCCER BALL GROUP (Juggles with smooth vertical flight and rotation) */}
+              <g className="realistic-ball-group">
+                {/* 3D Sphere Base */}
+                <circle
+                  cx="145"
+                  cy="172"
+                  r="36"
+                  fill="url(#soccerBallSphereGrad)"
+                  stroke="#18181B"
+                  strokeWidth="2.2"
+                />
 
-                  {/* Specular 3D Gloss Curve */}
-                  <ellipse
-                    cx="123"
-                    cy="122"
-                    rx="8"
-                    ry="4.5"
-                    transform="rotate(-30 123 122)"
-                    fill="#FFFFFF"
-                    opacity="0.5"
-                  />
-                </g>
-              </svg>
-            </div>
+                {/* Central Black Pentagon */}
+                <polygon
+                  points="145,157 159,167 154,183 136,183 131,167"
+                  fill="url(#soccerDarkPanelGrad)"
+                  stroke="#18181B"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
 
-            {/* Bottom Section: White Card with "Loading...." */}
-            <div className="football-loader-bottom">
-              <p className="football-loader-text">
-                Loading
-                <span className="football-loader-dots">
-                  <span>.</span>
-                  <span>.</span>
-                  <span>.</span>
-                  <span>.</span>
-                </span>
-              </p>
-            </div>
+                {/* Seam Lines Radiating from Center Pentagon */}
+                <line x1="145" y1="157" x2="145" y2="138" stroke="#18181B" strokeWidth="2" />
+                <line x1="159" y1="167" x2="174" y2="159" stroke="#18181B" strokeWidth="2" />
+                <line x1="154" y1="183" x2="167" y2="198" stroke="#18181B" strokeWidth="2" />
+                <line x1="136" y1="183" x2="123" y2="198" stroke="#18181B" strokeWidth="2" />
+                <line x1="131" y1="167" x2="116" y2="159" stroke="#18181B" strokeWidth="2" />
+
+                {/* Outer Perimeter Pentagons */}
+                {/* Top Pentagon */}
+                <path
+                  d="M 135 137 L 145 138 L 155 137 A 36 36 0 0 0 135 137 Z"
+                  fill="url(#soccerDarkPanelGrad)"
+                  stroke="#18181B"
+                  strokeWidth="1.8"
+                />
+                {/* Upper-Right Pentagon */}
+                <path
+                  d="M 174 159 L 169 148 A 36 36 0 0 1 180 170 L 174 159 Z"
+                  fill="url(#soccerDarkPanelGrad)"
+                  stroke="#18181B"
+                  strokeWidth="1.8"
+                />
+                {/* Lower-Right Pentagon */}
+                <path
+                  d="M 167 198 L 175 188 A 36 36 0 0 1 160 205 L 167 198 Z"
+                  fill="url(#soccerDarkPanelGrad)"
+                  stroke="#18181B"
+                  strokeWidth="1.8"
+                />
+                {/* Lower-Left Pentagon */}
+                <path
+                  d="M 123 198 L 130 205 A 36 36 0 0 1 115 188 L 123 198 Z"
+                  fill="url(#soccerDarkPanelGrad)"
+                  stroke="#18181B"
+                  strokeWidth="1.8"
+                />
+                {/* Upper-Left Pentagon */}
+                <path
+                  d="M 116 159 L 110 170 A 36 36 0 0 1 121 148 L 116 159 Z"
+                  fill="url(#soccerDarkPanelGrad)"
+                  stroke="#18181B"
+                  strokeWidth="1.8"
+                />
+
+                {/* 3D Specular Gloss Highlight */}
+                <ellipse
+                  cx="134"
+                  cy="156"
+                  rx="9.5"
+                  ry="5.5"
+                  transform="rotate(-30 134 156)"
+                  fill="#FFFFFF"
+                  opacity="0.55"
+                />
+              </g>
+            </svg>
           </div>
         </div>
       )}

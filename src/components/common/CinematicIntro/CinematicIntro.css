@@ -40,11 +40,10 @@ body.intro-scroll-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Football & Sneaker Juggling Loading Screen (Exact Dribbble Reference Match)
-   - Recreates the split-card loading screen with custom Sportsaal Red color
-   - Top Section: Athletic red stadium field with classic soccer ball and sneaker
-   - Realistic juggling physics: toe flick, parabolic flight, ball spin & squash
-   - Bottom Section: Crisp white card with clean "Loading...." typography
+   Realistic Football & Sneaker Juggling Loader (No Phone Card, Pure Animation)
+   - Displays purely the realistic athletic sneaker and classic soccer ball
+   - Realistic 3D perspective directly matched to reference image
+   - Kinematic juggling: heel-pivoted toe flick, ball launch, parabolic apex & spin
    -------------------------------------------------------------------------- */
 
 .intro-font-loader {
@@ -64,62 +63,43 @@ body.intro-scroll-lock {
   pointer-events: none;
 }
 
-/* Floating Rounded Device/App Card */
-.football-loader-card {
+/* Juggling Stage: Floating purely in the center of the dark screen */
+.football-juggle-stage {
   position: relative;
-  width: clamp(280px, 24vw, 324px);
-  height: clamp(480px, 66vh, 550px);
-  max-height: 84vh;
-  border-radius: 36px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  background-color: #FFFFFF;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85),
-              0 0 50px rgba(220, 38, 38, 0.2),
-              0 0 0 1px rgba(255, 255, 255, 0.1);
-  transform: translateZ(0);
-}
-
-/* 1. Top Section: Athletic Red Field with Football & Sneaker */
-.football-loader-top {
-  position: relative;
-  width: 100%;
-  flex: 1.45;
-  background: linear-gradient(180deg, #E62828 0%, #D31D1D 100%);
+  width: clamp(250px, 28vw, 340px);
+  height: clamp(260px, 30vw, 360px);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   user-select: none;
 }
 
-.football-loader-svg {
+.football-juggle-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.95));
 }
 
 /* --------------------------------------------------------------------------
-   Kinematic Juggling Physics: Ball & Sneaker Synchronization (1.25s Loop)
+   Kinematic Juggling Physics (1.25s infinite loop)
    -------------------------------------------------------------------------- */
 
-/* Ball Juggling Kinematics:
-   - 0%: Contact with toe
+/* Ball Juggling Motion:
+   - 0%: Contact on shoe toe
    - 4%: Squash compression on impact
-   - 14%: Rocket launch! Stretching upward
-   - 48%: Parabolic apex float at -112px high with continuous 360deg spin
+   - 14%: Rocket launch upward with stretch
+   - 48%: Parabolic apex float at -112px high with smooth 360deg spin
    - 88%: Fast downward gravity plunge
    - 100%: Hits toe and compresses into next loop
 */
-.football-ball-group {
-  transform-origin: 132px 135px;
-  animation: footballBallJuggle 1.25s infinite;
+.realistic-ball-group {
+  transform-origin: 145px 172px;
+  animation: realisticBallJuggle 1.25s infinite;
   will-change: transform;
 }
 
-@keyframes footballBallJuggle {
+@keyframes realisticBallJuggle {
   0% {
     transform: translate3d(0, 0, 0) scale(1.12, 0.88) rotate(0deg);
     animation-timing-function: cubic-bezier(0.2, 0.85, 0.35, 1);
@@ -146,15 +126,15 @@ body.intro-scroll-lock {
 }
 
 /* Sneaker Toe Flick Kinematics:
-   Pivots at the heel (235px 230px), toe snaps up to launch the ball
+   Pivots at the heel (275px 285px), toe snaps up to launch the ball
 */
-.football-shoe-group {
-  transform-origin: 235px 230px;
-  animation: footballShoeKick 1.25s ease-in-out infinite;
+.realistic-shoe-group {
+  transform-origin: 275px 285px;
+  animation: realisticShoeFlick 1.25s ease-in-out infinite;
   will-change: transform;
 }
 
-@keyframes footballShoeKick {
+@keyframes realisticShoeFlick {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
@@ -176,14 +156,14 @@ body.intro-scroll-lock {
    Expands and darkens upon ball contact, shrinks and fades when ball is airborne
 */
 .football-contact-shadow {
-  transform-origin: 132px 180px;
-  animation: footballContactShadowSync 1.25s ease-in-out infinite;
+  transform-origin: 128px 252px;
+  animation: realisticContactShadow 1.25s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
-@keyframes footballContactShadowSync {
+@keyframes realisticContactShadow {
   0%, 4%, 100% {
-    opacity: 0.8;
+    opacity: 0.85;
     transform: scale(1.15);
   }
   14% {
@@ -195,64 +175,8 @@ body.intro-scroll-lock {
     transform: scale(0.25);
   }
   88% {
-    opacity: 0.55;
+    opacity: 0.6;
     transform: scale(0.85);
-  }
-}
-
-/* 2. Bottom Section: White Card with "Loading...." Typography */
-.football-loader-bottom {
-  width: 100%;
-  flex: 1;
-  background-color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 20px;
-  user-select: none;
-}
-
-.football-loader-text {
-  font-family: var(--font-body, 'Barlow', sans-serif);
-  font-size: clamp(18px, 2.2vw, 21px);
-  font-weight: 600;
-  color: #1E232B;
-  letter-spacing: 0.5px;
-  margin: 0;
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: center;
-}
-
-.football-loader-dots {
-  display: inline-flex;
-  margin-left: 1px;
-}
-
-.football-loader-dots span {
-  display: inline-block;
-  font-weight: 700;
-  color: #1E232B;
-  animation: footballDotPulse 1.4s infinite ease-in-out;
-}
-
-.football-loader-dots span:nth-child(1) { animation-delay: 0.0s; }
-.football-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
-.football-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
-.football-loader-dots span:nth-child(4) { animation-delay: 0.6s; }
-
-@keyframes footballDotPulse {
-  0%, 20% {
-    opacity: 0.2;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(-2px);
-  }
-  80%, 100% {
-    opacity: 0.2;
-    transform: translateY(0);
   }
 }
 
@@ -479,13 +403,9 @@ body.intro-scroll-lock {
 
 /* Responsive tweaks */
 @media (max-width: 767px) {
-  .football-loader-card {
-    width: min(290px, 86vw);
-    height: min(480px, 78vh);
-    border-radius: 30px;
-  }
-  .football-loader-bottom {
-    padding: 18px 16px;
+  .football-juggle-stage {
+    width: clamp(220px, 70vw, 290px);
+    height: clamp(230px, 72vw, 310px);
   }
   .intro-progress-bar {
     bottom: 2rem;
@@ -503,12 +423,5 @@ body.intro-scroll-lock {
     right: 1.25rem;
     padding: 0.35rem 0.85rem;
     font-size: 0.7rem;
-  }
-}
-
-@media (max-height: 560px) {
-  .football-loader-card {
-    height: min(400px, 86vh);
-    width: 260px;
   }
 }
