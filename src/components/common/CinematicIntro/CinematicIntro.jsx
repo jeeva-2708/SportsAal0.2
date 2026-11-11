@@ -5,8 +5,9 @@ import './CinematicIntro.css';
  * CinematicIntro
  *
  * 1. Initial Small Loading Screen:
- *    - Displays a sleek, minimalist dark loader while checking document.fonts.ready
- *    - Guarantees custom fonts ('Anton', 'Barlow') are 100% loaded and ready
+ *    - Minimalist 2D cricket bat tapping the ball in the air
+ *    - Each tap increases the ball's bounce height (low -> medium -> high)
+ *    - Monitors document.fonts.ready to guarantee 'Anton' and 'Barlow' are ready
  *    - Completely eliminates FOUT (Flash of Unstyled Text)
  *
  * 2. 5-second cinematic typography sequence:
@@ -41,13 +42,14 @@ export default function CinematicIntro({ onComplete }) {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
-  // 1. Initial Font Preloader: Ensures Anton & Barlow are rendered before text appears
+  // 1. Initial Font Preloader with Bat-Tapping Animation
   useEffect(() => {
     document.body.classList.add('intro-scroll-lock');
 
     const startTime = performance.now();
-    const minDisplayDuration = 700; // brief, smooth preloader
-    const safetyLimit = 2200;       // safety fallback
+    // Allow at least ~1.8s so user sees the 2D bat progressively tapping the ball higher
+    const minDisplayDuration = 1800;
+    const safetyLimit = 3200;
 
     const fontPromises = [];
     if (typeof document !== 'undefined' && document.fonts) {
@@ -129,10 +131,60 @@ export default function CinematicIntro({ onComplete }) {
       aria-modal="true"
       aria-label="Sportsaal Introduction"
     >
-      {/* Small Font Preloader Screen */}
+      {/* Small Font Preloader Screen: 2D Bat Tapping Ball */}
       {!fontsLoaded && (
         <div className={`intro-font-loader ${loaderFading ? 'font-loader-fade-out' : ''}`}>
-          <div className="font-loader-spinner" />
+          {/* Minimal 2D Cricket Bat Tapping Ball Animation */}
+          <div className="cricket-tap-loader" aria-hidden="true">
+            <svg
+              viewBox="0 0 120 130"
+              className="cricket-tap-svg"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Soft Ground Shadow beneath bat */}
+              <ellipse cx="56" cy="118" rx="38" ry="3" fill="rgba(0, 0, 0, 0.6)" />
+
+              {/* Dynamic Contact Shadow on Bat Face (expands on descent, shrinks in air) */}
+              <ellipse className="tap-ball-shadow" cx="48" cy="105" rx="6" ry="1.8" fill="rgba(0, 0, 0, 0.75)" />
+
+              {/* Impact Flash Shockwave Ring on Contact */}
+              <ellipse className="tap-impact-ring" cx="48" cy="104" rx="9" ry="2.6" stroke="#FF2B2B" strokeWidth="1.4" />
+
+              {/* 2D Cricket Bat Assembly (Recoil tap motion) */}
+              <g className="tap-bat-assembly">
+                {/* Bat Blade */}
+                <rect x="18" y="104" width="56" height="10" rx="3" fill="#E2E8F0" stroke="#1E293B" strokeWidth="1.2" />
+                {/* Red Brand Accent Stripe on Blade */}
+                <rect x="30" y="107" width="30" height="2" rx="1" fill="#FF2B2B" />
+                {/* Bat Handle Collar */}
+                <path d="M 74 106.5 L 80 107.5 L 80 110.5 L 74 111.5 Z" fill="#94A3B8" />
+                {/* Bat Handle with Red Grip */}
+                <rect x="80" y="107.5" width="24" height="3" rx="1.5" fill="#FF2B2B" stroke="#B91C1C" strokeWidth="0.8" />
+                {/* Grip Wrap Rings */}
+                <line x1="86" y1="107.5" x2="86" y2="110.5" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.65" />
+                <line x1="92" y1="107.5" x2="92" y2="110.5" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.65" />
+                <line x1="98" y1="107.5" x2="98" y2="110.5" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.65" />
+              </g>
+
+              {/* Bouncing Cricket Ball (Progressive height taps) */}
+              <g className="tap-ball-group">
+                {/* Red Cricket Ball */}
+                <circle cx="48" cy="98" r="6" fill="#FF2B2B" stroke="#B91C1C" strokeWidth="1" />
+                {/* White Curved Seam Stitch */}
+                <path
+                  d="M 44.5 95 C 47.5 96.5 48.5 99.5 51.5 101"
+                  stroke="#FFFFFF"
+                  strokeWidth="0.9"
+                  strokeDasharray="1.2 1"
+                  strokeLinecap="round"
+                />
+                {/* Specular Highlight */}
+                <circle cx="46" cy="96" r="1.5" fill="#FFFFFF" opacity="0.5" />
+              </g>
+            </svg>
+          </div>
+
           <div className="font-loader-brand">
             <span className="font-loader-title">SPORTSAAL</span>
             <div className="font-loader-bar-track">
@@ -171,7 +223,7 @@ export default function CinematicIntro({ onComplete }) {
         </div>
       )}
 
-      {/* Progress Dots Indicator (Active once phrases begin) */}
+      {/* Progress Dots Indicator */}
       {fontsLoaded && (
         <div className="intro-progress-bar" aria-hidden="true">
           {PHRASES.map((p, idx) => (

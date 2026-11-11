@@ -1,6 +1,7 @@
 /* ==========================================================================
    Sportsaal 3.0 - Cinematic 5-Second Phrase Intro Overlay
-   - Small font-preloader screen to eliminate FOUT (Flash of Unstyled Text)
+   - Small font-preloader screen: Minimal 2D Cricket Bat tapping ball in air
+   - Each tap progressively launches the ball higher (Low -> Medium -> High)
    - Strictly Single Color: Bold White / Clean Cool Slate Gray
    - 3D Background-to-Foreground Motion (Text emerges from deep z-space)
    - Atmospheric Dark Background with subtle ambient pulse
@@ -38,7 +39,7 @@ body.intro-scroll-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Small Font Preloader Screen (Guarantees fonts are ready before text appears)
+   Small Font Preloader Screen
    -------------------------------------------------------------------------- */
 
 .intro-font-loader {
@@ -49,7 +50,7 @@ body.intro-scroll-lock {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.4rem;
+  gap: 1.25rem;
   z-index: 100;
   transition: opacity 0.32s ease, transform 0.32s ease;
 }
@@ -60,24 +61,188 @@ body.intro-scroll-lock {
   pointer-events: none;
 }
 
-.font-loader-spinner {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 2.5px solid rgba(255, 43, 43, 0.15);
-  border-top-color: var(--color-primary, #FF2B2B);
-  animation: fontLoaderSpin 0.75s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
-  box-shadow: 0 0 18px rgba(255, 43, 43, 0.35);
+/* --------------------------------------------------------------------------
+   Minimal 2D Cricket Bat Tapping Ball Icon & Physics
+   -------------------------------------------------------------------------- */
+
+.cricket-tap-loader {
+  position: relative;
+  width: 72px;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@keyframes fontLoaderSpin {
+.cricket-tap-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 14px rgba(255, 43, 43, 0.28));
+}
+
+/* 1. Ball Bounce Physics: Progressive Heights (Low -> Med -> High) */
+.tap-ball-group {
+  transform-origin: 48px 98px;
+  animation: tapBallBounce 2.3s infinite;
+  will-change: transform;
+}
+
+@keyframes tapBallBounce {
+  /* Tap 1: Low Bounce (-18px) */
   0% {
-    transform: rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(1.18, 0.82);
+    animation-timing-function: cubic-bezier(0.2, 0.85, 0.38, 1);
+  }
+  3% {
+    transform: translate3d(0, -3px, 0) scale(0.92, 1.08);
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  11% {
+    transform: translate3d(0, -18px, 0) scale(1, 1);
+    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  }
+  19% {
+    transform: translate3d(0, -2px, 0) scale(0.95, 1.05);
+    animation-timing-function: ease-in;
+  }
+  22% {
+    transform: translate3d(0, 0, 0) scale(1.22, 0.78);
+    animation-timing-function: cubic-bezier(0.2, 0.85, 0.38, 1);
+  }
+
+  /* Tap 2: Medium Bounce (-48px) */
+  25% {
+    transform: translate3d(0, -6px, 0) scale(0.9, 1.1);
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  38% {
+    transform: translate3d(0, -48px, 0) scale(1, 1);
+    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  }
+  51% {
+    transform: translate3d(0, -4px, 0) scale(0.93, 1.07);
+    animation-timing-function: ease-in;
+  }
+  54% {
+    transform: translate3d(0, 0, 0) scale(1.26, 0.74);
+    animation-timing-function: cubic-bezier(0.2, 0.85, 0.38, 1);
+  }
+
+  /* Tap 3: High Bounce (-86px) — Ball shoots high into the air! */
+  57.5% {
+    transform: translate3d(0, -9px, 0) scale(0.86, 1.14);
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  77% {
+    transform: translate3d(0, -86px, 0) scale(1, 1);
+    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  }
+  97% {
+    transform: translate3d(0, -4px, 0) scale(0.92, 1.08);
+    animation-timing-function: ease-in;
   }
   100% {
-    transform: rotate(360deg);
+    transform: translate3d(0, 0, 0) scale(1.18, 0.82);
   }
 }
+
+/* 2. Bat Recoil & Pop Motion on Each Contact */
+.tap-bat-assembly {
+  transform-origin: 86px 109px;
+  animation: tapBatMotion 2.3s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes tapBatMotion {
+  /* Tap 1 */
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  1.5% {
+    transform: translateY(-2px) rotate(-1.4deg);
+  }
+  4.5% {
+    transform: translateY(1.5px) rotate(0.8deg);
+  }
+  9% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  /* Tap 2 */
+  22% {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+  25.5% {
+    transform: translateY(2px) rotate(1deg);
+  }
+  30% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  /* Tap 3 */
+  54% {
+    transform: translateY(-4.5px) rotate(-3deg);
+  }
+  58% {
+    transform: translateY(2.5px) rotate(1.2deg);
+  }
+  64% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* 3. Dynamic Contact Shadow on Bat Face */
+.tap-ball-shadow {
+  transform-origin: 48px 105px;
+  animation: tapShadowScale 2.3s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes tapShadowScale {
+  0%, 22%, 54%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  11% {
+    opacity: 0.3;
+    transform: scale(0.55);
+  }
+  38% {
+    opacity: 0.15;
+    transform: scale(0.35);
+  }
+  77% {
+    opacity: 0.05;
+    transform: scale(0.2);
+  }
+}
+
+/* 4. Impact Flash Ring on Contact */
+.tap-impact-ring {
+  transform-origin: 48px 104px;
+  animation: tapImpactFlash 2.3s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes tapImpactFlash {
+  0%, 22%, 54% {
+    opacity: 0.95;
+    transform: scale(0.5);
+  }
+  3.5%, 25.5%, 57.5% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+  4%, 21.9%, 26%, 53.9%, 58%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Preloader Brand Text & Subtle Progress Indicator
+   -------------------------------------------------------------------------- */
 
 .font-loader-brand {
   display: flex;
@@ -238,13 +403,12 @@ body.intro-scroll-lock {
   text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
 }
 
-/* Strictly single white / monochromatic tone */
 .intro-phrase-line1 {
   color: #FFFFFF;
 }
 
 .intro-phrase-line2 {
-  color: #E2E8F0; /* Clean, bold, uniform monochromatic white/slate */
+  color: #E2E8F0;
 }
 
 /* --------------------------------------------------------------------------
