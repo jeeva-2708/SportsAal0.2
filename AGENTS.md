@@ -83,5 +83,6 @@ Sportsaal 3.0 is **strictly Dark Mode only**. No light theme styling or light/da
 ## 4. Development & Implementation Rules
 1. **Zero Light Theme Baggage**: Clean, streamlined CSS without dual-theme overrides or clutter.
 2. **High-Performance Animations**: Smooth CSS keyframes, transforms, and transitions (`transform`, `opacity`).
-3. **Responsive Excellence**: Fully responsive across mobile, tablet, and wide desktop viewports.
-4. **Curated High-Res Media**: Multi-sport action visuals optimized in WebP/JPG format.
+3. **Mandatory Mobile Responsiveness (CRITICAL)**: Every new design, component, and section we build MUST be fully mobile-responsive across small devices (≤480px) and tablets (≤768px / ≤1150px). Elements must never leave huge dead gaps, unreadable text, or awkward empty space; layouts must scale cohesively and look polished on mobile viewports.
+4. **Mobile Navigation Architecture**: The mobile navbar must always display the brand logo and the hamburger menu toggle. Secondary header action buttons (e.g. "BOOK A VENUE") must be moved cleanly inside the mobile full-screen menu drawer rather than cluttering the mobile header bar.
+5. **Curated High-Res Media**: Multi-sport action visuals optimized in WebP/JPG format.

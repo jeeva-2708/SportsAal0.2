@@ -9,7 +9,7 @@ import Testimonials from '../../sections/Testimonials/Testimonials.jsx';
 import Contact from '../../sections/Contact/Contact.jsx';
 import { scrollToSection } from '../../utils/navigation.js';
 
-export default function HomePage() {
+export default function HomePage({ introComplete }) {
   const location = useLocation();
 
   useEffect(() => {
@@ -24,8 +24,8 @@ export default function HomePage() {
 
   return (
     <main>
-      <Hero />
-      <About />
+      <Hero introComplete={introComplete} />
+      {/* About section is now dynamically integrated into the scroll experience with #about anchor */}
       <Services />
       {/* Temporarily hidden as requested: <OurWork /> */}
       <TrustedBy />

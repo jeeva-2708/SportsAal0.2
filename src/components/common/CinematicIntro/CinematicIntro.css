@@ -1,0 +1,283 @@
+/* ==========================================================================
+   Sportsaal 3.0 - Cinematic 5-Second Phrase Intro Overlay
+   - Strictly Single Color: Bold White / Clean Cool Slate Gray
+   - 3D Background-to-Foreground Motion (Text emerges from deep z-space)
+   - Atmospheric Dark Background with subtle ambient pulse
+   - Clean fade-out into Hero section
+   ========================================================================== */
+
+/* Body scroll lock during intro */
+body.intro-scroll-lock {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
+.cinematic-intro-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  background-color: #050505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.45s ease;
+}
+
+.cinematic-intro-overlay.intro-fade-out {
+  opacity: 0;
+  transform: scale(1.03);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Ambient Atmosphere (Dark, deep, cinematic)
+   -------------------------------------------------------------------------- */
+
+.intro-bg-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.intro-light-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 65vw;
+  height: 65vh;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 45%, transparent 70%);
+  filter: blur(40px);
+  animation: introGlowBreathe 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes introGlowBreathe {
+  0% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3D Depth Stage & Background-to-Foreground Animation
+   -------------------------------------------------------------------------- */
+
+.intro-depth-stage {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  perspective: 1200px;
+  perspective-origin: center center;
+}
+
+.intro-phrase-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+  animation: emergeFromDeepBackground 1.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Keyframe: Text emerges from deep background (scale 0.55, blurry, low opacity) 
+   to prominent foreground (scale 1.05, sharp, bright single-color white) */
+@keyframes emergeFromDeepBackground {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) translateZ(-350px);
+    filter: blur(14px);
+    letter-spacing: 0.14em;
+  }
+  30% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1.02) translateZ(0);
+    filter: blur(0px);
+    letter-spacing: 0.02em;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12) translateZ(80px);
+    filter: blur(6px);
+    letter-spacing: 0.04em;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Phrase Typography - Strictly Single Color Bold White / Gray
+   -------------------------------------------------------------------------- */
+
+.intro-phrase-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.4rem, 1.2vw, 1rem);
+}
+
+.intro-phrase-line {
+  font-family: 'Anton', sans-serif !important;
+  font-weight: 400 !important;
+  font-size: clamp(2.4rem, 5.8vw, 5.5rem);
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
+}
+
+/* Strictly single white / monochromatic tone */
+.intro-phrase-line1 {
+  color: #FFFFFF;
+}
+
+.intro-phrase-line2 {
+  color: #E2E8F0; /* Clean, bold, uniform monochromatic white/slate */
+}
+
+/* --------------------------------------------------------------------------
+   Final Brand Punch: SPORTSAAL
+   -------------------------------------------------------------------------- */
+
+.intro-brand-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.intro-brand-title {
+  font-family: 'Anton', sans-serif !important;
+  font-weight: 400 !important;
+  font-size: clamp(3.8rem, 10vw, 8.5rem);
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 0 60px rgba(255, 255, 255, 0.35), 0 10px 40px rgba(0, 0, 0, 0.95);
+}
+
+.intro-brand-subtitle {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 1.5vw, 1.15rem);
+  letter-spacing: 0.32em;
+  color: #94A3B8;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Progress Indicator Dots
+   -------------------------------------------------------------------------- */
+
+.intro-progress-bar {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 10;
+}
+
+.intro-dot {
+  width: 28px;
+  height: 3px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: all 0.35s ease;
+}
+
+.intro-dot.is-active {
+  background-color: #FFFFFF;
+  width: 42px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+.intro-dot.is-passed {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   Skip Button (Sleek & Unobtrusive)
+   -------------------------------------------------------------------------- */
+
+.intro-skip-btn {
+  position: absolute;
+  top: 2rem;
+  right: clamp(1.5rem, 4vw, 3.5rem);
+  z-index: 20;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.45rem 1.15rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.intro-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #FFFFFF;
+  transform: translateX(2px);
+}
+
+.skip-arrow {
+  font-size: 0.85rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 767px) {
+  .intro-progress-bar {
+    bottom: 2rem;
+    gap: 0.5rem;
+  }
+  .intro-dot {
+    width: 20px;
+    height: 2.5px;
+  }
+  .intro-dot.is-active {
+    width: 30px;
+  }
+  .intro-skip-btn {
+    top: 1.25rem;
+    right: 1.25rem;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.7rem;
+  }
+}
+
