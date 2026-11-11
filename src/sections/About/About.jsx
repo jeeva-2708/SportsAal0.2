@@ -41,38 +41,6 @@ export default function About() {
             Sportsaal is India's premier integrated athletic ecosystem. We connect athletes, corporate clubs, and sporting venues through world-class ground operations, premier tournaments, BCCI-certified coaching, and broadcast-grade streaming technology.
           </p>
 
-          {/* 4-Pillar Athletic Capability Matrix */}
-          <div className="about-v4-matrix">
-            <div className="v4-matrix-item">
-              <span className="matrix-number">30+</span>
-              <span className="matrix-label">VENUES MANAGED</span>
-              <span className="matrix-sub">BCCI & FIFA Standard Grounds</span>
-            </div>
-            <div className="v4-matrix-item">
-              <span className="matrix-number">120+</span>
-              <span className="matrix-label">TOURNAMENTS HOSTED</span>
-              <span className="matrix-sub">Corporate & Open Championships</span>
-            </div>
-            <div className="v4-matrix-item">
-              <span className="matrix-number">15K+</span>
-              <span className="matrix-label">ATHLETES EMPOWERED</span>
-              <span className="matrix-sub">Active Coaching & Leagues</span>
-            </div>
-            <div className="v4-matrix-item">
-              <span className="matrix-number">100%</span>
-              <span className="matrix-label">FLOODLIT COVERAGE</span>
-              <span className="matrix-sub">Broadcast-Grade Illumination</span>
-            </div>
-          </div>
-
-          {/* Feature Highlight Tags */}
-          <div className="about-v4-tags-row">
-            <span className="v4-pillar-pill">PRO TURF ARENAS</span>
-            <span className="v4-pillar-pill">LIVE 4K BROADCAST</span>
-            <span className="v4-pillar-pill">BCCI CERTIFIED COACHES</span>
-            <span className="v4-pillar-pill">LEAGUE MANAGEMENT</span>
-          </div>
-
           {/* Action Buttons Row */}
           <div className="about-v4-action-row">
             <a
