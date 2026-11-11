@@ -2,41 +2,17 @@ import React, { useState, useEffect } from 'react';
 import './Hero.css';
 import { useStickySection } from '../../hooks/useStickySection.js';
 import { scrollToSection } from '../../utils/navigation.js';
-
-// Multi-Sport Cinema Ribbon Photos
-import cricketBatsmanImg from '../../assets/images/hero-ribbon/cricket-batsman.jpg';
-import footballActionImg from '../../assets/images/hero-ribbon/football-action.jpg';
-import badmintonActionImg from '../../assets/images/hero-ribbon/badminton-action.jpg';
-import cricketStadiumImg from '../../assets/images/hero-ribbon/cricket-stadium.jpg';
-import tennisActionImg from '../../assets/images/hero-ribbon/tennis-action.jpg';
-import footballCelebrateImg from '../../assets/images/hero-ribbon/football-celebrate.jpg';
-import basketballDunkImg from '../../assets/images/hero-ribbon/basketball-dunk.jpg';
-import athleteSprintImg from '../../assets/images/hero-ribbon/athlete-sprint.jpg';
-
-const ribbonPhotos = [
-  { id: 'photo-1', src: cricketBatsmanImg, alt: 'Cricket Batting Action' },
-  { id: 'photo-2', src: footballActionImg, alt: 'Football Turf Match' },
-  { id: 'photo-3', src: badmintonActionImg, alt: 'Badminton Smash' },
-  { id: 'photo-4', src: cricketStadiumImg, alt: 'Sports Arena Infrastructure' },
-  { id: 'photo-5', src: tennisActionImg, alt: 'Tennis Court Rally' },
-  { id: 'photo-6', src: footballCelebrateImg, alt: 'Goal Celebration Action' },
-  { id: 'photo-7', src: basketballDunkImg, alt: 'Basketball Slam Dunk' },
-  { id: 'photo-8', src: athleteSprintImg, alt: 'Athletic Conditioning' },
-];
-
-const sportsaalServices = [
-  'VENUE MANAGEMENT',
-  'CRICKET TOURNAMENTS',
-  'PROFESSIONAL COACHING',
-  'EVENT MANAGEMENT',
-  'SPORTS TECHNOLOGY',
-  'LIVE STREAMING',
-  'GROUND BOOKINGS',
-  'SPORTSWEAR',
-];
+import { useSiteData } from '../../context/SiteDataContext.jsx';
 
 export default function Hero({ introComplete = false }) {
   const sectionRef = useStickySection();
+  const { sections } = useSiteData();
+  const heroCfg = sections?.hero || {};
+  const ribbonPhotos = Array.isArray(heroCfg.ribbonPhotos) ? heroCfg.ribbonPhotos : [];
+  const sportsaalServices = Array.isArray(heroCfg.marqueeItems) ? heroCfg.marqueeItems : [];
+  const ctaText = heroCfg.ctaText || 'EXPLORE SPORTSAAL';
+  const ctaHref = heroCfg.ctaHref || '#about';
+
   const [trainSettled, setTrainSettled] = useState(() => introComplete);
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -63,18 +39,20 @@ export default function Hero({ introComplete = false }) {
     }
   }, [introComplete, trainSettled]);
 
+  const midpoint = (ribbonPhotos.length - 1) / 2;
+
   return (
     <section ref={sectionRef} className="hero-section-v3 stacked-section stacked-section-1" id="hero">
-      {/* 1. Multi-Sport Cinema Ribbon (Pure slanted photo ribbon) */}
+      {/* 1. Multi-Sport Cinema Ribbon */}
       <div className="hero-ribbon-viewport">
         <div className="hero-ribbon-track">
           {ribbonPhotos.map((item, idx) => {
             const cardSpacing = isMobile ? 142 : Math.min(210, Math.max(160, viewportWidth * 0.135));
-            const ribbonX = (idx - 3.5) * cardSpacing;
+            const ribbonX = (idx - midpoint) * cardSpacing;
 
             return (
               <div
-                key={item.id}
+                key={item.id || idx}
                 className={`hero-photo-frame ${
                   !introComplete
                     ? 'train-waiting'
@@ -91,7 +69,7 @@ export default function Hero({ introComplete = false }) {
               >
                 <img
                   src={item.src}
-                  alt={item.alt}
+                  alt={item.alt || 'Sportsaal'}
                   className="hero-photo-img"
                   loading="eager"
                 />
@@ -121,14 +99,14 @@ export default function Hero({ introComplete = false }) {
         {/* Primary Action Callout CTA */}
         <div className={`hero-action-container ${!introComplete ? 'hero-btn-waiting' : 'hero-btn-active'}`}>
           <a
-            href="#about"
+            href={ctaHref}
             className="hero-pill-cta"
             onClick={(e) => {
               e.preventDefault();
-              scrollToSection('#about');
+              scrollToSection(ctaHref);
             }}
           >
-            <span>EXPLORE SPORTSAAL</span>
+            <span>{ctaText}</span>
           </a>
         </div>
       </div>

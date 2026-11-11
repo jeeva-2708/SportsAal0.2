@@ -1,71 +1,34 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import './Testimonials.css';
 import { useStickySection } from '../../hooks/useStickySection';
-
-// Client Avatar Images
-import arunAvatar from '../../assets/images/testimonials/arun-prakash.png';
-import karthikAvatar from '../../assets/images/testimonials/karthik-s.png';
-import vigneshAvatar from '../../assets/images/testimonials/vignesh-kumar.png';
-import deepakAvatar from '../../assets/images/testimonials/deepak-sundaram.png';
-
-const TESTIMONIALS = [
-  {
-    id: 1,
-    quote:
-      'Sportsaal managed our corporate cricket event seamlessly. From ground booking to live streaming, everything was professional and hassle-free. Highly recommended!',
-    name: 'Arun Prakash',
-    role: 'HR Manager',
-    company: 'TCS Chennai',
-    avatar: arunAvatar,
-  },
-  {
-    id: 2,
-    quote:
-      'The live streaming quality was excellent and the team was very supportive throughout the tournament. Sportsaal truly understands cricket and delivers beyond expectations.',
-    name: 'Karthik S',
-    role: 'Team Captain',
-    company: 'Chennai Strikers',
-    avatar: karthikAvatar,
-  },
-  {
-    id: 3,
-    quote:
-      'Great service, professional team and top-notch sportswear quality. Sportsaal is our go-to partner for all cricket-related events and merchandise.',
-    name: 'Vignesh Kumar',
-    role: 'Operations Head',
-    company: 'Zoho Corporation',
-    avatar: vigneshAvatar,
-  },
-  {
-    id: 4,
-    quote:
-      'Finding and booking floodlit cricket grounds in Chennai used to be a challenge until Sportsaal. Their instant booking platform and responsive team saved us countless hours.',
-    name: 'Deepak Sundaram',
-    role: 'Club Secretary',
-    company: 'Madras Cricket League',
-    avatar: deepakAvatar,
-  },
-];
-
-const TOTAL_SLIDES = 4;
+import { useSiteData } from '../../context/SiteDataContext.jsx';
 
 export default function Testimonials() {
   const sectionRef = useStickySection();
+  const { sections } = useSiteData();
+  const cfg = sections?.testimonials || {};
+  const testimonials = Array.isArray(cfg.items) ? cfg.items : [];
+  const totalSlides = testimonials.length || 1;
+
   const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    if (activeSlide >= totalSlides) {
+      setActiveSlide(0);
+    }
+  }, [activeSlide, totalSlides]);
 
   const touchStartXRef = useRef(0);
   const touchStartYRef = useRef(0);
   const isDraggingRef = useRef(false);
 
-  // Navigate to Next slide (wraps from last card 3 back to first card 0)
   const handleNext = useCallback(() => {
-    setActiveSlide((prev) => (prev + 1) % TOTAL_SLIDES);
-  }, []);
+    setActiveSlide((prev) => (prev + 1) % totalSlides);
+  }, [totalSlides]);
 
-  // Navigate to Previous slide (wraps from first card 0 to last card 3)
   const handlePrev = useCallback(() => {
-    setActiveSlide((prev) => (prev - 1 + TOTAL_SLIDES) % TOTAL_SLIDES);
-  }, []);
+    setActiveSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  }, [totalSlides]);
 
   // Direct dot click navigation
   const handleDotClick = (index) => {
@@ -116,16 +79,18 @@ export default function Testimonials() {
     }
   };
 
-  // Build the 4 slide sets:
-  // Each slide contains 3 cards for desktop view: [card_left, card_center (active), card_right]
-  const slides = [0, 1, 2, 3].map((slideIndex) => ({
-    id: slideIndex,
-    cards: [
-      TESTIMONIALS[slideIndex % 4],
-      TESTIMONIALS[(slideIndex + 1) % 4],
-      TESTIMONIALS[(slideIndex + 2) % 4],
-    ],
-  }));
+  // Build dynamic slide sets safely regardless of item count
+  const slides =
+    testimonials.length > 0
+      ? testimonials.map((_, slideIndex) => ({
+          id: slideIndex,
+          cards: [
+            testimonials[(slideIndex - 1 + testimonials.length) % testimonials.length],
+            testimonials[slideIndex % testimonials.length],
+            testimonials[(slideIndex + 1) % testimonials.length],
+          ],
+        }))
+      : [];
 
   return (
     <section
@@ -144,21 +109,21 @@ export default function Testimonials() {
           {/* Centered tag with red and subtle gray accent lines */}
           <div className="testimonials-tag" aria-hidden="true">
             <span className="testimonials-tag-line line-red" />
-            <span className="testimonials-tag-text">TESTIMONIALS</span>
+            <span className="testimonials-tag-text">{cfg.tagText || 'TESTIMONIALS'}</span>
             <span className="testimonials-tag-line line-gray" />
           </div>
 
           {/* Bold Display Heading */}
           <h2 className="testimonials-heading">
-            <span className="text-white">WHAT OUR</span>
+            <span className="text-white">{cfg.headlineWhite || 'WHAT OUR'}</span>
             <br />
-            <span className="text-red">CLIENTS</span>{' '}
+            <span className="text-red">{cfg.headlineRed || 'CLIENTS'}</span>{' '}
             <span className="text-white">SAY</span>
           </h2>
 
           {/* Subtitle */}
           <p className="testimonials-subtitle">
-            Here's what our clients and partners say about working with Sportsaal.
+            {cfg.subtitle || "Here's what our clients and partners say about working with Sportsaal."}
           </p>
         </div>
 
@@ -232,7 +197,7 @@ export default function Testimonials() {
                         <div className="testimonial-client">
                           <div className="testimonial-avatar-wrapper">
                             <img
-                              src={item.avatar}
+                              src={item.avatarSrc || item.avatar}
                               alt={item.name}
                               className="testimonial-avatar-img"
                               loading="lazy"
@@ -283,9 +248,9 @@ export default function Testimonials() {
           role="tablist"
           aria-label="Testimonial slider navigation"
         >
-          {TESTIMONIALS.map((t, idx) => (
+          {testimonials.map((t, idx) => (
             <button
-              key={t.id}
+              key={t.id || idx}
               type="button"
               className={`indicator-dot ${activeSlide === idx ? 'is-active' : ''}`}
               onClick={() => handleDotClick(idx)}

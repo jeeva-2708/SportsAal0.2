@@ -1,25 +1,16 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './TrustedBy.css';
 import cricketFieldBg from '../../assets/images/trusted-by/cricket-field-bg.png';
-
-// Partner SVG logos from src/assets/logos/trusted-by/
-import aionionLogo from '../../assets/logos/trusted-by/Aionion_Logo.svg';
-import allcargoLogo from '../../assets/logos/trusted-by/Allcargo_Logo.svg';
-import iknEngineeringLogo from '../../assets/logos/trusted-by/IKN_Engineering_Logo.svg';
-import walmartLogo from '../../assets/logos/trusted-by/WMT-Wordmark-Standard-TrueBlue-RGB.svg';
-import infosysLogo from '../../assets/logos/trusted-by/infosys-logo-svg.svg';
-
-const PARTNER_LOGOS = [
-  { id: 'allcargo', name: 'Allcargo', src: allcargoLogo },
-  { id: 'infosys', name: 'Infosys', src: infosysLogo },
-  { id: 'walmart', name: 'Walmart', src: walmartLogo },
-  { id: 'aionion', name: 'Aionion', src: aionionLogo },
-  { id: 'ikn-engineering', name: 'IKN Engineering', src: iknEngineeringLogo },
-];
+import { useSiteData } from '../../context/SiteDataContext.jsx';
 
 export default function TrustedBy() {
-  // Repeat array so each half has 15 items (30 items total) for an infinite, continuous loop
-  const baseLogos = [...PARTNER_LOGOS, ...PARTNER_LOGOS, ...PARTNER_LOGOS];
+  const { sections } = useSiteData();
+  const cfg = sections?.trusted_by || {};
+  const partnerLogos = Array.isArray(cfg.logos) ? cfg.logos : [];
+
+  // Repeat array enough times for an infinite, continuous marquee loop even if logos count changes
+  const repeatCount = partnerLogos.length > 0 ? Math.max(2, Math.ceil(15 / partnerLogos.length)) : 0;
+  const baseLogos = Array.from({ length: repeatCount }).flatMap(() => partnerLogos);
   const marqueeItems = [...baseLogos, ...baseLogos];
 
   const containerRef = useRef(null);
@@ -170,7 +161,7 @@ export default function TrustedBy() {
           {/* Contained Cricket Stadium Background Visual with Grass & Ball */}
           <div 
             className="trusted-by-bg-layer" 
-            style={{ backgroundImage: `url(${cricketFieldBg})` }}
+            style={{ backgroundImage: `url(${cfg.bgImageSrc || cricketFieldBg})` }}
             aria-hidden="true"
           />
 
@@ -185,12 +176,12 @@ export default function TrustedBy() {
               <div className="trusted-accent-line" aria-hidden="true"></div>
               
               <h2 className="trusted-heading">
-                <span className="text-white">TRUSTED </span>
-                <span className="text-red">BY</span>
+                <span className="text-white">{cfg.headlineWhite || 'TRUSTED'} </span>
+                <span className="text-red">{cfg.headlineRed || 'BY'}</span>
               </h2>
 
               <p className="trusted-subtitle">
-                TEAMS • COMPANIES • INSTITUTIONS • COMMUNITIES
+                {cfg.eyebrow || 'TEAMS • COMPANIES • INSTITUTIONS • COMMUNITIES'}
               </p>
             </div>
 

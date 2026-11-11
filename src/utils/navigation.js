@@ -1,35 +1,50 @@
 /**
- * Navigation utility for sticky stacked-section architecture.
- *
- * In a sticky-stacked layout (where sections have `position: sticky; top: 0`),
- * native `element.scrollIntoView()` fails when scrolling backwards from bottom
- * sections because preceding sticky sections already have `boundingClientRect.top === 0`
- * or negative values (tucked behind higher z-index layers).
- *
- * This helper calculates the true cumulative document scroll offset
- * of the target section by summing preceding siblings' layout heights.
+ * Navigation utility for sticky stacked-section architecture + Contact Inquiry routing.
  */
 
 const SECTION_ID_ALIASES = {
-  'home': 'hero',
-  'hero': 'hero',
-  'about': 'about',
+  home: 'hero',
+  hero: 'hero',
+  about: 'about',
   'about-us': 'about',
-  'services': 'services',
+  services: 'services',
   'our-services': 'services',
-  'venues': 'services',
-  'tournaments': 'services',
-  'coaching': 'services',
-  'work': 'work',
+  venues: 'services',
+  tournaments: 'services',
+  coaching: 'services',
+  work: 'work',
   'our-work': 'work',
   'trusted-by': 'partners',
-  'partners': 'partners',
-  'testimonials': 'testimonials',
-  'contact': 'contact',
+  partners: 'partners',
+  testimonials: 'testimonials',
+  contact: 'contact',
   'contact-us': 'contact',
-  'book': 'contact',
-  'footer': 'footer',
+  book: 'contact',
+  footer: 'footer',
 };
+
+const CONTACT_PREFILL_KEY = 'sportsaal_contact_prefill';
+
+export function setContactPrefill(payload) {
+  if (!payload) return;
+  try {
+    sessionStorage.setItem(CONTACT_PREFILL_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore
+  }
+  window.dispatchEvent(new CustomEvent('sportsaal:contact-prefill', { detail: payload }));
+}
+
+export function consumeContactPrefill() {
+  try {
+    const raw = sessionStorage.getItem(CONTACT_PREFILL_KEY);
+    if (!raw) return null;
+    sessionStorage.removeItem(CONTACT_PREFILL_KEY);
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
 
 export function scrollToSection(targetId) {
   if (!targetId) return;
@@ -37,7 +52,6 @@ export function scrollToSection(targetId) {
   const cleanId = (targetId.startsWith('#') ? targetId.slice(1) : targetId).toLowerCase();
   const resolvedId = SECTION_ID_ALIASES[cleanId] || cleanId;
 
-  // Handle Home / Top of page
   if (resolvedId === 'hero' || resolvedId === 'home' || !resolvedId) {
     window.scrollTo({
       top: 0,
@@ -49,7 +63,6 @@ export function scrollToSection(targetId) {
     return;
   }
 
-  // Locate the target section in the DOM
   const targetEl =
     document.getElementById(resolvedId) ||
     document.querySelector(`[id="${resolvedId}"]`) ||
@@ -60,25 +73,21 @@ export function scrollToSection(targetId) {
     return;
   }
 
-  // Calculate accumulated offset of all preceding siblings in layout flow
   let cumulativeTop = 0;
   let curr = targetEl.previousElementSibling;
   while (curr) {
-    cumulativeTop += (curr.offsetHeight || 0);
+    cumulativeTop += curr.offsetHeight || 0;
     curr = curr.previousElementSibling;
   }
 
-  // Account for parent offset if container has offset from document top
   if (targetEl.parentElement && targetEl.parentElement.offsetTop) {
     cumulativeTop += targetEl.parentElement.offsetTop;
   }
 
-  // Fallback if offsetTop exists
   if (cumulativeTop === 0 && targetEl.offsetTop) {
     cumulativeTop = targetEl.offsetTop;
   }
 
-  // Smooth scroll to the target position
   window.scrollTo({
     top: Math.max(0, cumulativeTop),
     behavior: 'smooth',
@@ -87,4 +96,20 @@ export function scrollToSection(targetId) {
   try {
     history.pushState(null, '', '#' + resolvedId);
   } catch (_) {}
+}
+
+/**
+ * Redirects from any Service card, Item CTA, Header, or Venue page straight to #contact
+ * while pre-filling the inquiry Subject & Message with context.
+ */
+export function navigateToContact(navigate, location, prefill = null) {
+  if (prefill) {
+    setContactPrefill(prefill);
+  }
+
+  if (location?.pathname === '/') {
+    scrollToSection('#contact');
+  } else {
+    navigate('/#contact');
+  }
 }

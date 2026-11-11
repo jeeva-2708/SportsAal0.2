@@ -7,6 +7,10 @@ node_modules/
 dist/
 dist-ssr/
 
+# Uploaded runtime media & generated default copies
+uploads/
+!uploads/.gitkeep
+
 # Local env files
 .env
 .env.local

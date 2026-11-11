@@ -2,11 +2,28 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
 import logoDarkImg from '../../assets/logos/sportsaal-logo.png';
-import { scrollToSection } from '../../utils/navigation';
+import { navigateToContact, scrollToSection } from '../../utils/navigation';
+import { useSiteData } from '../../context/SiteDataContext.jsx';
 
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { sections } = useSiteData();
+  const headerCfg = sections?.header || {};
+  const navLinks =
+    Array.isArray(headerCfg.navLinks) && headerCfg.navLinks.length > 0
+      ? headerCfg.navLinks
+      : [
+          { label: 'ABOUT', href: '#about' },
+          { label: 'SERVICES', href: '#services' },
+          { label: 'EVENTS', href: '/services/cricket-tournaments' },
+          { label: 'VENUES', href: '/services/venue-management' },
+          { label: 'CONTACT US', href: '#contact' },
+        ];
+  const logoSrc = headerCfg.logoUrl || logoDarkImg;
+  const ctaText = headerCfg.ctaText || 'INQUIRE NOW';
+  const ctaHref = headerCfg.ctaHref || '#contact';
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -101,11 +118,36 @@ export default function Header() {
 
   const handleNavClick = (e, href) => {
     e.preventDefault();
-    handleCloseMenu();
+    const target = href || '#hero';
+
+    // Route navigation cleanly when href is a page path (e.g., /services/venue-management)
+    if (target.startsWith('/') && !target.startsWith('/#')) {
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        setIsClosing(false);
+      }
+      navigate(target);
+      return;
+    }
+
+    const anchor = target.startsWith('/#') ? target.slice(1) : target;
+
+    if (mobileMenuOpen) {
+      if (location.pathname === '/') {
+        targetSectionRef.current = anchor;
+        handleCloseMenu();
+      } else {
+        setMobileMenuOpen(false);
+        setIsClosing(false);
+        navigate('/' + anchor);
+      }
+      return;
+    }
+
     if (location.pathname === '/') {
-      scrollToSection(href);
+      scrollToSection(anchor);
     } else {
-      navigate('/' + href);
+      navigate('/' + anchor);
     }
   };
 
@@ -129,26 +171,38 @@ export default function Header() {
           aria-label="Sportsaal Home"
           onClick={handleLogoClick}
         >
-          <img src={logoDarkImg} alt="SPORTSAAL" className="brand-logo-img" />
+          <img src={logoSrc} alt="SPORTSAAL" className="brand-logo-img" />
         </a>
 
-        {/* Desktop Navigation Menu (ABOUT First) */}
+        {/* Desktop Navigation Menu */}
         <nav className="desktop-nav-menu">
-          <a href="/#about" className="nav-link" onClick={(e) => handleNavClick(e, '#about')}>ABOUT</a>
-          <a href="/#services" className="nav-link" onClick={(e) => handleNavClick(e, '#services')}>SERVICES</a>
-          <a href="/services/cricket-tournaments" className="nav-link" onClick={(e) => handleNavClick(e, '/services/cricket-tournaments')}>EVENTS</a>
-          <a href="/services/venue-management" className="nav-link" onClick={(e) => handleNavClick(e, '/services/venue-management')}>VENUES</a>
-          <a href="/#contact" className="nav-link" onClick={(e) => handleNavClick(e, '#contact')}>CONTACT US</a>
+          {navLinks.map((link) => (
+            <a
+              key={`${link.label}-${link.href}`}
+              href={link.href.startsWith('#') ? `/${link.href}` : link.href}
+              className="nav-link"
+              onClick={(e) => handleNavClick(e, link.href)}
+            >
+              {link.label}
+            </a>
+          ))}
         </nav>
 
-        {/* Header Actions: Clean Outline Pill CTA like the video SAVE MY SPOT */}
+        {/* Header Actions */}
         <div className="header-actions">
           <a 
-            href="#contact" 
+            href={ctaHref.startsWith('#') ? `/${ctaHref}` : ctaHref} 
             className="btn-header-outline-pill"
-            onClick={(e) => { e.preventDefault(); scrollToSection('#contact'); }}
+            onClick={(e) => {
+              e.preventDefault();
+              if (ctaHref === '#contact' || ctaHref === '/#contact') {
+                navigateToContact(navigate, location);
+              } else {
+                handleNavClick(e, ctaHref);
+              }
+            }}
           >
-            <span>BOOK A VENUE</span>
+            <span>{ctaText}</span>
           </a>
 
           {/* Circular Mobile Toggle (visible when menu is closed) */}
@@ -170,7 +224,7 @@ export default function Header() {
         <div className={`mobile-fullscreen-menu ${isClosing ? 'closing' : 'opening'}`}>
           <div className="mobile-menu-top">
             <a href="/" className="mobile-menu-logo-link" onClick={handleLogoClick}>
-              <img src={logoDarkImg} alt="SPORTSAAL" className="mobile-menu-logo" />
+              <img src={logoSrc} alt="SPORTSAAL" className="mobile-menu-logo" />
             </a>
             <button
               type="button"
@@ -186,15 +240,9 @@ export default function Header() {
           </div>
 
           <nav className="mobile-nav-links">
-            {[
-              { label: 'ABOUT', href: '#about' },
-              { label: 'SERVICES', href: '#services' },
-              { label: 'EVENTS', href: '/services/cricket-tournaments' },
-              { label: 'VENUES', href: '/services/venue-management' },
-              { label: 'CONTACT US', href: '#contact' },
-            ].map((item, i) => (
+            {navLinks.map((item, i) => (
               <a
-                key={item.label}
+                key={`${item.label}-${i}`}
                 href={item.href}
                 className={`mobile-nav-item item-${i + 1}`}
                 onClick={(e) => handleNavClick(e, item.href)}
@@ -207,8 +255,24 @@ export default function Header() {
 
           <div className="mobile-menu-footer">
             <div className="mobile-menu-divider"></div>
-            <a href="#book" className="mobile-cta-full-red" onClick={(e) => handleNavClick(e, '#book')}>
-              <span>BOOK A VENUE</span>
+            <a
+              href={ctaHref}
+              className="mobile-cta-full-red"
+              onClick={(e) => {
+                e.preventDefault();
+                if (ctaHref === '#contact' || ctaHref === '/#contact') {
+                  targetSectionRef.current = '#contact';
+                  handleCloseMenu();
+                  if (location.pathname !== '/') {
+                    setMobileMenuOpen(false);
+                    navigateToContact(navigate, location);
+                  }
+                } else {
+                  handleNavClick(e, ctaHref);
+                }
+              }}
+            >
+              <span>{ctaText}</span>
               <span className="cta-arrow">→</span>
             </a>
             <div className="mobile-social-icons">
