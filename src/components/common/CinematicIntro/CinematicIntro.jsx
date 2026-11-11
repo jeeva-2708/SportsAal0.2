@@ -5,16 +5,17 @@ import './CinematicIntro.css';
  * CinematicIntro
  *
  * 1. Initial Loading Screen:
- *    - Realistic 2D Cricket Bat tapping the ball in the air
- *    - The bat's handle (top) remains anchored while the bat's blade (bottom) flicks up to tap the ball
- *    - Each tap progressively launches the ball higher (Low -> Medium -> High air time)
+ *    - Realistic 2D Cricket Bat (SIDE ANGLE profile showing striking face, thick spine swell & toe)
+ *    - Organic biomechanics: the handle moves naturally with hand flex, while the bottom of the bat
+ *      flicks up with dynamic wrist action to tap the ball into the air
+ *    - Progressive bounce heights on each tap (Low -> Medium -> High air time)
+ *    - No text on screen, pure realistic athletic loader
  *    - Monitors document.fonts.ready to guarantee 'Anton' and 'Barlow' are ready
- *    - Completely eliminates FOUT (Flash of Unstyled Text)
  *
  * 2. 5-second cinematic typography sequence:
  *    - 2 bold monochromatic phrases emerging from background to foreground in 3D
  *    - Final punch with SPORTSAAL brand reveal
- *    - Completes smoothly and triggers hero train entrance
+ *    - Completes smoothly and triggers hero section
  */
 
 const PHRASES = [
@@ -43,14 +44,14 @@ export default function CinematicIntro({ onComplete }) {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
-  // 1. Initial Font Preloader with Realistic Bat-Tapping Animation
+  // 1. Initial Font Preloader with Realistic Side-Angle Bat Tapping Animation
   useEffect(() => {
     document.body.classList.add('intro-scroll-lock');
 
     const startTime = performance.now();
-    // Allow at least ~2.1s so user enjoys watching the progressive taps (Low -> Med -> High)
-    const minDisplayDuration = 2100;
-    const safetyLimit = 3600;
+    // Allow ~2.2s so user enjoys watching the 3 progressive height taps
+    const minDisplayDuration = 2200;
+    const safetyLimit = 3800;
 
     const fontPromises = [];
     if (typeof document !== 'undefined' && document.fonts) {
@@ -132,196 +133,226 @@ export default function CinematicIntro({ onComplete }) {
       aria-modal="true"
       aria-label="Sportsaal Introduction"
     >
-      {/* Loading Screen: Realistic 2D Cricket Bat Tapping Ball (No text) */}
+      {/* Loading Screen: Realistic Side-Angle Cricket Bat Tapping Ball */}
       {!fontsLoaded && (
         <div className={`intro-font-loader ${loaderFading ? 'font-loader-fade-out' : ''}`}>
           <div className="cricket-tap-loader" aria-hidden="true">
             <svg
-              viewBox="0 0 280 260"
+              viewBox="0 0 320 280"
               className="cricket-tap-svg"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
                 {/* 3D Realistic Cricket Ball Shader */}
-                <radialGradient id="cricketBallRealistic" cx="32%" cy="28%" r="72%">
-                  <stop offset="0%" stopColor="#FF6E75" />
-                  <stop offset="28%" stopColor="#EF202A" />
-                  <stop offset="68%" stopColor="#B9131A" />
-                  <stop offset="100%" stopColor="#54070A" />
+                <radialGradient id="cricketBallShaderReal" cx="30%" cy="28%" r="72%">
+                  <stop offset="0%" stopColor="#FF7A80" />
+                  <stop offset="28%" stopColor="#EF232C" />
+                  <stop offset="68%" stopColor="#BA141C" />
+                  <stop offset="100%" stopColor="#4A0508" />
                 </radialGradient>
 
-                {/* English Willow Wood Face Gradient */}
-                <linearGradient id="willowBladeFace" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#FFFDF7" />
-                  <stop offset="16%" stopColor="#F7F0E1" />
-                  <stop offset="60%" stopColor="#E9DCBF" />
-                  <stop offset="88%" stopColor="#D5C5A1" />
-                  <stop offset="100%" stopColor="#B3A17B" />
+                {/* English Willow Wood Profile Shader (Side View) */}
+                <linearGradient id="willowProfileWood" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#FFFDF8" />
+                  <stop offset="12%" stopColor="#F8F2E4" />
+                  <stop offset="55%" stopColor="#EADECA" />
+                  <stop offset="85%" stopColor="#D5C5A8" />
+                  <stop offset="100%" stopColor="#AC9974" />
                 </linearGradient>
 
-                {/* Blade Bottom Thickness / Edge Bevel */}
-                <linearGradient id="willowBladeEdge" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8C7957" />
-                  <stop offset="50%" stopColor="#67563A" />
-                  <stop offset="100%" stopColor="#3C311F" />
+                {/* Spine Bottom Depth Bevel */}
+                <linearGradient id="willowSpineShadow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#877553" />
+                  <stop offset="55%" stopColor="#5E4E32" />
+                  <stop offset="100%" stopColor="#352B19" />
                 </linearGradient>
 
-                {/* Embossed Brand Decal Gradient */}
-                <linearGradient id="batDecalGradient" x1="0" y1="0" x2="1" y2="0">
+                {/* Side Edge Branding Sticker */}
+                <linearGradient id="sideEdgeDecalGrad" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#FF3333" />
-                  <stop offset="50%" stopColor="#D91616" />
+                  <stop offset="60%" stopColor="#DC1414" />
                   <stop offset="100%" stopColor="#990B0B" />
                 </linearGradient>
 
-                {/* Rubber Grip Texture Gradient */}
-                <linearGradient id="handleGripShader" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#EF4444" />
-                  <stop offset="40%" stopColor="#DC2626" />
-                  <stop offset="85%" stopColor="#991B1B" />
-                  <stop offset="100%" stopColor="#580C0C" />
+                {/* Cane Handle Rubber Grip */}
+                <linearGradient id="handleRubberGrip" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#F87171" />
+                  <stop offset="35%" stopColor="#EF4444" />
+                  <stop offset="75%" stopColor="#B91C1C" />
+                  <stop offset="100%" stopColor="#680C0C" />
                 </linearGradient>
 
-                {/* Dynamic Contact Shadow beneath ball */}
-                <radialGradient id="contactShadowShader" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="rgba(0, 0, 0, 0.85)" />
-                  <stop offset="65%" stopColor="rgba(0, 0, 0, 0.25)" />
+                {/* Dynamic Contact Shadow on Bat Face */}
+                <radialGradient id="contactShadowSide" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="rgba(0, 0, 0, 0.88)" />
+                  <stop offset="60%" stopColor="rgba(0, 0, 0, 0.3)" />
                   <stop offset="100%" stopColor="transparent" />
                 </radialGradient>
 
-                {/* Sweet Spot Impact Glow */}
-                <radialGradient id="sweetSpotImpactGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="rgba(255, 43, 43, 0.9)" />
-                  <stop offset="50%" stopColor="rgba(255, 43, 43, 0.3)" />
+                {/* Sweet Spot Impact Shockwave */}
+                <radialGradient id="sweetSpotImpactBurst" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="rgba(255, 43, 43, 0.95)" />
+                  <stop offset="50%" stopColor="rgba(255, 43, 43, 0.35)" />
                   <stop offset="100%" stopColor="transparent" />
                 </radialGradient>
               </defs>
 
-              {/* Floor Ambient Shadow */}
-              <ellipse cx="120" cy="186" rx="90" ry="7" fill="rgba(0, 0, 0, 0.55)" />
+              {/* Ambient Ground Shadow */}
+              <ellipse cx="150" cy="225" rx="105" ry="8" fill="rgba(0, 0, 0, 0.55)" />
 
-              {/* BAT ASSEMBLY: Pivot origin at handle top (230px, 149px) so the BOTTOM moves, not the top! */}
-              <g className="realistic-bat-assembly">
-                {/* Dynamic Ball Contact Shadow on the hitting face */}
-                <ellipse 
-                  className="tap-ball-contact-shadow" 
-                  cx="102" 
-                  cy="142" 
-                  rx="16" 
-                  ry="4.5" 
-                  fill="url(#contactShadowShader)" 
+              {/* SIDE-ANGLE CRICKET BAT ASSEMBLY: Dynamic Hand & Wrist Motion */}
+              <g className="realistic-side-bat-assembly">
+                {/* Contact Shadow on the flat striking face */}
+                <ellipse
+                  className="tap-side-contact-shadow"
+                  cx="115"
+                  cy="155.5"
+                  rx="18"
+                  ry="4.5"
+                  fill="url(#contactShadowSide)"
                 />
 
                 {/* Impact Shockwave Ring on Contact */}
-                <ellipse 
-                  className="tap-sweetspot-impact-ring" 
-                  cx="102" 
-                  cy="140" 
-                  rx="22" 
-                  ry="6.5" 
-                  stroke="#FF2B2B" 
-                  strokeWidth="2" 
+                <ellipse
+                  className="tap-side-impact-ring"
+                  cx="115"
+                  cy="154"
+                  rx="24"
+                  ry="6.5"
+                  stroke="#FF2B2B"
+                  strokeWidth="2"
                 />
 
-                {/* 1. Blade Bottom Edge Thickness (Gives the bat solid 2D depth) */}
+                {/* 1. Spine Under-Bevel (Bottom edge thickness seen from side) */}
                 <path
-                  d="M 44 162 L 165 162 C 170 162 173 163.5 176 166 L 174 168 C 170 168 165 168 44 168 C 36 168 31 165 31 162 C 33 162 38 162 44 162 Z"
-                  fill="url(#willowBladeEdge)"
-                  stroke="#231E17"
-                  strokeWidth="0.8"
+                  d="M 60 174 Q 115 194 186 160 L 186 163 Q 115 198 60 178 Z"
+                  fill="url(#willowSpineShadow)"
                 />
 
-                {/* 2. Main English Willow Blade */}
+                {/* 2. Main Cricket Bat Side Profile: Flat striking face on top, iconic curved spine swell below */}
                 <path
-                  d="M 44 140 L 166 140 C 171 140 174 142.5 177 145.5 L 177 161 C 174 163.5 171 165 166 165 L 44 165 C 36 165 31 161.5 31 152.5 C 31 144 36 140 44 140 Z"
-                  fill="url(#willowBladeFace)"
-                  stroke="#1A1814"
-                  strokeWidth="2.2"
+                  d="M 60 155 L 186 148 C 188 148 190 149.5 190 151.5 L 188 159 C 187 160 185 160.5 183 160.5 Q 115 192 60 174 C 54 172 50 167 50 162 C 50 158 54 155 60 155 Z"
+                  fill="url(#willowProfileWood)"
+                  stroke="#1E1A14"
+                  strokeWidth="2"
                   strokeLinejoin="round"
                 />
 
-                {/* 3. Willow Grain Lines */}
-                <line x1="56" y1="145" x2="160" y2="145" stroke="#D1BE9B" strokeWidth="0.75" opacity="0.6" />
-                <line x1="52" y1="151" x2="162" y2="151" stroke="#D1BE9B" strokeWidth="0.75" opacity="0.6" />
-                <line x1="48" y1="157" x2="158" y2="157" stroke="#D1BE9B" strokeWidth="0.75" opacity="0.6" />
-
-                {/* 4. Protective Toe Guard (Dark rubber bottom tip) */}
+                {/* 3. Authentic Wood Grain Curves on Willow Profile */}
                 <path
-                  d="M 44 140 C 35 140 30 144.5 30 152.5 C 30 160.5 35 165 44 165 L 48 165 C 40 165 36 161 36 152.5 C 36 144 40 140 48 140 Z"
-                  fill="#1C1917"
+                  d="M 66 160 Q 115 168 180 154"
+                  stroke="#CDB790"
+                  strokeWidth="0.8"
+                  opacity="0.55"
+                />
+                <path
+                  d="M 62 165 Q 115 178 182 157"
+                  stroke="#CDB790"
+                  strokeWidth="0.8"
+                  opacity="0.55"
+                />
+                <path
+                  d="M 60 170 Q 115 185 176 160"
+                  stroke="#CDB790"
+                  strokeWidth="0.8"
+                  opacity="0.55"
                 />
 
-                {/* 5. Embossed Athletic Decal on Blade Face */}
+                {/* 4. Protective Toe Guard at the Bottom Tip */}
                 <path
-                  d="M 62 148 L 148 148 L 144 154 L 58 154 Z"
-                  fill="url(#batDecalGradient)"
+                  d="M 60 155 C 53 155 49 158 49 162 C 49 167 53 172 60 174 L 68 171.5 C 62 169.5 59 166 59 162 C 59 158.5 62 155 68 155 Z"
+                  fill="#18181B"
+                  stroke="#09090B"
+                  strokeWidth="0.8"
+                />
+
+                {/* 5. Authentic Side Edge Branding Tape (Red & Silver athletic decal) */}
+                <path
+                  d="M 72 161 Q 115 170 176 155 L 174 157.5 Q 115 172.5 70 163.5 Z"
+                  fill="url(#sideEdgeDecalGrad)"
                   stroke="#990B0B"
-                  strokeWidth="0.6"
+                  strokeWidth="0.5"
                 />
-                <line x1="64" y1="151" x2="142" y2="151" stroke="#FFFFFF" strokeWidth="1" opacity="0.85" />
-
-                {/* 6. Bat Shoulder Splice Wedge */}
                 <path
-                  d="M 166 144 L 176 146.5 L 176 153.5 L 166 156 Z"
-                  fill="#78716C"
+                  d="M 78 162.5 Q 115 171 168 156.5"
+                  stroke="#FFFFFF"
+                  strokeWidth="0.9"
+                  opacity="0.85"
                 />
 
-                {/* 7. Realistic Cane Handle with Rubber Grip Wrap */}
+                {/* 6. Shoulder Splice Joint */}
+                <path
+                  d="M 186 148 L 196 144 L 195 156 L 186 160 Z"
+                  fill="#78716C"
+                  stroke="#44403C"
+                  strokeWidth="0.8"
+                />
+
+                {/* 7. Angled Cane Handle with Textured Rubber Grip */}
                 <rect
-                  x="176"
-                  y="146.5"
-                  width="54"
-                  height="7"
-                  rx="3.5"
-                  fill="url(#handleGripShader)"
+                  x="195"
+                  y="142"
+                  width="56"
+                  height="11"
+                  rx="5.5"
+                  transform="rotate(-5 195 142)"
+                  fill="url(#handleRubberGrip)"
                   stroke="#7F1D1D"
                   strokeWidth="1.2"
                 />
 
                 {/* Handle Chevron Grip Wrap Ribs */}
-                <line x1="184" y1="146.5" x2="184" y2="153.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.7" />
-                <line x1="192" y1="146.5" x2="192" y2="153.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.7" />
-                <line x1="200" y1="146.5" x2="200" y2="153.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.7" />
-                <line x1="208" y1="146.5" x2="208" y2="153.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.7" />
-                <line x1="216" y1="146.5" x2="216" y2="153.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.7" />
-                <line x1="224" y1="146.5" x2="224" y2="153.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.7" />
+                <line x1="205" y1="140" x2="204" y2="152" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
+                <line x1="214" y1="139" x2="213" y2="151" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
+                <line x1="223" y1="138" x2="222" y2="150" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
+                <line x1="232" y1="137" x2="231" y2="149" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
+                <line x1="241" y1="136" x2="240" y2="148" stroke="#FFFFFF" strokeWidth="1" opacity="0.65" />
 
-                {/* Handle Top Rubber Cap (Anchor point) */}
-                <circle cx="230" cy="150" r="4.2" fill="#1C1917" stroke="#44403C" strokeWidth="0.8" />
+                {/* Handle Top Rubber End Cap */}
+                <circle cx="251" cy="143" r="5" fill="#18181B" stroke="#3F3F46" strokeWidth="1" />
               </g>
 
               {/* REALISTIC BOUNCING CRICKET BALL: Progressive Heights (Low -> Med -> High) */}
-              <g className="realistic-ball-flight-group">
-                {/* 3D Shaded Leather Cricket Ball */}
+              <g className="realistic-side-ball-group">
+                {/* 3D Radial Sphere Leather Cricket Ball */}
                 <circle
-                  cx="102"
-                  cy="126"
-                  r="13"
-                  fill="url(#cricketBallRealistic)"
-                  stroke="#450A0A"
+                  cx="115"
+                  cy="139"
+                  r="14"
+                  fill="url(#cricketBallShaderReal)"
+                  stroke="#3B0507"
                   strokeWidth="1.2"
                 />
 
-                {/* Twin White Seam Stitch Lines with Cross-Stitch Marks */}
+                {/* Hand-Stitched White Seam Line with Cross-Stitches */}
                 <path
-                  d="M 92 119 C 98 122 106 128 112 133"
+                  d="M 104 131 C 111 134 119 141 126 147"
                   stroke="#FFFFFF"
                   strokeWidth="1.6"
-                  strokeDasharray="2.2 1.5"
+                  strokeDasharray="2.5 1.6"
                   strokeLinecap="round"
                   opacity="0.95"
                 />
                 <path
-                  d="M 93.5 120.5 C 99.5 123.5 107.5 129.5 113.5 134.5"
+                  d="M 105.5 132.5 C 112.5 135.5 120.5 142.5 127.5 148.5"
                   stroke="#FFFFFF"
-                  strokeWidth="0.9"
-                  strokeDasharray="1.5 2"
+                  strokeWidth="1"
+                  strokeDasharray="1.6 2.2"
                   strokeLinecap="round"
                   opacity="0.75"
                 />
 
-                {/* High-Gloss Specular Shine Highlight */}
-                <ellipse cx="97" cy="120" rx="3.5" ry="2" transform="rotate(-30 97 120)" fill="#FFFFFF" opacity="0.65" />
+                {/* Realistic Specular Gloss Gleam */}
+                <ellipse
+                  cx="110"
+                  cy="133"
+                  rx="3.8"
+                  ry="2.2"
+                  transform="rotate(-28 110 133)"
+                  fill="#FFFFFF"
+                  opacity="0.65"
+                />
               </g>
             </svg>
           </div>
