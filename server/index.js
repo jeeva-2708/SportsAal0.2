@@ -29,13 +29,24 @@ app.use(
   helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
 
-if (!IS_PROD) {
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+  : [CORS_ORIGIN];
+
+if (!IS_PROD || process.env.CORS_ORIGIN) {
   app.use(
     cors({
-      origin: CORS_ORIGIN,
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (!allowedOrigins.length || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        return callback(null, true);
+      },
       credentials: true,
     })
   );
@@ -89,10 +100,11 @@ app.use((err, _req, res, next) => {
   next();
 });
 
-// Serve built Vite SPA in production (Hostinger VPS / Node app)
+// Serve built Vite SPA in production (Render Web Service / Node app)
 if (IS_PROD && fs.existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));
-  app.get('*', (req, res, next) => {
+  app.use((req, res, next) => {
+    if (req.method !== 'GET') return next();
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
       return next();
     }
@@ -111,8 +123,9 @@ async function startServer() {
     );
   }
 
-  app.listen(PORT, () => {
-    console.log(`Sportsaal backend server listening on http://localhost:${PORT}`);
+  const HOST = '0.0.0.0';
+  app.listen(PORT, HOST, () => {
+    console.log(`Sportsaal backend server listening on http://${HOST}:${PORT}`);
   });
 }
 

@@ -27,6 +27,7 @@ export function clearSessionCookie(res) {
   res.clearCookie(COOKIE_NAME, {
     httpOnly: true,
     sameSite: 'lax',
+    secure: IS_PROD && process.env.ALLOW_INSECURE_COOKIE !== 'true',
     path: '/',
   });
 }

@@ -34,14 +34,29 @@ export function hasDatabaseCredentials() {
   );
 }
 
+export function shouldEnableSsl() {
+  if (process.env.PGSSL === 'false') return false;
+  if (process.env.PGSSL === 'true') return true;
+  if (IS_PROD) return true;
+  const dbUrl = (process.env.DATABASE_URL || '').toLowerCase();
+  if (
+    dbUrl.includes('supabase.co') ||
+    dbUrl.includes('supabase.com') ||
+    dbUrl.includes('pooler.supabase.com') ||
+    dbUrl.includes('sslmode=require')
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export function getDatabaseConfig(overrideDatabase = null) {
+  const sslConfig = shouldEnableSsl() ? { rejectUnauthorized: false } : undefined;
+
   if (process.env.DATABASE_URL && !overrideDatabase) {
     return {
       connectionString: process.env.DATABASE_URL,
-      ssl:
-        process.env.PGSSL === 'true'
-          ? { rejectUnauthorized: false }
-          : undefined,
+      ssl: sslConfig,
     };
   }
 
@@ -51,10 +66,7 @@ export function getDatabaseConfig(overrideDatabase = null) {
     database: overrideDatabase || process.env.PGDATABASE || 'sportsaal',
     user: process.env.PGUSER || 'postgres',
     password: process.env.PGPASSWORD ?? '',
-    ssl:
-      process.env.PGSSL === 'true'
-        ? { rejectUnauthorized: false }
-        : undefined,
+    ssl: sslConfig,
   };
 }
 

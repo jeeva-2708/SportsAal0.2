@@ -8,6 +8,7 @@ import { GALLERY_UPLOADS_DIR } from '../config.js';
 import { query } from '../db.js';
 import { requireAdmin } from '../middleware/auth.js';
 import { DEFAULT_DISPLAY_CONFIG } from '../seedData.js';
+import { saveMediaFile, deleteMediaFile } from '../storage.js';
 
 const router = Router();
 router.use(requireAdmin);
@@ -116,12 +117,9 @@ function normalizeHighlights(raw) {
 }
 
 function removeUploadedFileIfLocalGallery(fileUrl) {
-  if (!fileUrl || !fileUrl.startsWith('/uploads/gallery/')) return;
-  const safeName = path.basename(fileUrl);
-  const fullPath = path.join(GALLERY_UPLOADS_DIR, safeName);
-  if (fullPath.startsWith(GALLERY_UPLOADS_DIR) && fs.existsSync(fullPath)) {
-    fs.unlinkSync(fullPath);
-  }
+  deleteMediaFile(fileUrl).catch((err) => {
+    console.warn('File removal error:', err.message);
+  });
 }
 
 /* --------------------------------------------------------------------------
@@ -314,8 +312,11 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
         }
 
         const outName = `media-${Date.now()}-${idSuffix}.svg`;
-        const outPath = path.join(GALLERY_UPLOADS_DIR, outName);
-        fs.writeFileSync(outPath, svgText, 'utf8');
+        const uploadResult = await saveMediaFile({
+          filename: outName,
+          buffer: Buffer.from(svgText, 'utf8'),
+          mimeType: 'image/svg+xml',
+        });
 
         const insertRes = await query(
           `INSERT INTO media_gallery (title, alt_text, section_tag, file_url, original_filename, mime_type, size_bytes)
@@ -325,7 +326,7 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
             baseTitle.slice(0, 180),
             (customAlt || baseTitle).slice(0, 255),
             sectionTag,
-            `/uploads/gallery/${outName}`,
+            uploadResult.fileUrl,
             file.originalname.slice(0, 255),
             'image/svg+xml',
             Buffer.byteLength(svgText, 'utf8'),
@@ -334,13 +335,18 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
         created.push(insertRes.rows[0]);
       } else {
         const outName = `media-${Date.now()}-${idSuffix}.webp`;
-        const outPath = path.join(GALLERY_UPLOADS_DIR, outName);
 
-        const info = await sharp(file.buffer)
+        const { data: webpBuffer, info } = await sharp(file.buffer)
           .rotate()
           .resize({ width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true })
           .webp({ quality: 84 })
-          .toFile(outPath);
+          .toBuffer({ resolveWithObject: true });
+
+        const uploadResult = await saveMediaFile({
+          filename: outName,
+          buffer: webpBuffer,
+          mimeType: 'image/webp',
+        });
 
         const insertRes = await query(
           `INSERT INTO media_gallery (title, alt_text, section_tag, file_url, original_filename, mime_type, width, height, size_bytes)
@@ -350,12 +356,12 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
             baseTitle.slice(0, 180),
             (customAlt || baseTitle).slice(0, 255),
             sectionTag,
-            `/uploads/gallery/${outName}`,
+            uploadResult.fileUrl,
             file.originalname.slice(0, 255),
             'image/webp',
             info.width || 0,
             info.height || 0,
-            info.size || 0,
+            info.size || webpBuffer.length || 0,
           ]
         );
         created.push(insertRes.rows[0]);
@@ -520,7 +526,7 @@ router.delete('/gallery/:id', async (req, res) => {
       return res.status(404).json({ error: 'Media item not found.' });
     }
 
-    removeUploadedFileIfLocalGallery(resDel.rows[0].file_url);
+    await deleteMediaFile(resDel.rows[0].file_url);
     return res.json({ ok: true });
   } catch (err) {
     console.error('Gallery delete error:', err.message);
