@@ -9,6 +9,7 @@ const DRAFT_PREFIX = 'sportsaal_admin_draft_';
 export function useDraftState(draftKey, serverData) {
   const storageKey = `${DRAFT_PREFIX}${draftKey}`;
   const initializedKeyRef = useRef('');
+  const prevServerDataStrRef = useRef('');
 
   const [value, setValue] = useState(serverData);
   const [hasRecoveredDraft, setHasRecoveredDraft] = useState(false);
@@ -20,6 +21,15 @@ export function useDraftState(draftKey, serverData) {
     const fullId = `${storageKey}`;
     const serializedServer = JSON.stringify(serverData);
 
+    // Skip if neither the draft key nor the underlying server data payload has changed.
+    // This prevents infinite re-render loops if the caller passes unmemoized objects.
+    if (initializedKeyRef.current === fullId && prevServerDataStrRef.current === serializedServer) {
+      return;
+    }
+
+    initializedKeyRef.current = fullId;
+    prevServerDataStrRef.current = serializedServer;
+
     try {
       const savedRaw = sessionStorage.getItem(storageKey);
       if (savedRaw) {
@@ -27,7 +37,6 @@ export function useDraftState(draftKey, serverData) {
         if (JSON.stringify(parsed) !== serializedServer) {
           setValue(parsed);
           setHasRecoveredDraft(true);
-          initializedKeyRef.current = fullId;
           return;
         } else {
           sessionStorage.removeItem(storageKey);
@@ -39,7 +48,6 @@ export function useDraftState(draftKey, serverData) {
 
     setValue(serverData);
     setHasRecoveredDraft(false);
-    initializedKeyRef.current = fullId;
   }, [storageKey, serverData]);
 
   const isDirty =
@@ -101,3 +109,4 @@ export function useDraftState(draftKey, serverData) {
     clearDraft,
   };
 }
+

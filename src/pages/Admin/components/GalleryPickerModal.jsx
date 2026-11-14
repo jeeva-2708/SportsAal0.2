@@ -82,7 +82,7 @@ export default function GalleryPickerModal({
       <div className="admin-modal-card gallery-picker-modal">
         <div className="admin-modal-header">
           <div>
-            <h3 className="admin-modal-title">SELECT FROM GALLERY</h3>
+            <h3 className="admin-modal-title">Select from Gallery</h3>
             <p className="admin-modal-subtitle">
               Choose an existing gallery photo or upload a new image right away.
             </p>
@@ -93,17 +93,22 @@ export default function GalleryPickerModal({
         </div>
 
         <div className="gallery-picker-toolbar">
-          <div className="gallery-filter-pills">
-            {TAG_FILTERS.map((f) => (
-              <button
-                key={f.key}
-                type="button"
-                className={`admin-pill-btn ${tag === f.key ? 'is-active' : ''}`}
-                onClick={() => setTag(f.key)}
-              >
-                {f.label}
-              </button>
-            ))}
+          <div className="toolbar-select-group">
+            <label htmlFor="picker-tag-select" className="admin-label">
+              Category
+            </label>
+            <select
+              id="picker-tag-select"
+              className="admin-input admin-toolbar-select"
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+            >
+              {TAG_FILTERS.map((f) => (
+                <option key={f.key} value={f.key}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="gallery-picker-right-tools">
@@ -114,8 +119,8 @@ export default function GalleryPickerModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <label className="admin-btn-primary upload-inline-btn">
-              <span>{uploading ? 'UPLOADING...' : '+ UPLOAD NEW'}</span>
+            <label className="admin-btn-primary admin-btn-sm upload-inline-btn">
+              <span>{uploading ? 'Uploading...' : '+ Upload New'}</span>
               <input
                 type="file"
                 accept="image/*"
@@ -134,37 +139,65 @@ export default function GalleryPickerModal({
             <div className="admin-empty-box">Loading gallery assets...</div>
           ) : media.length === 0 ? (
             <div className="admin-empty-box">
-              No images found for this filter. Try switching to &ldquo;All Media&rdquo; or upload a new photo above.
+              <p style={{ marginTop: 0 }}>
+                No images found under &ldquo;{tag}&rdquo;. Browse All Media or upload a new photo above.
+              </p>
+              {tag !== 'all' && (
+                <button
+                  type="button"
+                  className="admin-btn-secondary"
+                  onClick={() => setTag('all')}
+                >
+                  Show All Media
+                </button>
+              )}
             </div>
           ) : (
-            <div className="gallery-picker-grid">
-              {media.map((item) => {
-                const isSelected = currentUrl && item.file_url === currentUrl;
-                return (
+            <>
+              {tag !== 'all' && media.length <= 2 && (
+                <div style={{ marginBottom: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)' }}>
+                    Filtered by &ldquo;{tag}&rdquo; tag. Want another image?
+                  </span>
                   <button
-                    key={item.id}
                     type="button"
-                    className={`gallery-picker-tile ${isSelected ? 'is-selected' : ''}`}
-                    onClick={() => {
-                      onSelect(item);
-                      onClose();
-                    }}
+                    className="admin-btn-ghost admin-btn-sm"
+                    onClick={() => setTag('all')}
                   >
-                    <div className="picker-thumb">
-                      <img src={item.file_url} alt={item.alt_text || item.title} loading="lazy" />
-                      {isSelected && <span className="picker-selected-badge">SELECTED</span>}
-                    </div>
-                    <div className="picker-meta">
-                      <span className="picker-title">{item.title}</span>
-                      <span className="picker-tag">{item.section_tag}</span>
-                    </div>
+                    Browse All Media →
                   </button>
-                );
-              })}
-            </div>
+                </div>
+              )}
+              <div className="gallery-picker-grid">
+                {media.map((item) => {
+                  const isSelected = currentUrl && item.file_url === currentUrl;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`gallery-picker-tile ${isSelected ? 'is-selected' : ''}`}
+                      onClick={() => {
+                        onSelect(item);
+                        onClose();
+                      }}
+                    >
+                      <div className="picker-thumb">
+                        <img src={item.file_url} alt={item.alt_text || item.title} loading="lazy" />
+                        {isSelected && <span className="picker-selected-badge">Selected</span>}
+                      </div>
+                      <div className="picker-meta">
+                        <span className="picker-title">{item.title}</span>
+                        <span className="picker-tag">{item.section_tag}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
     </div>
   );
 }
+

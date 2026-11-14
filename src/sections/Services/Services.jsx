@@ -1,16 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Services.css';
 import { useStickySection } from '../../hooks/useStickySection';
 import { useSiteData } from '../../context/SiteDataContext.jsx';
+
+const CARDS_PER_PAGE = 6;
 
 export default function Services() {
   const sectionRef = useStickySection();
   const { sections, services } = useSiteData();
   const headerCfg = sections?.services_section || {};
 
-  const featured = services.filter((s) => s.is_featured_home !== false);
-  const displayServices = featured.length > 0 ? featured : services;
+  const activeServices = services.filter((s) => s.is_active !== false);
+  const totalPages = Math.max(1, Math.ceil(activeServices.length / CARDS_PER_PAGE));
+  const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    setPage((prev) => (prev >= totalPages ? Math.max(0, totalPages - 1) : prev));
+  }, [totalPages]);
+
+  const safePage = Math.min(page, totalPages - 1);
+  const hasMultiplePages = activeServices.length > CARDS_PER_PAGE;
+  const visibleServices = activeServices.slice(
+    safePage * CARDS_PER_PAGE,
+    (safePage + 1) * CARDS_PER_PAGE
+  );
 
   return (
     <section ref={sectionRef} className="services-section stacked-section stacked-section-3" id="services">
@@ -33,9 +47,9 @@ export default function Services() {
           </p>
         </div>
 
-        {/* Service Cards Grid */}
+        {/* 3x2 Service Cards Grid (Max 6 per page) */}
         <div className="services-grid">
-          {displayServices.map((svc) => (
+          {visibleServices.map((svc) => (
             <Link key={svc.id || svc.slug} to={`/services/${svc.slug}`} className="service-card">
               <div
                 className="card-bg-image"
@@ -52,6 +66,63 @@ export default function Services() {
             </Link>
           ))}
         </div>
+
+        {/* Arrow Pagination Controls (Shown automatically when > 6 active services) */}
+        {hasMultiplePages && (
+          <div className="services-pagination" role="navigation" aria-label="Services pages">
+            <button
+              type="button"
+              className="services-nav-arrow"
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={safePage === 0}
+              aria-label="Previous services"
+              title="Previous services"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M15 18l-6-6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            <div className="services-page-dots" role="tablist" aria-label="Service page selector">
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  role="tab"
+                  aria-selected={safePage === idx}
+                  aria-label={`Show services page ${idx + 1} of ${totalPages}`}
+                  className={`services-page-dot ${safePage === idx ? 'is-active' : ''}`}
+                  onClick={() => setPage(idx)}
+                />
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="services-nav-arrow"
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={safePage >= totalPages - 1}
+              aria-label="Next remaining services"
+              title="Next remaining services"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M9 18l6-6-6-6"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* Center Bottom Action CTA Button */}
         <div className="services-bottom-cta">

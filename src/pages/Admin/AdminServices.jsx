@@ -5,6 +5,7 @@ import { DEFAULT_DISPLAY_CONFIG } from '../../data/fallbackSiteData.js';
 import { useDraftState } from '../../hooks/useDraftState.js';
 import ImagePickerField from './components/ImagePickerField.jsx';
 import DraftBanner from './components/DraftBanner.jsx';
+import { useConfirm } from './context/ConfirmContext.jsx';
 
 const EMPTY_SERVICE_TEMPLATE = {
   title: '',
@@ -34,14 +35,16 @@ const FIELD_TOGGLES = [
 
 export default function AdminServices() {
   const { onContentChanged } = useOutletContext();
+  const confirm = useConfirm();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedId, setSelectedId] = useState(null); // null = list view, 'new' = add, number = edit
+  const [selectedId, setSelectedId] = useState(null);
+  const [editorTab, setEditorTab] = useState('general'); // 'general' | 'display' | 'empty'
   const [saving, setSaving] = useState(false);
+  const [togglingId, setTogglingId] = useState(null);
   const [toast, setToast] = useState('');
   const [error, setError] = useState('');
 
-  // Recover selected editor across reload cleanly via sessionStorage
   useEffect(() => {
     const savedMode = sessionStorage.getItem('sportsaal_admin_active_service_editor');
     if (savedMode) {
@@ -54,6 +57,7 @@ export default function AdminServices() {
       sessionStorage.removeItem('sportsaal_admin_active_service_editor');
     } else {
       sessionStorage.setItem('sportsaal_admin_active_service_editor', String(selectedId));
+      setEditorTab('general');
     }
   }, [selectedId]);
 
@@ -103,14 +107,31 @@ export default function AdminServices() {
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     if (!form) return;
+
+    const isNew = selectedId === 'new';
+    const ok = await confirm({
+      title: isNew ? 'Create New Service' : 'Save Service Changes',
+      message: isNew
+        ? `Are you sure you want to create and publish the service "${form.title || 'Untitled'}"?`
+        : `Are you sure you want to save changes to service "${form.title}"?`,
+      confirmText: isNew ? 'Create Service' : 'Save Changes',
+      variant: 'primary',
+    });
+    if (!ok) return;
+
     setSaving(true);
     setError('');
+    const payload = {
+      ...form,
+      is_active: Boolean(form.is_active),
+      is_featured_home: Boolean(form.is_active),
+    };
     try {
       if (selectedId === 'new') {
-        await adminApi.createService(form);
+        await adminApi.createService(payload);
         showToast('New service created successfully.');
       } else {
-        await adminApi.updateService(selectedId, form);
+        await adminApi.updateService(selectedId, payload);
         showToast('Service updated successfully.');
       }
       clearDraft();
@@ -124,14 +145,55 @@ export default function AdminServices() {
     }
   };
 
-  const handleDelete = async (svc) => {
-    if (
-      !window.confirm(
-        `Delete service "${svc.title}" and all ${svc.items_count || 0} of its offerings?`
-      )
-    ) {
-      return;
+  const handleToggleWebsiteVisibility = async (svc) => {
+    const nextActive = !svc.is_active;
+    const ok = await confirm({
+      title: nextActive ? 'Show Service on Website' : 'Hide Service from Website',
+      message: nextActive
+        ? `Make "${svc.title}" publicly visible on the live website and homepage?`
+        : `Hide "${svc.title}" from the live website? Its data and settings will be preserved in Admin.`,
+      confirmText: nextActive ? 'Show on Website' : 'Hide from Website',
+      variant: nextActive ? 'primary' : 'warning',
+    });
+    if (!ok) return;
+
+    setTogglingId(svc.id);
+    setError('');
+    try {
+      await adminApi.updateService(svc.id, {
+        is_active: nextActive,
+        is_featured_home: nextActive,
+      });
+      setServices((prev) =>
+        prev.map((item) =>
+          item.id === svc.id
+            ? { ...item, is_active: nextActive, is_featured_home: nextActive }
+            : item
+        )
+      );
+      await onContentChanged();
+      showToast(
+        nextActive
+          ? `"${svc.title}" is now visible on the website.`
+          : `"${svc.title}" is now hidden from the website.`
+      );
+    } catch (err) {
+      setError(err.message || 'Failed to update service visibility.');
+    } finally {
+      setTogglingId(null);
     }
+  };
+
+  const handleDelete = async (svc) => {
+    const ok = await confirm({
+      title: 'Delete Service',
+      message: `Delete service "${svc.title}" and all ${svc.items_count || 0} of its offerings? This action cannot be undone.`,
+      confirmText: 'Delete Service',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+    if (!ok) return;
+
     try {
       await adminApi.deleteService(svc.id);
       if (selectedId === svc.id) {
@@ -146,19 +208,46 @@ export default function AdminServices() {
     }
   };
 
+  const handleCancelEdit = async () => {
+    if (isDirty) {
+      const ok = await confirm({
+        title: 'Discard Unsaved Changes',
+        message: 'You have unsaved changes on this service. Are you sure you want to discard them?',
+        confirmText: 'Discard Changes',
+        cancelText: 'Keep Editing',
+        variant: 'warning',
+      });
+      if (!ok) return;
+      discardDraft();
+    }
+    setSelectedId(null);
+  };
+
+  const handleDiscardDraftWithConfirm = async () => {
+    const ok = await confirm({
+      title: 'Discard Draft Edits',
+      message: 'Discard all unsaved edits made to this service draft?',
+      confirmText: 'Discard Draft',
+      cancelText: 'Keep Editing',
+      variant: 'warning',
+    });
+    if (!ok) return;
+    discardDraft();
+  };
+
   return (
     <div className="admin-page">
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">SERVICES &amp; VIEW DISPLAY SETTINGS</h1>
+          <h1 className="admin-page-title">Services &amp; View Settings</h1>
           <p className="admin-page-subtitle">
-            Add, edit, or delete services and control which fields appear on each service&rsquo;s public View Page.
+            Manage service categories and configure each service&rsquo;s View Page layout.
           </p>
         </div>
 
         {selectedId === null ? (
           <button type="button" className="admin-btn-primary" onClick={() => setSelectedId('new')}>
-            + ADD NEW SERVICE
+            + Add Service
           </button>
         ) : (
           <button
@@ -166,7 +255,7 @@ export default function AdminServices() {
             className="admin-btn-ghost"
             onClick={() => setSelectedId(null)}
           >
-            ← Back to Services List
+            ← Back to List
           </button>
         )}
       </div>
@@ -179,76 +268,75 @@ export default function AdminServices() {
           <DraftBanner
             isDirty={isDirty}
             hasRecoveredDraft={hasRecoveredDraft}
-            onDiscard={discardDraft}
+            onDiscard={handleDiscardDraftWithConfirm}
             onSave={handleSave}
             saving={saving}
           />
 
-          <div className="admin-card">
-            <h2 className="admin-card-title">
-              {selectedId === 'new' ? 'CREATE NEW SERVICE' : `EDIT SERVICE: ${form.title}`}
-            </h2>
+          {/* Clean Tab Switcher to prevent a crowded long scroll */}
+          <div className="admin-tabs-bar" role="tablist" aria-label="Service editor sections">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={editorTab === 'general'}
+              className={`admin-tab-btn ${editorTab === 'general' ? 'is-active' : ''}`}
+              onClick={() => setEditorTab('general')}
+            >
+              General Info &amp; Images
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={editorTab === 'display'}
+              className={`admin-tab-btn ${editorTab === 'display' ? 'is-active' : ''}`}
+              onClick={() => setEditorTab('display')}
+            >
+              View Page Layout &amp; Toggles
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={editorTab === 'empty'}
+              className={`admin-tab-btn ${editorTab === 'empty' ? 'is-active' : ''}`}
+              onClick={() => setEditorTab('empty')}
+            >
+              Coming Soon Text
+            </button>
+          </div>
 
-            <div className="admin-form-grid-2">
-              <div className="admin-field-group">
-                <label className="admin-label">SERVICE TITLE *</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="e.g. VENUE MANAGEMENT"
-                  required
-                />
+          {editorTab === 'general' && (
+            <div className="admin-card">
+              <h2 className="admin-card-title">
+                {selectedId === 'new' ? 'Create New Service' : `Edit: ${form.title}`}
+              </h2>
+
+              <div className="admin-form-grid-2">
+                <div className="admin-field-group">
+                  <label className="admin-label">Service Title *</label>
+                  <input
+                    type="text"
+                    className="admin-input"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    placeholder="e.g. Venue Management"
+                    required
+                  />
+                </div>
+
+                <div className="admin-field-group">
+                  <label className="admin-label">URL Slug (Auto if Empty)</label>
+                  <input
+                    type="text"
+                    className="admin-input"
+                    value={form.slug}
+                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                    placeholder="e.g. venue-management"
+                  />
+                </div>
               </div>
 
-              <div className="admin-field-group">
-                <label className="admin-label">URL SLUG (AUTO IF EMPTY)</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  placeholder="e.g. venue-management"
-                />
-              </div>
-
-              <div className="admin-field-group">
-                <label className="admin-label">CATEGORY LABEL</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  placeholder="SPORTS INFRASTRUCTURE & OPERATIONS"
-                />
-              </div>
-
-              <div className="admin-field-group">
-                <label className="admin-label">TAGLINE</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={form.tagline}
-                  onChange={(e) => setForm({ ...form, tagline: e.target.value })}
-                  placeholder="WORLD-CLASS INFRASTRUCTURE. PEAK PLAYABILITY."
-                />
-              </div>
-            </div>
-
-            <div className="admin-field-group">
-              <label className="admin-label">SHORT DESCRIPTION</label>
-              <textarea
-                rows={3}
-                className="admin-textarea"
-                value={form.short_description}
-                onChange={(e) => setForm({ ...form, short_description: e.target.value })}
-              />
-            </div>
-
-            <div className="admin-form-grid-2">
               <ImagePickerField
-                label="HOME SECTION CARD IMAGE"
+                label="Home Card Cover Image"
                 value={form.card_image}
                 defaultTag="services"
                 onChange={(url, media) =>
@@ -256,146 +344,192 @@ export default function AdminServices() {
                     ...form,
                     card_image: url,
                     card_media_id: media?.id ?? null,
-                    hero_image: form.hero_image || url,
-                    hero_media_id: form.hero_media_id || media?.id || null,
-                  })
-                }
-              />
-
-              <ImagePickerField
-                label="VIEW PAGE HERO BANNER IMAGE"
-                value={form.hero_image}
-                defaultTag="services"
-                onChange={(url, media) =>
-                  setForm({
-                    ...form,
                     hero_image: url,
                     hero_media_id: media?.id ?? null,
                   })
                 }
               />
-            </div>
 
-            <div className="admin-form-grid-3">
-              <div className="admin-field-group">
-                <label className="admin-label">SORT ORDER</label>
-                <input
-                  type="number"
-                  className="admin-input"
-                  value={form.sort_order}
-                  onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })}
-                />
+              <div className="admin-form-grid-2">
+                <div className="admin-field-group" style={{ marginBottom: 0 }}>
+                  <label className="admin-label">Sort Order</label>
+                  <input
+                    type="number"
+                    className="admin-input"
+                    value={form.sort_order}
+                    onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })}
+                  />
+                </div>
+
+                <div className="admin-switch-tile is-toggle">
+                  <div className="switch-tile-copy">
+                    <strong>Show on Website</strong>
+                    <span>
+                      {form.is_active
+                        ? 'Visible on Home page & service detail route'
+                        : 'Hidden from public website visitors'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={Boolean(form.is_active)}
+                    aria-label="Show on website"
+                    className={`admin-toggle-switch-btn ${form.is_active ? 'is-on' : ''}`}
+                    onClick={() => {
+                      const next = !form.is_active;
+                      setForm({ ...form, is_active: next, is_featured_home: next });
+                    }}
+                  >
+                    <span className="admin-switch-track">
+                      <span className="admin-switch-thumb" />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {editorTab === 'display' && (
+            <div className="admin-card">
+              <div className="admin-card-header">
+                <div>
+                  <h2 className="admin-card-title">Offerings Grid &amp; Card Visibility</h2>
+                  <p className="admin-card-desc" style={{ marginBottom: 0 }}>
+                    Settings for <code>/services/{form.slug || '...'}</code>. Individual cards can override these in Service Offerings.
+                  </p>
+                </div>
+
+                {selectedId !== 'new' && (
+                  <button
+                    type="button"
+                    className="admin-btn-secondary"
+                    onClick={async () => {
+                      try {
+                        await adminApi.resetServiceItemOverrides(selectedId);
+                        await onContentChanged();
+                        showToast('Applied Service defaults to all cards.');
+                      } catch (err) {
+                        setError(err.message || 'Unable to reset card overrides.');
+                      }
+                    }}
+                  >
+                    Apply to All Cards
+                  </button>
+                )}
               </div>
 
-              <label className="admin-switch-tile">
-                <input
-                  type="checkbox"
-                  checked={Boolean(form.is_featured_home)}
-                  onChange={(e) => setForm({ ...form, is_featured_home: e.target.checked })}
-                />
-                <div>
-                  <strong>Show Card on Home Page</strong>
-                  <span>Include inside main Our Services 3x2 grid</span>
-                </div>
-              </label>
-
-              <label className="admin-switch-tile">
-                <input
-                  type="checkbox"
-                  checked={Boolean(form.is_active)}
-                  onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-                />
-                <div>
-                  <strong>Service Published (Active)</strong>
-                  <span>Visible to public visitors</span>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          {/* Field Visibility Controls for this Service's View Page */}
-          <div className="admin-card">
-            <h2 className="admin-card-title">VIEW PAGE FIELD VISIBILITY CONTROLS</h2>
-            <p className="admin-card-desc">
-              Enable or disable specific fields shown on each offering card on <code>/services/{form.slug || '...'}</code>.
-            </p>
-
-            <div className="admin-toggle-grid">
-              {FIELD_TOGGLES.map((item) => (
-                <label key={item.key} className="admin-switch-tile">
-                  <input
-                    type="checkbox"
-                    checked={form.display_config?.[item.key] !== false}
+              <div className="admin-form-grid-2" style={{ marginBottom: '1.25rem' }}>
+                <div className="admin-field-group" style={{ marginBottom: 0 }}>
+                  <label className="admin-label">Desktop Cards per Row</label>
+                  <select
+                    className="admin-input"
+                    value={Number(form.display_config?.cardsPerRow) === 4 ? 4 : 3}
                     onChange={(e) =>
                       setForm({
                         ...form,
                         display_config: {
                           ...form.display_config,
-                          [item.key]: e.target.checked,
+                          cardsPerRow: Number(e.target.value),
+                        },
+                      })
+                    }
+                  >
+                    <option value={3}>3 Cards per Row (Recommended)</option>
+                    <option value={4}>4 Cards per Row</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="admin-field-group" style={{ marginBottom: 0 }}>
+                <label className="admin-label">Default Card Fields (Applies to All Cards)</label>
+                <div className="admin-toggle-grid admin-toggle-grid-2">
+                  {FIELD_TOGGLES.map((item) => (
+                    <label key={item.key} className="admin-switch-tile">
+                      <input
+                        type="checkbox"
+                        checked={form.display_config?.[item.key] !== false}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            display_config: {
+                              ...form.display_config,
+                              [item.key]: e.target.checked,
+                            },
+                          })
+                        }
+                      />
+                      <div>
+                        <strong>{item.label}</strong>
+                        <span>
+                          {form.display_config?.[item.key] !== false ? 'Enabled' : 'Hidden'}
+                        </span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {editorTab === 'empty' && (
+            <div className="admin-card">
+              <h2 className="admin-card-title">Coming Soon State (When 0 Offerings Exist)</h2>
+              <p className="admin-card-desc">
+                Shown automatically when this service has no active offering cards.
+              </p>
+
+              <div className="admin-form-grid-2">
+                <div className="admin-field-group">
+                  <label className="admin-label">Coming Soon Headline</label>
+                  <input
+                    type="text"
+                    className="admin-input"
+                    value={form.display_config?.emptyMessage || ''}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        display_config: {
+                          ...form.display_config,
+                          emptyMessage: e.target.value,
                         },
                       })
                     }
                   />
-                  <div>
-                    <strong>{item.label}</strong>
-                    <span>
-                      {form.display_config?.[item.key] !== false ? 'Enabled on View Page' : 'Hidden on View Page'}
-                    </span>
-                  </div>
-                </label>
-              ))}
-            </div>
+                </div>
 
-            <div className="admin-form-grid-2" style={{ marginTop: '1.25rem' }}>
-              <div className="admin-field-group">
-                <label className="admin-label">COMING SOON HEADLINE (WHEN 0 ITEMS)</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={form.display_config?.emptyMessage || ''}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      display_config: {
-                        ...form.display_config,
-                        emptyMessage: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-
-              <div className="admin-field-group">
-                <label className="admin-label">COMING SOON SUBTITLE</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={form.display_config?.emptySubtext || ''}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      display_config: {
-                        ...form.display_config,
-                        emptySubtext: e.target.value,
-                      },
-                    })
-                  }
-                />
+                <div className="admin-field-group">
+                  <label className="admin-label">Coming Soon Subtitle</label>
+                  <input
+                    type="text"
+                    className="admin-input"
+                    value={form.display_config?.emptySubtext || ''}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        display_config: {
+                          ...form.display_config,
+                          emptySubtext: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="admin-form-footer">
-            <button type="button" className="admin-btn-ghost" onClick={() => setSelectedId(null)}>
+            <button type="button" className="admin-btn-ghost" onClick={handleCancelEdit}>
               Cancel
             </button>
             <button type="submit" className="admin-btn-primary" disabled={saving}>
-              {saving ? 'SAVING SERVICE...' : 'SAVE SERVICE'}
+              {saving ? 'Saving...' : 'Save Service'}
             </button>
           </div>
         </form>
       ) : loading ? (
-        <div className="admin-empty-box">Loading services catalog...</div>
+        <div className="admin-empty-box">Loading services...</div>
       ) : (
         <div className="admin-services-list">
           {services.map((svc) => (
@@ -404,20 +538,19 @@ export default function AdminServices() {
                 {svc.card_image ? (
                   <img src={svc.card_image} alt={svc.title} />
                 ) : (
-                  <span>NO IMG</span>
+                  <span>No Img</span>
                 )}
               </div>
 
               <div className="service-row-info">
                 <div className="service-row-badges">
                   <span className={`admin-status-badge ${svc.is_active ? 'status-new' : 'status-archived'}`}>
-                    {svc.is_active ? 'PUBLISHED' : 'DRAFT'}
+                    {svc.is_active ? 'On Website' : 'Hidden'}
                   </span>
-                  {svc.is_featured_home && <span className="admin-mini-badge">HOME GRID</span>}
                   {svc.active_items_count === 0 ? (
-                    <span className="admin-mini-badge badge-warn">0 ITEMS · COMING SOON</span>
+                    <span className="admin-mini-badge badge-warn">Coming Soon</span>
                   ) : (
-                    <span className="admin-mini-badge">{svc.active_items_count} OFFERINGS</span>
+                    <span className="admin-mini-badge">{svc.active_items_count} Offerings</span>
                   )}
                 </div>
 
@@ -426,30 +559,50 @@ export default function AdminServices() {
               </div>
 
               <div className="service-row-actions">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={Boolean(svc.is_active)}
+                  aria-label={`Show ${svc.title} on website`}
+                  className={`admin-toggle-switch-pill ${svc.is_active ? 'is-on' : ''}`}
+                  disabled={togglingId === svc.id}
+                  onClick={() => handleToggleWebsiteVisibility(svc)}
+                >
+                  <span className="admin-switch-track">
+                    <span className="admin-switch-thumb" />
+                  </span>
+                  <span className="switch-pill-label">
+                    {togglingId === svc.id
+                      ? 'Saving...'
+                      : svc.is_active
+                        ? 'Show on Website'
+                        : 'Hidden'}
+                  </span>
+                </button>
                 <Link
-                  to={`/admin-login/service-items?serviceId=${svc.id}`}
-                  className="admin-btn-secondary"
+                  to={`/admin-portal/service-items?serviceId=${svc.id}`}
+                  className="admin-btn-secondary admin-btn-sm"
                 >
                   Offerings ({svc.items_count})
                 </Link>
+                <button
+                  type="button"
+                  className="admin-btn-primary admin-btn-sm"
+                  onClick={() => setSelectedId(svc.id)}
+                >
+                  Edit
+                </button>
                 <a
                   href={`/services/${svc.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="admin-btn-ghost"
+                  className="admin-btn-ghost admin-btn-sm"
                 >
                   View ↗
                 </a>
                 <button
                   type="button"
-                  className="admin-btn-secondary"
-                  onClick={() => setSelectedId(svc.id)}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className="admin-btn-ghost-danger"
+                  className="admin-btn-ghost-danger admin-btn-sm"
                   onClick={() => handleDelete(svc)}
                 >
                   Delete

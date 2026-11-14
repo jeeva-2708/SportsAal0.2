@@ -60,7 +60,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.55rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.4rem;
   font-family: 'Barlow', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
@@ -95,6 +95,16 @@
   gap: 2.5rem;
   align-items: center;
   margin-bottom: 4rem;
+}
+
+.svc-v2-hero--compact {
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin-bottom: 2.25rem;
+}
+
+.svc-v2-hero--compact .service-hero-heading {
+  margin-bottom: 0;
 }
 
 .service-category-badge {
@@ -404,8 +414,12 @@
 
 .svc-v2-items-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.svc-v2-items-grid.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .svc-v2-item-card {
@@ -426,7 +440,7 @@
 
 .svc-item-media {
   width: 100%;
-  height: 230px;
+  height: 180px;
   overflow: hidden;
   background: #161619;
 }
@@ -444,7 +458,7 @@
 }
 
 .svc-item-body {
-  padding: 1.65rem;
+  padding: 1.2rem;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -456,7 +470,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.7rem;
 }
 
 .svc-item-tag {
@@ -465,7 +479,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 6px;
   background: rgba(255, 43, 43, 0.14);
   color: #ff6b6b;
@@ -474,11 +488,11 @@
 
 .svc-item-price {
   font-family: 'Barlow', sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 700;
   color: #ffffff;
   background: rgba(255, 255, 255, 0.06);
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -486,28 +500,28 @@
 .svc-item-title {
   font-family: 'Anton', sans-serif;
   font-weight: 400;
-  font-size: 1.55rem;
+  font-size: 1.32rem;
   line-height: 1.15;
   text-transform: uppercase;
   color: #ffffff;
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.55rem;
 }
 
 .svc-item-desc {
   font-family: 'Barlow', sans-serif;
-  font-size: 0.96rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.55;
   color: #9ca3af;
-  margin: 0 0 1.15rem;
+  margin: 0 0 0.95rem;
 }
 
 .svc-item-highlights {
   list-style: none;
   padding: 0;
-  margin: 0 0 1.4rem;
+  margin: 0 0 1.35rem;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.55rem 0.9rem;
+  grid-template-columns: 1fr;
+  gap: 0.48rem;
 }
 
 .svc-item-highlights li {
@@ -684,13 +698,20 @@
 /* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
+@media (max-width: 1120px) {
+  .svc-v2-items-grid.cols-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 991px) {
   .svc-v2-hero {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  .svc-v2-items-grid {
-    grid-template-columns: 1fr;
+  .svc-v2-items-grid,
+  .svc-v2-items-grid.cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .svc-v2-gallery-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -703,6 +724,10 @@
 @media (max-width: 640px) {
   .service-detail-page {
     padding-top: 5.5rem;
+  }
+  .svc-v2-items-grid,
+  .svc-v2-items-grid.cols-4 {
+    grid-template-columns: 1fr;
   }
   .svc-item-highlights {
     grid-template-columns: 1fr;

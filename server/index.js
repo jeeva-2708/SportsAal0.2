@@ -57,7 +57,7 @@ app.use(
 );
 
 // Noindex header for admin routes
-app.use('/admin-login', (_req, res, next) => {
+app.use(['/admin-login', '/admin-portal'], (_req, res, next) => {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   next();
 });
@@ -117,3 +117,4 @@ async function startServer() {
 }
 
 startServer();
+

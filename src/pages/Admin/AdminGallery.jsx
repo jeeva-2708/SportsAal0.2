@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { adminApi } from '../../lib/api.js';
+import { useConfirm } from './context/ConfirmContext.jsx';
 
 const GALLERY_TAGS = [
   { key: 'all', label: 'All Media' },
@@ -16,11 +17,13 @@ const GALLERY_TAGS = [
 
 export default function AdminGallery() {
   const { onContentChanged } = useOutletContext();
+  const confirm = useConfirm();
   const [media, setMedia] = useState([]);
   const [services, setServices] = useState([]);
   const [filterTag, setFilterTag] = useState('all');
   const [search, setSearch] = useState('');
   const [uploadTag, setUploadTag] = useState('general');
+  const [showUploadBox, setShowUploadBox] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [toast, setToast] = useState('');
@@ -62,6 +65,7 @@ export default function AdminGallery() {
     try {
       const res = await adminApi.uploadGalleryFiles(files, { sectionTag: uploadTag });
       showToast(`Uploaded ${res.uploaded?.length || 0} image(s) cleanly in WebP/SVG.`);
+      setShowUploadBox(false);
       await loadAll();
     } catch (err) {
       setError(err.message || 'Image upload failed.');
@@ -75,6 +79,13 @@ export default function AdminGallery() {
     setError('');
     try {
       const res = await adminApi.assignMedia(mediaId, target);
+      if (target === 'about.poster') {
+        sessionStorage.removeItem('sportsaal_admin_draft_section_about');
+      } else if (target === 'hero.addCard') {
+        sessionStorage.removeItem('sportsaal_admin_draft_section_hero');
+      } else if (target === 'trusted_by.addLogo') {
+        sessionStorage.removeItem('sportsaal_admin_draft_section_trusted_by');
+      }
       showToast(res.message || 'Assigned image to section!');
       await onContentChanged();
       await loadAll();
@@ -104,8 +115,39 @@ export default function AdminGallery() {
     }
   };
 
+  const handleAssignWithConfirm = async (item, target) => {
+    if (!target) return;
+    const ok = await confirm({
+      title: 'Assign Image to Website Section',
+      message: `Are you sure you want to assign "${item.title}" to this website section?`,
+      confirmText: 'Assign Image',
+      variant: 'primary',
+    });
+    if (!ok) return;
+    await handleAssign(item.id, target);
+  };
+
+  const saveEditWithConfirm = async (item) => {
+    const ok = await confirm({
+      title: 'Save Image Info',
+      message: `Save updated info for "${item.title}"?`,
+      confirmText: 'Save Info',
+      variant: 'primary',
+    });
+    if (!ok) return;
+    await saveEdit(item.id);
+  };
+
   const handleDelete = async (item) => {
-    if (!window.confirm(`Delete "${item.title}" from the Gallery?`)) return;
+    const ok = await confirm({
+      title: 'Delete Image from Gallery',
+      message: `Are you sure you want to permanently delete "${item.title}" from the Gallery? This cannot be undone.`,
+      confirmText: 'Delete Image',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+    if (!ok) return;
+
     try {
       await adminApi.deleteMedia(item.id);
       showToast('Deleted image.');
@@ -119,69 +161,90 @@ export default function AdminGallery() {
     <div className="admin-page">
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">MEDIA GALLERY</h1>
+          <h1 className="admin-page-title">Media Gallery</h1>
           <p className="admin-page-subtitle">
-            Upload images once (automatically compressed to WebP), organize by section tag, and assign to Hero, About, Partners, or any Service page.
+            Upload images (auto-converted to WebP) and assign them to any website section.
           </p>
         </div>
+
+        <button
+          type="button"
+          className="admin-btn-primary"
+          onClick={() => setShowUploadBox((v) => !v)}
+        >
+          {showUploadBox ? 'Hide Upload Box' : '+ Upload Images'}
+        </button>
       </div>
 
       {toast && <div className="admin-alert admin-alert-success">{toast}</div>}
       {error && <div className="admin-alert admin-alert-error">{error}</div>}
 
-      {/* Upload Box */}
-      <div className="admin-card admin-upload-card">
-        <div className="upload-card-controls">
-          <div>
-            <label htmlFor="gallery-upload-tag" className="admin-label">TAG FOR UPLOADED FILES</label>
-            <select
-              id="gallery-upload-tag"
-              className="admin-input"
-              value={uploadTag}
-              onChange={(e) => setUploadTag(e.target.value)}
-            >
-              {GALLERY_TAGS.filter((t) => t.key !== 'all' && t.key !== 'showcase').map((t) => (
-                <option key={t.key} value={t.key}>{t.label}</option>
-              ))}
-              {services.map((s) => (
-                <option key={s.id} value={`showcase:${s.slug}`}>
-                  Showcase Strip: {s.title}
-                </option>
-              ))}
-            </select>
+      {/* Expandable Upload Box */}
+      {showUploadBox && (
+        <div className="admin-card admin-upload-card">
+          <div className="upload-card-controls">
+            <div>
+              <label htmlFor="gallery-upload-tag" className="admin-label">
+                Tag for Uploaded Files
+              </label>
+              <select
+                id="gallery-upload-tag"
+                className="admin-input"
+                value={uploadTag}
+                onChange={(e) => setUploadTag(e.target.value)}
+              >
+                {GALLERY_TAGS.filter((t) => t.key !== 'all' && t.key !== 'showcase').map((t) => (
+                  <option key={t.key} value={t.key}>
+                    {t.label}
+                  </option>
+                ))}
+                {services.map((s) => (
+                  <option key={s.id} value={`showcase:${s.slug}`}>
+                    Showcase Strip: {s.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="admin-upload-dropzone">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  handleUpload(e.target.files);
+                  e.target.value = '';
+                }}
+                disabled={uploading}
+                hidden
+              />
+              <strong>
+                {uploading ? 'Optimizing & Uploading...' : 'Click to Select Images (Multi-Select)'}
+              </strong>
+              <span>JPG, PNG, WebP, AVIF, and SVG up to 12 MB each</span>
+            </label>
           </div>
-
-          <label className="admin-upload-dropzone">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => {
-                handleUpload(e.target.files);
-                e.target.value = '';
-              }}
-              disabled={uploading}
-              hidden
-            />
-            <strong>{uploading ? 'OPTIMIZING & UPLOADING...' : 'CLICK TO UPLOAD IMAGES (MULTI-SELECT)'}</strong>
-            <span>Supports JPG, PNG, WebP, AVIF, and SVG logos up to 12 MB each</span>
-          </label>
         </div>
-      </div>
+      )}
 
-      {/* Filters */}
-      <div className="admin-toolbar-row">
-        <div className="gallery-filter-pills">
-          {GALLERY_TAGS.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              className={`admin-pill-btn ${filterTag === t.key ? 'is-active' : ''}`}
-              onClick={() => setFilterTag(t.key)}
-            >
-              {t.label}
-            </button>
-          ))}
+      {/* Single-Row Clean Filter + Search Toolbar */}
+      <div className="admin-toolbar-row admin-clean-toolbar">
+        <div className="toolbar-select-group">
+          <label htmlFor="gallery-filter-select" className="admin-label">
+            Category
+          </label>
+          <select
+            id="gallery-filter-select"
+            className="admin-input admin-toolbar-select"
+            value={filterTag}
+            onChange={(e) => setFilterTag(e.target.value)}
+          >
+            {GALLERY_TAGS.map((t) => (
+              <option key={t.key} value={t.key}>
+                {t.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <input
@@ -229,11 +292,17 @@ export default function AdminGallery() {
                       <select
                         className="admin-input"
                         value={editDraft.section_tag}
-                        onChange={(e) => setEditDraft({ ...editDraft, section_tag: e.target.value })}
+                        onChange={(e) =>
+                          setEditDraft({ ...editDraft, section_tag: e.target.value })
+                        }
                       >
-                        {GALLERY_TAGS.filter((t) => t.key !== 'all' && t.key !== 'showcase').map((t) => (
-                          <option key={t.key} value={t.key}>{t.label}</option>
-                        ))}
+                        {GALLERY_TAGS.filter((t) => t.key !== 'all' && t.key !== 'showcase').map(
+                          (t) => (
+                            <option key={t.key} value={t.key}>
+                              {t.label}
+                            </option>
+                          )
+                        )}
                         {services.map((s) => (
                           <option key={s.id} value={`showcase:${s.slug}`}>
                             Showcase: {s.title}
@@ -241,10 +310,18 @@ export default function AdminGallery() {
                         ))}
                       </select>
                       <div className="gallery-edit-actions">
-                        <button type="button" className="admin-btn-primary" onClick={() => saveEdit(item.id)}>
+                        <button
+                          type="button"
+                          className="admin-btn-primary admin-btn-sm"
+                          onClick={() => saveEditWithConfirm(item)}
+                        >
                           Save
                         </button>
-                        <button type="button" className="admin-btn-ghost" onClick={() => setEditingId(null)}>
+                        <button
+                          type="button"
+                          className="admin-btn-ghost admin-btn-sm"
+                          onClick={() => setEditingId(null)}
+                        >
                           Cancel
                         </button>
                       </div>
@@ -257,36 +334,51 @@ export default function AdminGallery() {
                         {item.size_bytes ? `${Math.round(item.size_bytes / 1024)} KB` : ''}
                       </p>
 
-                      {/* Direct Assignment Dropdown */}
+                      {item.section_tag === 'about' && (
+                        <button
+                          type="button"
+                          className="admin-btn-primary admin-btn-sm"
+                          style={{ width: '100%', justifyContent: 'center', marginTop: '0.25rem' }}
+                          onClick={() => handleAssignWithConfirm(item, 'about.poster')}
+                        >
+                          Use as About Image
+                        </button>
+                      )}
+
                       <select
                         className="admin-input gallery-assign-select"
                         defaultValue=""
                         onChange={(e) => {
                           const target = e.target.value;
                           e.target.value = '';
-                          handleAssign(item.id, target);
+                          handleAssignWithConfirm(item, target);
                         }}
                       >
-                        <option value="" disabled>Assign Directly to Section →</option>
+                        <option value="" disabled>
+                          Assign to Section...
+                        </option>
                         <option value="about.poster">Set as About Section Poster</option>
                         <option value="hero.addCard">Add Card to Hero Ribbon</option>
-                        <option value="trusted_by.addLogo">Add to Trusted By Partner Logos</option>
+                        <option value="trusted_by.addLogo">Add to Trusted By Logos</option>
                         {services.map((s) => (
                           <optgroup key={s.id} label={s.title}>
                             <option value={`service.card:${s.id}`}>Set as Home Card Cover</option>
-                            <option value={`service.hero:${s.id}`}>Set as View Page Hero Image</option>
-                            <option value={`showcase:${s.slug}`}>Add to Action Showcase Strip</option>
+                            <option value={`showcase:${s.slug}`}>Add to Showcase Strip</option>
                           </optgroup>
                         ))}
                       </select>
 
                       <div className="gallery-card-footer">
-                        <button type="button" className="admin-btn-ghost" onClick={() => startEdit(item)}>
+                        <button
+                          type="button"
+                          className="admin-btn-ghost admin-btn-sm"
+                          onClick={() => startEdit(item)}
+                        >
                           Edit Info
                         </button>
                         <button
                           type="button"
-                          className="admin-btn-ghost-danger"
+                          className="admin-btn-ghost-danger admin-btn-sm"
                           onClick={() => handleDelete(item)}
                         >
                           Delete

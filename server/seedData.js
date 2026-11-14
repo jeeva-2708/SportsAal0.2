@@ -60,6 +60,11 @@ export const DEFAULT_DISPLAY_CONFIG = {
   showHighlights: true,
   showContactCta: true,
   showGalleryStrip: true,
+  showHeroDescription: true,
+  showHeroButtons: true,
+  showHeroVisual: true,
+  showSectionIntroHeading: true,
+  cardsPerRow: 3,
   emptyMessage: 'GETTING THE ARENA READY. COMING SOON.',
   emptySubtext:
     'We are curating championship-grade offerings and specs for this service. Reach out to our operations team for custom inquiries right now.',
@@ -267,6 +272,13 @@ export function buildInitialServices(mediaMap) {
       heroKey: 'svc-venue',
       is_featured_home: true,
       sort_order: 1,
+      display_config: {
+        showHeroDescription: false,
+        showHeroButtons: false,
+        showHeroVisual: false,
+        showSectionIntroHeading: false,
+        cardsPerRow: 3,
+      },
       items: [
         {
           title: 'Greenfield Championship Ground',
@@ -584,7 +596,7 @@ export function buildInitialServices(mediaMap) {
     card_media_id: id(s.cardKey),
     hero_image: url(s.heroKey),
     hero_media_id: id(s.heroKey),
-    display_config: { ...DEFAULT_DISPLAY_CONFIG },
+    display_config: { ...DEFAULT_DISPLAY_CONFIG, ...(s.display_config || {}) },
     items: s.items.map((item) => ({
       ...item,
       image_url: url(item.imageKey),
@@ -592,3 +604,4 @@ export function buildInitialServices(mediaMap) {
     })),
   }));
 }
+

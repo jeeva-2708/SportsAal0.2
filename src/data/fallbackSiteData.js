@@ -47,10 +47,27 @@ export const DEFAULT_DISPLAY_CONFIG = {
   showHighlights: true,
   showContactCta: true,
   showGalleryStrip: true,
+  showHeroDescription: true,
+  showHeroButtons: true,
+  showHeroVisual: true,
+  showSectionIntroHeading: true,
+  cardsPerRow: 3,
   emptyMessage: 'GETTING THE ARENA READY. COMING SOON.',
   emptySubtext:
     'We are curating championship-grade offerings and specs for this service. Reach out to our operations team for custom inquiries right now.',
 };
+
+/**
+ * Resolves visibility for an individual service card field,
+ * allowing per-card overrides (service_items.display_config) on top of
+ * the service-wide default (services.display_config).
+ */
+export function resolveItemFieldVisibility(serviceConfig, itemConfig, key) {
+  if (itemConfig && typeof itemConfig[key] === 'boolean') {
+    return itemConfig[key];
+  }
+  return serviceConfig?.[key] !== false;
+}
 
 export const FALLBACK_SECTIONS = {
   header: {
@@ -237,7 +254,14 @@ export const FALLBACK_SERVICES = [
     hero_image: venueImg,
     is_featured_home: true,
     sort_order: 1,
-    display_config: { ...DEFAULT_DISPLAY_CONFIG },
+    display_config: {
+      ...DEFAULT_DISPLAY_CONFIG,
+      showHeroDescription: false,
+      showHeroButtons: false,
+      showHeroVisual: false,
+      showSectionIntroHeading: false,
+      cardsPerRow: 3,
+    },
     showcaseMedia: [],
     items: [
       {
@@ -583,3 +607,4 @@ export const FALLBACK_SERVICES = [
     ],
   },
 ];
+

@@ -1,6 +1,22 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { publicApi } from '../lib/api';
 import { FALLBACK_SECTIONS, FALLBACK_SERVICES } from '../data/fallbackSiteData';
+
+const SYNC_CHANNEL = 'sportsaal_cms_sync';
+const SYNC_STORAGE_KEY = 'sportsaal_cms_last_updated';
+
+export function broadcastCmsUpdate() {
+  try {
+    if (typeof BroadcastChannel !== 'undefined') {
+      const ch = new BroadcastChannel(SYNC_CHANNEL);
+      ch.postMessage({ updatedAt: Date.now() });
+      ch.close();
+    }
+    localStorage.setItem(SYNC_STORAGE_KEY, String(Date.now()));
+  } catch {
+    // Ignore storage/broadcast unavailability
+  }
+}
 
 const SiteDataContext = createContext({
   sections: FALLBACK_SECTIONS,
@@ -15,8 +31,10 @@ export function SiteDataProvider({ children }) {
   const [services, setServices] = useState(FALLBACK_SERVICES);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const lastFetchAtRef = useRef(0);
 
   const refreshSiteData = useCallback(async () => {
+    lastFetchAtRef.current = Date.now();
     try {
       const data = await publicApi.getBootstrap();
       if (data?.sections && Object.keys(data.sections).length > 0) {
@@ -38,6 +56,38 @@ export function SiteDataProvider({ children }) {
     refreshSiteData();
   }, [refreshSiteData]);
 
+  // Keep public site synchronized across browser tabs & when returning focus from Admin
+  useEffect(() => {
+    let ch = null;
+    if (typeof BroadcastChannel !== 'undefined') {
+      ch = new BroadcastChannel(SYNC_CHANNEL);
+      ch.onmessage = () => refreshSiteData();
+    }
+
+    const onStorage = (e) => {
+      if (e.key === SYNC_STORAGE_KEY) {
+        refreshSiteData();
+      }
+    };
+
+    const onVisibleOrFocus = () => {
+      if (document.visibilityState === 'visible' && Date.now() - lastFetchAtRef.current > 2000) {
+        refreshSiteData();
+      }
+    };
+
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('focus', onVisibleOrFocus);
+    document.addEventListener('visibilitychange', onVisibleOrFocus);
+
+    return () => {
+      if (ch) ch.close();
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('focus', onVisibleOrFocus);
+      document.removeEventListener('visibilitychange', onVisibleOrFocus);
+    };
+  }, [refreshSiteData]);
+
   return (
     <SiteDataContext.Provider
       value={{
@@ -56,3 +106,4 @@ export function SiteDataProvider({ children }) {
 export function useSiteData() {
   return useContext(SiteDataContext);
 }
+

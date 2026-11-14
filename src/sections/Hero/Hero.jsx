@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './Hero.css';
 import { useStickySection } from '../../hooks/useStickySection.js';
 import { scrollToSection } from '../../utils/navigation.js';
-import { useSiteData } from '../../context/SiteDataContext.jsx';
+import { FALLBACK_SECTIONS } from '../../data/fallbackSiteData.js';
 
 export default function Hero({ introComplete = false }) {
   const sectionRef = useStickySection();
-  const { sections } = useSiteData();
-  const heroCfg = sections?.hero || {};
+  // Hero is strictly code-managed for guaranteed animation performance and visual fidelity
+  const heroCfg = FALLBACK_SECTIONS.hero || {};
   const ribbonPhotos = Array.isArray(heroCfg.ribbonPhotos) ? heroCfg.ribbonPhotos : [];
   const sportsaalServices = Array.isArray(heroCfg.marqueeItems) ? heroCfg.marqueeItems : [];
   const ctaText = heroCfg.ctaText || 'EXPLORE SPORTSAAL';

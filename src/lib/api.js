@@ -111,6 +111,11 @@ export const adminApi = {
       method: 'PUT',
       body: JSON.stringify(payload),
     }),
+  resetServiceItemOverrides: (id, fieldKey = null) =>
+    request(`/api/admin/services/${id}/reset-item-overrides`, {
+      method: 'POST',
+      body: JSON.stringify({ fieldKey }),
+    }),
   deleteService: (id) =>
     request(`/api/admin/services/${id}`, {
       method: 'DELETE',
@@ -146,3 +151,4 @@ export const adminApi = {
       method: 'DELETE',
     }),
 };
+

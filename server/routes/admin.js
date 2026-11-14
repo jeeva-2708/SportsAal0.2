@@ -66,6 +66,11 @@ function normalizeDisplayConfig(input) {
     showHighlights: input.showHighlights !== false,
     showContactCta: input.showContactCta !== false,
     showGalleryStrip: input.showGalleryStrip !== false,
+    showHeroDescription: input.showHeroDescription !== false,
+    showHeroButtons: input.showHeroButtons !== false,
+    showHeroVisual: input.showHeroVisual !== false,
+    showSectionIntroHeading: input.showSectionIntroHeading !== false,
+    cardsPerRow: Number(input.cardsPerRow) === 4 ? 4 : 3,
     emptyMessage:
       typeof input.emptyMessage === 'string' && input.emptyMessage.trim()
         ? input.emptyMessage.trim()
@@ -75,6 +80,26 @@ function normalizeDisplayConfig(input) {
         ? input.emptySubtext.trim()
         : base.emptySubtext,
   };
+}
+
+const ITEM_DISPLAY_KEYS = [
+  'showImage',
+  'showTag',
+  'showPriceOrLabel',
+  'showDescription',
+  'showHighlights',
+  'showContactCta',
+];
+
+function normalizeItemDisplayConfig(input) {
+  if (!input || typeof input !== 'object') return {};
+  const cleaned = {};
+  for (const key of ITEM_DISPLAY_KEYS) {
+    if (typeof input[key] === 'boolean') {
+      cleaned[key] = input[key];
+    }
+  }
+  return cleaned;
 }
 
 function normalizeHighlights(raw) {
@@ -548,8 +573,9 @@ router.post('/services', async (req, res) => {
     const cardMediaId = req.body?.card_media_id ? Number(req.body.card_media_id) : null;
     const heroImage = String(req.body?.hero_image || cardImage).trim();
     const heroMediaId = req.body?.hero_media_id ? Number(req.body.hero_media_id) : cardMediaId;
-    const isFeaturedHome = req.body?.is_featured_home !== false;
     const isActive = req.body?.is_active !== false;
+    const isFeaturedHome =
+      req.body?.is_featured_home !== undefined ? Boolean(req.body.is_featured_home) : isActive;
     const sortOrder = Number.isFinite(Number(req.body?.sort_order))
       ? Number(req.body.sort_order)
       : 99;
@@ -667,7 +693,9 @@ router.put('/services/:id', async (req, res) => {
           : cur.hero_media_id,
         req.body?.is_featured_home !== undefined
           ? Boolean(req.body.is_featured_home)
-          : cur.is_featured_home,
+          : req.body?.is_active !== undefined
+            ? Boolean(req.body.is_active)
+            : cur.is_featured_home,
         req.body?.is_active !== undefined ? Boolean(req.body.is_active) : cur.is_active,
         req.body?.sort_order !== undefined && Number.isFinite(Number(req.body.sort_order))
           ? Number(req.body.sort_order)
@@ -699,6 +727,43 @@ router.delete('/services/:id', async (req, res) => {
   } catch (err) {
     console.error('Delete service error:', err.message);
     return res.status(500).json({ error: 'Failed to delete service.' });
+  }
+});
+
+/**
+ * Reset per-card display overrides on a service's offerings so they inherit
+ * the service-wide toggle configuration cleanly.
+ */
+router.post('/services/:id/reset-item-overrides', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: 'Invalid service ID.' });
+    }
+
+    const fieldKey = req.body?.fieldKey ? String(req.body.fieldKey).trim() : null;
+    if (fieldKey && ITEM_DISPLAY_KEYS.includes(fieldKey)) {
+      await query(
+        `UPDATE service_items
+         SET display_config = COALESCE(display_config, '{}'::jsonb) - $1,
+             updated_at = NOW()
+         WHERE service_id = $2`,
+        [fieldKey, id]
+      );
+    } else {
+      await query(
+        `UPDATE service_items
+         SET display_config = '{}'::jsonb,
+             updated_at = NOW()
+         WHERE service_id = $1`,
+        [id]
+      );
+    }
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Reset item overrides error:', err.message);
+    return res.status(500).json({ error: 'Failed to reset card overrides.' });
   }
 });
 
@@ -743,8 +808,8 @@ router.post('/service-items', async (req, res) => {
 
     const inserted = await query(
       `INSERT INTO service_items
-        (service_id, title, tag, price_label, description, highlights, image_url, media_id, cta_text, is_active, sort_order)
-       VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, $10, $11)
+        (service_id, title, tag, price_label, description, highlights, image_url, media_id, cta_text, display_config, is_active, sort_order)
+       VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, $10::jsonb, $11, $12)
        RETURNING *`,
       [
         serviceId,
@@ -756,6 +821,7 @@ router.post('/service-items', async (req, res) => {
         String(req.body?.image_url || '').trim(),
         req.body?.media_id ? Number(req.body.media_id) : null,
         String(req.body?.cta_text || 'Inquire Now').trim() || 'Inquire Now',
+        JSON.stringify(normalizeItemDisplayConfig(req.body?.display_config)),
         req.body?.is_active !== false,
         Number.isFinite(Number(req.body?.sort_order)) ? Number(req.body.sort_order) : 99,
       ]
@@ -786,6 +852,11 @@ router.put('/service-items/:id', async (req, res) => {
       return res.status(400).json({ error: 'Item title cannot be empty.' });
     }
 
+    const itemDisplayConfig =
+      req.body?.display_config !== undefined
+        ? normalizeItemDisplayConfig(req.body.display_config)
+        : cur.display_config || {};
+
     const updated = await query(
       `UPDATE service_items
        SET service_id = $1,
@@ -797,10 +868,11 @@ router.put('/service-items/:id', async (req, res) => {
            image_url = $7,
            media_id = $8,
            cta_text = $9,
-           is_active = $10,
-           sort_order = $11,
+           display_config = $10::jsonb,
+           is_active = $11,
+           sort_order = $12,
            updated_at = NOW()
-       WHERE id = $12
+       WHERE id = $13
        RETURNING *`,
       [
         req.body?.service_id !== undefined ? Number(req.body.service_id) : cur.service_id,
@@ -826,6 +898,7 @@ router.put('/service-items/:id', async (req, res) => {
         req.body?.cta_text !== undefined
           ? String(req.body.cta_text).trim() || 'Inquire Now'
           : cur.cta_text,
+        JSON.stringify(itemDisplayConfig),
         req.body?.is_active !== undefined ? Boolean(req.body.is_active) : cur.is_active,
         req.body?.sort_order !== undefined && Number.isFinite(Number(req.body.sort_order))
           ? Number(req.body.sort_order)
@@ -914,3 +987,4 @@ router.delete('/inquiries/:id', async (req, res) => {
 });
 
 export default router;
+

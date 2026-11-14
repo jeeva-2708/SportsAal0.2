@@ -11,6 +11,13 @@ export default function AdminLogin() {
   const [checkingSession, setCheckingSession] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [adminTheme] = useState(() => {
+    try {
+      return localStorage.getItem('sportsaal_admin_theme') === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
 
   // Enforce noindex metadata on admin login route
   useEffect(() => {
@@ -30,7 +37,7 @@ export default function AdminLogin() {
       .getMe()
       .then((res) => {
         if (active && res?.admin) {
-          navigate('/admin-login/dashboard', { replace: true });
+          navigate('/admin-portal/dashboard', { replace: true });
         }
       })
       .catch(() => {})
@@ -48,7 +55,7 @@ export default function AdminLogin() {
     setSubmitting(true);
     try {
       await authApi.login(email.trim(), password);
-      navigate('/admin-login/dashboard', { replace: true });
+      navigate('/admin-portal/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Invalid credentials or backend offline.');
     } finally {
@@ -57,16 +64,18 @@ export default function AdminLogin() {
   };
 
   return (
-    <main className="admin-login-page">
+    <main className="admin-login-page" data-admin-theme={adminTheme}>
       <div className="admin-login-ambient" aria-hidden="true" />
 
       <div className="admin-login-card">
         <div className="admin-login-brand">
-          <img src={logoDarkImg} alt="Sportsaal" className="admin-login-logo" />
-          <span className="admin-login-badge">CONTROL PORTAL</span>
+          <div className="admin-logo-badge">
+            <img src={logoDarkImg} alt="Sportsaal" className="admin-login-logo" />
+          </div>
+          <span className="admin-login-badge">Control Portal</span>
         </div>
 
-        <h1 className="admin-login-title">ADMIN SIGN IN</h1>
+        <h1 className="admin-login-title">Admin Sign In</h1>
         <p className="admin-login-subtitle">
           Direct URL access only. Manage sections, services, offerings, gallery assets, and customer inquiries.
         </p>
@@ -78,7 +87,7 @@ export default function AdminLogin() {
             {error && <div className="admin-alert admin-alert-error">{error}</div>}
 
             <div className="admin-field-group">
-              <label htmlFor="admin-email" className="admin-label">ADMIN EMAIL</label>
+              <label htmlFor="admin-email" className="admin-label">Admin Email</label>
               <input
                 id="admin-email"
                 type="email"
@@ -92,7 +101,7 @@ export default function AdminLogin() {
             </div>
 
             <div className="admin-field-group">
-              <label htmlFor="admin-password" className="admin-label">PASSWORD</label>
+              <label htmlFor="admin-password" className="admin-label">Password</label>
               <input
                 id="admin-password"
                 type="password"
@@ -110,7 +119,7 @@ export default function AdminLogin() {
               className="admin-btn-primary admin-login-submit"
               disabled={submitting}
             >
-              {submitting ? 'SIGNING IN...' : 'ENTER ADMIN PORTAL →'}
+              {submitting ? 'Signing In...' : 'Enter Admin Portal →'}
             </button>
           </form>
         )}
@@ -122,3 +131,4 @@ export default function AdminLogin() {
     </main>
   );
 }
+

@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { publicApi } from '../../lib/api.js';
 import { useSiteData } from '../../context/SiteDataContext.jsx';
-import { DEFAULT_DISPLAY_CONFIG } from '../../data/fallbackSiteData.js';
+import {
+  DEFAULT_DISPLAY_CONFIG,
+  resolveItemFieldVisibility,
+} from '../../data/fallbackSiteData.js';
 import { navigateToContact } from '../../utils/navigation.js';
 import './ServiceDetail.css';
 
@@ -73,17 +76,27 @@ export default function ServiceDetail({ forcedSlug = null }) {
   const displayConfig = { ...DEFAULT_DISPLAY_CONFIG, ...(service.display_config || {}) };
   const items = Array.isArray(service.items) ? service.items : [];
   const showcaseMedia = Array.isArray(service.showcaseMedia) ? service.showcaseMedia : [];
+  const cardsPerRow = Number(displayConfig.cardsPerRow) === 4 ? 4 : 3;
 
-  // Unique item tags for filter bar (when showTag is enabled and > 1 tag exists)
+  // Unique item tags for filter bar (honoring per-card showTag overrides)
   const uniqueTags = Array.from(
-    new Set(items.map((item) => item.tag?.trim()).filter(Boolean))
+    new Set(
+      items
+        .filter((item) => resolveItemFieldVisibility(displayConfig, item.display_config, 'showTag'))
+        .map((item) => item.tag?.trim())
+        .filter(Boolean)
+    )
   );
-  const showTagFilterBar = displayConfig.showTag && uniqueTags.length > 1;
+  const showTagFilterBar = uniqueTags.length > 1;
 
   const filteredItems =
     activeTagFilter === 'ALL' || !showTagFilterBar
       ? items
-      : items.filter((item) => (item.tag || '').trim() === activeTagFilter);
+      : items.filter(
+          (item) =>
+            resolveItemFieldVisibility(displayConfig, item.display_config, 'showTag') &&
+            (item.tag || '').trim() === activeTagFilter
+        );
 
   const handleInquiryRedirect = (itemTitle = '') => {
     const message = itemTitle
@@ -95,10 +108,6 @@ export default function ServiceDetail({ forcedSlug = null }) {
       message,
     });
   };
-
-  const titleWords = String(service.title || '').split(' ');
-  const firstWord = titleWords[0] || '';
-  const remainingWords = titleWords.slice(1).join(' ');
 
   return (
     <article className="service-detail-page">
@@ -114,65 +123,42 @@ export default function ServiceDetail({ forcedSlug = null }) {
           <span className="breadcrumb-current" aria-current="page">{service.title}</span>
         </nav>
 
-        {/* 2. Dynamic Hero Showcase */}
-        <section className="svc-v2-hero">
-          <div className="svc-v2-hero-copy">
-            {service.category && (
-              <div className="service-category-badge">
-                <span className="badge-pulse-dot" />
-                <span className="badge-label">{service.category}</span>
+        {/* 2. Dynamic Offerings List OR Coming Soon Empty State */}
+        <section className="svc-v2-offerings-section" id="offerings">
+          <div className="svc-v2-section-header">
+            <div>
+              <div className="narrative-tag">
+                <span className="tag-line" />
+                <span className="tag-title">CURATED PACKAGES &amp; OPTIONS</span>
+              </div>
+              <h1 className="svc-v2-heading svc-v2-page-heading">
+                WHAT WE OFFER IN <span className="text-red">{service.title}</span>
+              </h1>
+            </div>
+
+            {items.length > 0 && showTagFilterBar && (
+              <div className="svc-v2-filter-row" role="tablist" aria-label="Filter by category">
+                <button
+                  type="button"
+                  className={`svc-filter-pill ${activeTagFilter === 'ALL' ? 'is-active' : ''}`}
+                  onClick={() => setActiveTagFilter('ALL')}
+                >
+                  ALL ({items.length})
+                </button>
+                {uniqueTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    className={`svc-filter-pill ${activeTagFilter === tag ? 'is-active' : ''}`}
+                    onClick={() => setActiveTagFilter(tag)}
+                  >
+                    {tag}
+                  </button>
+                ))}
               </div>
             )}
-
-            <h1 className="service-hero-heading">
-              <span className="heading-primary">{firstWord}</span>
-              {remainingWords ? (
-                <>
-                  {' '}
-                  <span className="heading-accent">{remainingWords}</span>
-                </>
-              ) : null}
-            </h1>
-
-            {service.tagline && <p className="service-hero-tagline">{service.tagline}</p>}
-            {service.short_description && (
-              <p className="service-hero-intro">{service.short_description}</p>
-            )}
-
-            <div className="service-hero-actions">
-              <button
-                type="button"
-                className="btn-service-primary"
-                onClick={() => handleInquiryRedirect('')}
-              >
-                <span>CONTACT US FOR {service.title}</span>
-                <span className="btn-arrow">→</span>
-              </button>
-
-              {items.length > 0 && (
-                <a href="#offerings" className="btn-service-ghost">
-                  <span>EXPLORE OFFERINGS ({items.length})</span>
-                </a>
-              )}
-            </div>
           </div>
 
-          <div className="svc-v2-hero-visual">
-            <img
-              src={service.hero_image || service.card_image}
-              alt={service.title}
-              className="svc-v2-hero-img"
-            />
-            <div className="svc-v2-hero-vignette" aria-hidden="true" />
-            <div className="svc-v2-status-pill">
-              <span className="status-dot" />
-              <span>{items.length > 0 ? `${items.length} AVAILABLE OPTIONS` : 'COMING SOON'}</span>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. Dynamic Offerings Grid OR Coming Soon Empty State */}
-        <section className="svc-v2-offerings-section" id="offerings">
           {items.length === 0 ? (
             <div className="svc-v2-coming-soon">
               <div className="coming-soon-badge">
@@ -191,51 +177,46 @@ export default function ServiceDetail({ forcedSlug = null }) {
               </button>
             </div>
           ) : (
-            <>
-              <div className="svc-v2-section-header">
-                <div>
-                  <div className="narrative-tag">
-                    <span className="tag-line" />
-                    <span className="tag-title">CURATED PACKAGES &amp; OPTIONS</span>
-                  </div>
-                  <h2 className="svc-v2-heading">
-                    WHAT WE OFFER IN <span className="text-red">{service.title}</span>
-                  </h2>
-                </div>
-
-                {showTagFilterBar && (
-                  <div className="svc-v2-filter-row" role="tablist" aria-label="Filter by category">
-                    <button
-                      type="button"
-                      className={`svc-filter-pill ${activeTagFilter === 'ALL' ? 'is-active' : ''}`}
-                      onClick={() => setActiveTagFilter('ALL')}
-                    >
-                      ALL ({items.length})
-                    </button>
-                    {uniqueTags.map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        className={`svc-filter-pill ${activeTagFilter === tag ? 'is-active' : ''}`}
-                        onClick={() => setActiveTagFilter(tag)}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="svc-v2-items-grid">
+            <div className={`svc-v2-items-grid cols-${cardsPerRow}`}>
                 {filteredItems.map((item) => {
+                  const showItemImage = resolveItemFieldVisibility(
+                    displayConfig,
+                    item.display_config,
+                    'showImage'
+                  );
+                  const showItemTag = resolveItemFieldVisibility(
+                    displayConfig,
+                    item.display_config,
+                    'showTag'
+                  );
+                  const showItemPrice = resolveItemFieldVisibility(
+                    displayConfig,
+                    item.display_config,
+                    'showPriceOrLabel'
+                  );
+                  const showItemDesc = resolveItemFieldVisibility(
+                    displayConfig,
+                    item.display_config,
+                    'showDescription'
+                  );
+                  const showItemHighlights = resolveItemFieldVisibility(
+                    displayConfig,
+                    item.display_config,
+                    'showHighlights'
+                  );
+                  const showItemCta = resolveItemFieldVisibility(
+                    displayConfig,
+                    item.display_config,
+                    'showContactCta'
+                  );
+
                   const hasMetaRow =
-                    (displayConfig.showTag && item.tag) ||
-                    (displayConfig.showPriceOrLabel && item.price_label);
+                    (showItemTag && item.tag) || (showItemPrice && item.price_label);
                   const highlights = Array.isArray(item.highlights) ? item.highlights : [];
 
                   return (
                     <div key={item.id} className="svc-v2-item-card">
-                      {displayConfig.showImage && item.image_url && (
+                      {showItemImage && item.image_url && (
                         <div className="svc-item-media">
                           <img src={item.image_url} alt={item.title} loading="lazy" />
                         </div>
@@ -244,10 +225,10 @@ export default function ServiceDetail({ forcedSlug = null }) {
                       <div className="svc-item-body">
                         {hasMetaRow && (
                           <div className="svc-item-meta">
-                            {displayConfig.showTag && item.tag && (
+                            {showItemTag && item.tag && (
                               <span className="svc-item-tag">{item.tag}</span>
                             )}
-                            {displayConfig.showPriceOrLabel && item.price_label && (
+                            {showItemPrice && item.price_label && (
                               <span className="svc-item-price">{item.price_label}</span>
                             )}
                           </div>
@@ -255,11 +236,11 @@ export default function ServiceDetail({ forcedSlug = null }) {
 
                         <h3 className="svc-item-title">{item.title}</h3>
 
-                        {displayConfig.showDescription && item.description && (
+                        {showItemDesc && item.description && (
                           <p className="svc-item-desc">{item.description}</p>
                         )}
 
-                        {displayConfig.showHighlights && highlights.length > 0 && (
+                        {showItemHighlights && highlights.length > 0 && (
                           <ul className="svc-item-highlights">
                             {highlights.map((bullet, bIdx) => (
                               <li key={bIdx}>
@@ -270,7 +251,7 @@ export default function ServiceDetail({ forcedSlug = null }) {
                           </ul>
                         )}
 
-                        {displayConfig.showContactCta && (
+                        {showItemCta && (
                           <div className="svc-item-actions">
                             <button
                               type="button"
@@ -287,7 +268,6 @@ export default function ServiceDetail({ forcedSlug = null }) {
                   );
                 })}
               </div>
-            </>
           )}
         </section>
 

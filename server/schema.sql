@@ -74,11 +74,15 @@ CREATE TABLE IF NOT EXISTS service_items (
   image_url TEXT NOT NULL DEFAULT '',
   media_id INTEGER REFERENCES media_gallery(id) ON DELETE SET NULL,
   cta_text VARCHAR(80) NOT NULL DEFAULT 'Inquire Now',
+  display_config JSONB NOT NULL DEFAULT '{}'::jsonb,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   sort_order INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE service_items
+  ADD COLUMN IF NOT EXISTS display_config JSONB NOT NULL DEFAULT '{}'::jsonb;
 
 CREATE INDEX IF NOT EXISTS idx_service_items_service ON service_items(service_id, sort_order, id);
 
@@ -94,3 +98,4 @@ CREATE TABLE IF NOT EXISTS contact_inquiries (
 );
 
 CREATE INDEX IF NOT EXISTS idx_contact_inquiries_status ON contact_inquiries(status, created_at DESC);
+

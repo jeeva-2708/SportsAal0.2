@@ -19,7 +19,7 @@ router.get('/bootstrap', async (_req, res) => {
       ),
       query(
         `SELECT id, service_id, title, tag, price_label, description,
-                highlights, image_url, cta_text, sort_order
+                highlights, image_url, cta_text, sort_order, display_config
          FROM service_items
          WHERE is_active = TRUE
          ORDER BY sort_order ASC, id ASC`
@@ -84,7 +84,7 @@ router.get('/services/:slug', async (req, res) => {
     const [itemsRes, showcaseRes, otherRes] = await Promise.all([
       query(
         `SELECT id, service_id, title, tag, price_label, description,
-                highlights, image_url, cta_text, sort_order
+                highlights, image_url, cta_text, sort_order, display_config
          FROM service_items
          WHERE service_id = $1 AND is_active = TRUE
          ORDER BY sort_order ASC, id ASC`,
@@ -147,3 +147,4 @@ router.post('/contact', async (req, res) => {
 });
 
 export default router;
+

@@ -28,3 +28,4 @@ export default function DraftBanner({ isDirty, hasRecoveredDraft, onDiscard, onS
     </div>
   );
 }
+

@@ -17,11 +17,12 @@ const AdminServiceItems = lazy(() => import('./pages/Admin/AdminServiceItems.jsx
 const AdminGallery = lazy(() => import('./pages/Admin/AdminGallery.jsx'));
 const AdminSections = lazy(() => import('./pages/Admin/AdminSections.jsx'));
 const AdminInquiries = lazy(() => import('./pages/Admin/AdminInquiries.jsx'));
-const AdminSecurity = lazy(() => import('./pages/Admin/AdminSecurity.jsx'));
 
 function AppRoutes() {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin-login');
+  const isAdminRoute =
+    location.pathname.startsWith('/admin-login') ||
+    location.pathname.startsWith('/admin-portal');
   const skipIntroForDeepLink =
     isAdminRoute ||
     location.pathname.startsWith('/services/') ||
@@ -43,15 +44,17 @@ function AppRoutes() {
       <Suspense fallback={<div style={{ minHeight: '100vh', background: '#050505', color: '#fff', display: 'grid', placeItems: 'center' }}>loading....</div>}>
         <Routes>
           <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/admin-login" element={<AdminLayout />}>
+          <Route path="/admin-login/*" element={<Navigate to="/admin-portal/dashboard" replace />} />
+          <Route path="/admin-portal" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin-portal/dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="services" element={<AdminServices />} />
             <Route path="service-items" element={<AdminServiceItems />} />
             <Route path="gallery" element={<AdminGallery />} />
             <Route path="sections/:sectionKey" element={<AdminSections />} />
             <Route path="inquiries" element={<AdminInquiries />} />
-            <Route path="security" element={<AdminSecurity />} />
-            <Route path="*" element={<Navigate to="/admin-login/dashboard" replace />} />
+            <Route path="security" element={<Navigate to="/admin-portal/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/admin-portal/dashboard" replace />} />
           </Route>
         </Routes>
       </Suspense>

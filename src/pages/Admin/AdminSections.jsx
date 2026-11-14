@@ -1,38 +1,76 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useOutletContext } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useParams, useOutletContext, Link } from 'react-router-dom';
 import { adminApi } from '../../lib/api.js';
 import { FALLBACK_SECTIONS } from '../../data/fallbackSiteData.js';
 import { useDraftState } from '../../hooks/useDraftState.js';
 import ImagePickerField from './components/ImagePickerField.jsx';
 import DraftBanner from './components/DraftBanner.jsx';
+import { useConfirm } from './context/ConfirmContext.jsx';
+
+const CANONICAL_NAV_ITEMS = [
+  { label: 'ABOUT', href: '#about' },
+  { label: 'SERVICES', href: '#services' },
+  { label: 'EVENTS', href: '/services/cricket-tournaments' },
+  { label: 'VENUES', href: '/services/venue-management' },
+  { label: 'CONTACT US', href: '#contact' },
+];
+
+function normalizeNavLinks(currentLinks) {
+  if (!Array.isArray(currentLinks) || currentLinks.length === 0) {
+    return CANONICAL_NAV_ITEMS;
+  }
+
+  const result = [];
+  const handled = new Set();
+
+  for (const item of currentLinks) {
+    const canonical = CANONICAL_NAV_ITEMS.find((c) => c.href === item?.href);
+    if (canonical && !handled.has(canonical.href)) {
+      result.push({
+        label: typeof item?.label === 'string' && item.label.trim() ? item.label.trim() : canonical.label,
+        href: canonical.href,
+      });
+      handled.add(canonical.href);
+    }
+  }
+
+  for (const canonical of CANONICAL_NAV_ITEMS) {
+    if (!handled.has(canonical.href)) {
+      result.push({ ...canonical });
+      handled.add(canonical.href);
+    }
+  }
+
+  return result;
+}
 
 const SECTION_META = {
   header: {
-    title: 'HEADER & NAVIGATION',
-    subtitle: 'Manage top brand logo, header menu links, and primary pill CTA.',
+    title: 'Header & Navigation',
+    subtitle: 'Manage top brand logo, header menu links order, and primary pill CTA.',
   },
   hero: {
-    title: 'HERO RIBBON & MARQUEE',
-    subtitle: 'Manage the 8-photo slanted cinema ribbon cards, marquee strip, and CTA button.',
+    title: 'Hero Section (Code-Managed)',
+    subtitle: 'Hero visuals, ribbon action photos, and marquee ticker are configured directly in source code.',
   },
   about: {
-    title: 'ABOUT SECTION',
+    title: 'About Section',
     subtitle: 'Manage the About side poster photo, eyebrow badge, narrative copy, and CTAs.',
   },
   services_section: {
-    title: 'SERVICES SECTION HEADER',
+    title: 'Services Section Header',
     subtitle: 'Manage the Services heading, subtitle, and bottom All Services button.',
   },
   trusted_by: {
-    title: 'TRUSTED BY PARTNERS',
+    title: 'Trusted By Partners',
     subtitle: 'Manage partner section headings, stadium backdrop, and scrolling brand logos.',
   },
   testimonials: {
-    title: 'TESTIMONIALS',
+    title: 'Testimonials',
     subtitle: 'Add, edit, or remove client testimonials, roles, companies, and avatars.',
   },
   contact_footer: {
-    title: 'CONTACT & FOOTER SETTINGS',
+    title: 'Contact & Footer Settings',
     subtitle: 'Manage phone, email, hours, social links, inquiry subjects, and footer branding.',
   },
 };
@@ -40,6 +78,7 @@ const SECTION_META = {
 export default function AdminSections() {
   const { sectionKey } = useParams();
   const { onContentChanged } = useOutletContext();
+  const confirm = useConfirm();
 
   const [serverSections, setServerSections] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -68,13 +107,16 @@ export default function AdminSections() {
     loadSections();
   }, [loadSections]);
 
-  const initialValue =
-    sectionKey === 'contact_footer'
-      ? {
-          contact: serverSections?.contact || FALLBACK_SECTIONS.contact,
-          footer: serverSections?.footer || FALLBACK_SECTIONS.footer,
-        }
-      : serverSections?.[sectionKey] || FALLBACK_SECTIONS[sectionKey] || {};
+  const initialValue = useMemo(() => {
+    if (!serverSections) return null;
+    if (sectionKey === 'contact_footer') {
+      return {
+        contact: serverSections.contact || FALLBACK_SECTIONS.contact,
+        footer: serverSections.footer || FALLBACK_SECTIONS.footer,
+      };
+    }
+    return serverSections[sectionKey] || FALLBACK_SECTIONS[sectionKey] || {};
+  }, [sectionKey, serverSections]);
 
   const {
     value: form,
@@ -83,7 +125,7 @@ export default function AdminSections() {
     hasRecoveredDraft,
     discardDraft,
     clearDraft,
-  } = useDraftState(`section_${sectionKey}`, serverSections ? initialValue : null);
+  } = useDraftState(`section_${sectionKey}`, initialValue);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -93,6 +135,15 @@ export default function AdminSections() {
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     if (!form) return;
+
+    const ok = await confirm({
+      title: 'Save Section Changes',
+      message: `Are you sure you want to save and publish changes for "${meta.title}" to the live website?`,
+      confirmText: 'Save Section',
+      variant: 'primary',
+    });
+    if (!ok) return;
+
     setSaving(true);
     setError('');
     try {
@@ -115,8 +166,21 @@ export default function AdminSections() {
     }
   };
 
+  const handleDiscardWithConfirm = async () => {
+    if (!isDirty && !hasRecoveredDraft) return;
+    const ok = await confirm({
+      title: 'Discard Unsaved Changes',
+      message: `Are you sure you want to discard your unsaved changes for "${meta.title}"? All edits made since the last save will be reset.`,
+      confirmText: 'Discard Changes',
+      cancelText: 'Keep Editing',
+      variant: 'warning',
+    });
+    if (!ok) return;
+    discardDraft();
+  };
+
   const meta = SECTION_META[sectionKey] || {
-    title: 'SECTION EDITOR',
+    title: 'Section Editor',
     subtitle: 'Manage website content.',
   };
 
@@ -131,257 +195,287 @@ export default function AdminSections() {
           <h1 className="admin-page-title">{meta.title}</h1>
           <p className="admin-page-subtitle">{meta.subtitle}</p>
         </div>
-        <button type="button" className="admin-btn-primary" onClick={handleSave} disabled={saving}>
-          {saving ? 'SAVING...' : 'SAVE CHANGES'}
-        </button>
+        {sectionKey !== 'hero' && (
+          <button type="button" className="admin-btn-primary" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        )}
       </div>
 
       {toast && <div className="admin-alert admin-alert-success">{toast}</div>}
       {error && <div className="admin-alert admin-alert-error">{error}</div>}
 
-      <DraftBanner
-        isDirty={isDirty}
-        hasRecoveredDraft={hasRecoveredDraft}
-        onDiscard={discardDraft}
-        onSave={handleSave}
-        saving={saving}
-      />
-
-      <form onSubmit={handleSave} className="admin-form-stack">
-        {sectionKey === 'header' && <HeaderEditor form={form} setForm={setForm} />}
-        {sectionKey === 'hero' && <HeroEditor form={form} setForm={setForm} />}
-        {sectionKey === 'about' && <AboutEditor form={form} setForm={setForm} />}
-        {sectionKey === 'services_section' && <ServicesHeaderEditor form={form} setForm={setForm} />}
-        {sectionKey === 'trusted_by' && <TrustedByEditor form={form} setForm={setForm} />}
-        {sectionKey === 'testimonials' && <TestimonialsEditor form={form} setForm={setForm} />}
-        {sectionKey === 'contact_footer' && <ContactFooterEditor form={form} setForm={setForm} />}
-
-        <div className="admin-form-footer">
-          <button type="button" className="admin-btn-ghost" onClick={discardDraft} disabled={!isDirty || saving}>
-            Reset Changes
-          </button>
-          <button type="submit" className="admin-btn-primary" disabled={saving}>
-            {saving ? 'SAVING...' : 'SAVE SECTION'}
-          </button>
+      {sectionKey === 'hero' ? (
+        <div className="admin-card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.65rem' }}>
+            <span style={{ fontSize: '1.45rem' }}>⚡</span>
+            <h2 className="admin-card-title" style={{ margin: 0 }}>Hero Section is Code-Managed</h2>
+          </div>
+          <p className="admin-card-desc" style={{ marginTop: '0.35rem' }}>
+            The Hero Cinema Ribbon photos, marquee keywords ticker, and action button are configured strictly in source code (<code>src/sections/Hero/Hero.jsx</code> &amp; <code>src/data/fallbackSiteData.js</code>) for optimal animation performance and visual fidelity. No fields need to be managed by the admin.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+            <a href="/#hero" target="_blank" rel="noopener noreferrer" className="admin-btn-secondary admin-btn-sm">
+              View Live Hero ↗
+            </a>
+            <Link to="/admin-portal/sections/header" className="admin-btn-primary admin-btn-sm">
+              Go to Header &amp; Navigation
+            </Link>
+          </div>
         </div>
-      </form>
+      ) : (
+        <>
+          <DraftBanner
+            isDirty={isDirty}
+            hasRecoveredDraft={hasRecoveredDraft}
+            onDiscard={handleDiscardWithConfirm}
+            onSave={handleSave}
+            saving={saving}
+          />
+
+          <form onSubmit={handleSave} className="admin-form-stack">
+            {sectionKey === 'header' && <HeaderEditor form={form} setForm={setForm} />}
+            {sectionKey === 'about' && (
+              <AboutEditor
+                form={form}
+                setForm={setForm}
+                savedPosterSrc={serverSections?.about?.posterSrc || ''}
+                onQuickSave={handleSave}
+                saving={saving}
+              />
+            )}
+            {sectionKey === 'services_section' && <ServicesHeaderEditor form={form} setForm={setForm} />}
+            {sectionKey === 'trusted_by' && <TrustedByEditor form={form} setForm={setForm} />}
+            {sectionKey === 'testimonials' && <TestimonialsEditor form={form} setForm={setForm} />}
+            {sectionKey === 'contact_footer' && <ContactFooterEditor form={form} setForm={setForm} />}
+
+            <div className="admin-form-footer">
+              <button type="button" className="admin-btn-ghost" onClick={handleDiscardWithConfirm} disabled={!isDirty || saving}>
+                Reset Changes
+              </button>
+              <button type="submit" className="admin-btn-primary" disabled={saving}>
+                {saving ? 'Saving...' : 'Save Section'}
+              </button>
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 }
 
 function HeaderEditor({ form, setForm }) {
-  const navLinks = Array.isArray(form.navLinks) ? form.navLinks : [];
+  const confirm = useConfirm();
+  const links = normalizeNavLinks(form.navLinks);
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+
+  const moveLink = (fromIdx, toIdx) => {
+    if (toIdx < 0 || toIdx >= links.length || fromIdx === toIdx) return;
+    const next = [...links];
+    const [moved] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, moved);
+    setForm({ ...form, navLinks: next });
+  };
+
+  const updateLabel = (idx, newLabel) => {
+    const next = [...links];
+    next[idx] = { ...next[idx], label: newLabel };
+    setForm({ ...form, navLinks: next });
+  };
+
+  const resetOrder = async () => {
+    const ok = await confirm({
+      title: 'Reset Navigation Order',
+      message:
+        'Are you sure you want to restore the default navigation order and labels? Click Save Changes afterwards to publish to the live site.',
+      confirmText: 'Reset Order',
+      cancelText: 'Cancel',
+      variant: 'warning',
+    });
+    if (!ok) return;
+
+    setForm({
+      ...form,
+      navLinks: CANONICAL_NAV_ITEMS.map((item) => {
+        const existing = links.find((l) => l.href === item.href);
+        return {
+          label: existing?.label || item.label,
+          href: item.href,
+        };
+      }),
+    });
+  };
+
+  const handleDragStart = (e, index) => {
+    setDraggedIdx(index);
+    e.dataTransfer.effectAllowed = 'move';
+    try {
+      e.dataTransfer.setData('text/plain', String(index));
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverIdx !== index) {
+      setDragOverIdx(index);
+    }
+  };
+
+  const handleDragLeave = (e, index) => {
+    if (dragOverIdx === index) {
+      setDragOverIdx(null);
+    }
+  };
+
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === dropIndex) {
+      setDraggedIdx(null);
+      setDragOverIdx(null);
+      return;
+    }
+    const next = [...links];
+    const [moved] = next.splice(draggedIdx, 1);
+    next.splice(dropIndex, 0, moved);
+    setForm({ ...form, navLinks: next });
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  };
+
   return (
     <div className="admin-card">
-      <h2 className="admin-card-title">BRAND &amp; CTA</h2>
+      <h2 className="admin-card-title">Brand &amp; CTA</h2>
       <ImagePickerField
-        label="HEADER BRAND LOGO"
+        label="Header Brand Logo"
         value={form.logoUrl}
         defaultTag="general"
         onChange={(url, media) =>
           setForm({ ...form, logoUrl: url, logoMediaId: media?.id ?? null })
         }
       />
-      <div className="admin-form-grid-2">
-        <div className="admin-field-group">
-          <label className="admin-label">CTA BUTTON TEXT</label>
-          <input
-            type="text"
-            className="admin-input"
-            value={form.ctaText || ''}
-            onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
-          />
-        </div>
-        <div className="admin-field-group">
-          <label className="admin-label">CTA TARGET (#contact or /services/...)</label>
-          <input
-            type="text"
-            className="admin-input"
-            value={form.ctaHref || ''}
-            onChange={(e) => setForm({ ...form, ctaHref: e.target.value })}
-          />
-        </div>
+      <div className="admin-field-group">
+        <label className="admin-label">CTA Button Text</label>
+        <input
+          type="text"
+          className="admin-input"
+          value={form.ctaText || ''}
+          placeholder="e.g. INQUIRE NOW"
+          onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
+        />
       </div>
 
-      <div className="admin-card-header" style={{ marginTop: '1.5rem' }}>
-        <h3 className="admin-card-title">NAVIGATION LINKS</h3>
+      <div className="admin-card-header" style={{ marginTop: '1.75rem', alignItems: 'flex-start' }}>
+        <div>
+          <h3 className="admin-card-title">Navigation Links Order</h3>
+          <p className="admin-card-desc" style={{ marginBottom: 0 }}>
+            Drag and drop rows using the handle (<strong>⋮⋮</strong>) or use the arrow buttons to arrange menu sequence. Click <strong>Save Changes</strong> to publish live.
+          </p>
+        </div>
         <button
           type="button"
-          className="admin-btn-secondary"
-          onClick={() =>
-            setForm({
-              ...form,
-              navLinks: [...navLinks, { label: 'NEW LINK', href: '#services' }],
-            })
-          }
+          className="admin-btn-secondary admin-btn-sm"
+          onClick={resetOrder}
+          title="Restore standard navigation sequence"
         >
-          + Add Link
+          Reset Order
         </button>
       </div>
 
-      <div className="admin-repeater-list">
-        {navLinks.map((lnk, idx) => (
-          <div key={idx} className="admin-repeater-row">
-            <input
-              type="text"
-              className="admin-input"
-              value={lnk.label}
-              placeholder="Label"
-              onChange={(e) => {
-                const next = [...navLinks];
-                next[idx] = { ...lnk, label: e.target.value };
-                setForm({ ...form, navLinks: next });
-              }}
-            />
-            <input
-              type="text"
-              className="admin-input"
-              value={lnk.href}
-              placeholder="Href (#about or /services/...)"
-              onChange={(e) => {
-                const next = [...navLinks];
-                next[idx] = { ...lnk, href: e.target.value };
-                setForm({ ...form, navLinks: next });
-              }}
-            />
-            <button
-              type="button"
-              className="admin-btn-ghost-danger"
-              onClick={() =>
-                setForm({ ...form, navLinks: navLinks.filter((_, i) => i !== idx) })
-              }
+      <div className="admin-nav-order-list">
+        {links.map((lnk, idx) => {
+          const isDragging = draggedIdx === idx;
+          const isOver = dragOverIdx === idx;
+
+          return (
+            <div
+              key={lnk.href}
+              className={`admin-nav-order-row ${isDragging ? 'is-dragging' : ''} ${isOver ? 'is-drag-over' : ''}`}
+              draggable
+              onDragStart={(e) => handleDragStart(e, idx)}
+              onDragOver={(e) => handleDragOver(e, idx)}
+              onDragLeave={(e) => handleDragLeave(e, idx)}
+              onDrop={(e) => handleDrop(e, idx)}
+              onDragEnd={handleDragEnd}
             >
-              Remove
-            </button>
-          </div>
-        ))}
+              <div
+                className="admin-nav-drag-handle"
+                title="Drag to reorder"
+                aria-label="Drag to reorder"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="8" cy="5" r="2" />
+                  <circle cx="16" cy="5" r="2" />
+                  <circle cx="8" cy="12" r="2" />
+                  <circle cx="16" cy="12" r="2" />
+                  <circle cx="8" cy="19" r="2" />
+                  <circle cx="16" cy="19" r="2" />
+                </svg>
+              </div>
+
+              <span className="admin-nav-order-num" title={`Menu Position ${idx + 1}`}>
+                {String(idx + 1).padStart(2, '0')}
+              </span>
+
+              <div className="admin-nav-label-field">
+                <label className="admin-label-mini">Navigation Name</label>
+                <input
+                  type="text"
+                  className="admin-input"
+                  value={lnk.label}
+                  placeholder="e.g. ABOUT"
+                  onChange={(e) => updateLabel(idx, e.target.value)}
+                />
+              </div>
+
+              <div className="admin-nav-order-actions">
+                <label className="admin-label-mini">Move</label>
+                <div className="admin-nav-order-btns">
+                  <button
+                    type="button"
+                    className="admin-nav-move-btn"
+                    disabled={idx === 0}
+                    onClick={() => moveLink(idx, idx - 1)}
+                    title={idx === 0 ? 'Already at top' : 'Move Up'}
+                    aria-label={`Move ${lnk.label} Up`}
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-nav-move-btn"
+                    disabled={idx === links.length - 1}
+                    onClick={() => moveLink(idx, idx + 1)}
+                    title={idx === links.length - 1 ? 'Already at bottom' : 'Move Down'}
+                    aria-label={`Move ${lnk.label} Down`}
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-function HeroEditor({ form, setForm }) {
-  const photos = Array.isArray(form.ribbonPhotos) ? form.ribbonPhotos : [];
-  const marqueeText = Array.isArray(form.marqueeItems) ? form.marqueeItems.join('\n') : '';
-
-  return (
-    <>
-      <div className="admin-card">
-        <h2 className="admin-card-title">HERO MARQUEE &amp; ACTION BUTTON</h2>
-        <div className="admin-form-grid-2">
-          <div className="admin-field-group">
-            <label className="admin-label">CTA BUTTON TEXT</label>
-            <input
-              type="text"
-              className="admin-input"
-              value={form.ctaText || ''}
-              onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
-            />
-          </div>
-          <div className="admin-field-group">
-            <label className="admin-label">CTA TARGET (#about)</label>
-            <input
-              type="text"
-              className="admin-input"
-              value={form.ctaHref || ''}
-              onChange={(e) => setForm({ ...form, ctaHref: e.target.value })}
-            />
-          </div>
-        </div>
-
-        <div className="admin-field-group">
-          <label className="admin-label">TICKER KEYWORDS (ONE PER LINE)</label>
-          <textarea
-            rows={5}
-            className="admin-textarea"
-            value={marqueeText}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                marqueeItems: e.target.value.split(/\r?\n/),
-              })
-            }
-          />
-        </div>
-      </div>
-
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <h2 className="admin-card-title">SLANTED RIBBON CARDS ({photos.length})</h2>
-          <button
-            type="button"
-            className="admin-btn-secondary"
-            onClick={() =>
-              setForm({
-                ...form,
-                ribbonPhotos: [
-                  ...photos,
-                  { id: `photo-${Date.now()}`, src: '', alt: 'Sportsaal Action' },
-                ],
-              })
-            }
-          >
-            + Add Ribbon Card
-          </button>
-        </div>
-
-        <div className="admin-repeater-cards">
-          {photos.map((p, idx) => (
-            <div key={p.id || idx} className="admin-repeater-card">
-              <div className="repeater-card-top">
-                <strong>CARD #{idx + 1}</strong>
-                <button
-                  type="button"
-                  className="admin-btn-ghost-danger"
-                  onClick={() =>
-                    setForm({ ...form, ribbonPhotos: photos.filter((_, i) => i !== idx) })
-                  }
-                >
-                  Delete Card
-                </button>
-              </div>
-              <ImagePickerField
-                label="CARD PHOTO"
-                value={p.src}
-                defaultTag="hero"
-                onChange={(url, media) => {
-                  const next = [...photos];
-                  next[idx] = {
-                    ...p,
-                    src: url,
-                    mediaId: media?.id ?? p.mediaId ?? null,
-                    alt: p.alt || media?.alt_text || media?.title || 'Sportsaal Action',
-                  };
-                  setForm({ ...form, ribbonPhotos: next });
-                }}
-              />
-              <div className="admin-field-group">
-                <label className="admin-label">ALT TEXT</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={p.alt || ''}
-                  onChange={(e) => {
-                    const next = [...photos];
-                    next[idx] = { ...p, alt: e.target.value };
-                    setForm({ ...form, ribbonPhotos: next });
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-}
-
-function AboutEditor({ form, setForm }) {
+function AboutEditor({ form, setForm, savedPosterSrc = '', onQuickSave, saving = false }) {
+  const posterChanged = (form.posterSrc || '') !== (savedPosterSrc || '');
   return (
     <div className="admin-card">
-      <h2 className="admin-card-title">ABOUT EDITORIAL CONTENT</h2>
+      <h2 className="admin-card-title">About Editorial Content</h2>
       <div className="admin-field-group">
-        <label className="admin-label">EYEBROW BADGE</label>
+        <label className="admin-label">Eyebrow Badge</label>
         <input
           type="text"
           className="admin-input"
@@ -392,7 +486,7 @@ function AboutEditor({ form, setForm }) {
 
       <div className="admin-form-grid-2">
         <div className="admin-field-group">
-          <label className="admin-label">HEADLINE LINE 1 (WHITE)</label>
+          <label className="admin-label">Headline Line 1 (White)</label>
           <input
             type="text"
             className="admin-input"
@@ -401,7 +495,7 @@ function AboutEditor({ form, setForm }) {
           />
         </div>
         <div className="admin-field-group">
-          <label className="admin-label">HEADLINE LINE 2 (RED ACCENT)</label>
+          <label className="admin-label">Headline Line 2 (Red Accent)</label>
           <input
             type="text"
             className="admin-input"
@@ -412,7 +506,7 @@ function AboutEditor({ form, setForm }) {
       </div>
 
       <div className="admin-field-group">
-        <label className="admin-label">BRAND NARRATIVE</label>
+        <label className="admin-label">Brand Narrative</label>
         <textarea
           rows={4}
           className="admin-textarea"
@@ -422,9 +516,10 @@ function AboutEditor({ form, setForm }) {
       </div>
 
       <ImagePickerField
-        label="LEFT POSTER PHOTO (PURE PHOTO, ZERO OVERLAY TEXT)"
+        label="Left Poster Photo (Pure Photo, Zero Overlay Text)"
         value={form.posterSrc}
         defaultTag="about"
+        helperText="Click Select from Gallery to pick or upload an About photo, then click Save Photo Now / Save Changes."
         onChange={(url, media) =>
           setForm({
             ...form,
@@ -435,9 +530,23 @@ function AboutEditor({ form, setForm }) {
         }
       />
 
+      {posterChanged && onQuickSave && (
+        <div className="about-photo-save-callout" role="status">
+          <span>New About image selected — publish it to update the live site right away.</span>
+          <button
+            type="button"
+            className="admin-btn-primary"
+            onClick={() => onQuickSave()}
+            disabled={saving}
+          >
+            {saving ? 'Saving...' : 'Save Photo Now'}
+          </button>
+        </div>
+      )}
+
       <div className="admin-form-grid-2">
         <div className="admin-field-group">
-          <label className="admin-label">PRIMARY CTA LABEL</label>
+          <label className="admin-label">Primary CTA Label</label>
           <input
             type="text"
             className="admin-input"
@@ -446,7 +555,7 @@ function AboutEditor({ form, setForm }) {
           />
         </div>
         <div className="admin-field-group">
-          <label className="admin-label">SECONDARY CTA LABEL</label>
+          <label className="admin-label">Secondary CTA Label</label>
           <input
             type="text"
             className="admin-input"
@@ -462,10 +571,10 @@ function AboutEditor({ form, setForm }) {
 function ServicesHeaderEditor({ form, setForm }) {
   return (
     <div className="admin-card">
-      <h2 className="admin-card-title">SERVICES SECTION HEADER &amp; CTA</h2>
+      <h2 className="admin-card-title">Services Section Header &amp; CTA</h2>
       <div className="admin-form-grid-3">
         <div className="admin-field-group">
-          <label className="admin-label">EYEBROW TAG</label>
+          <label className="admin-label">Eyebrow Tag</label>
           <input
             type="text"
             className="admin-input"
@@ -474,7 +583,7 @@ function ServicesHeaderEditor({ form, setForm }) {
           />
         </div>
         <div className="admin-field-group">
-          <label className="admin-label">TITLE PRIMARY</label>
+          <label className="admin-label">Title Primary</label>
           <input
             type="text"
             className="admin-input"
@@ -483,7 +592,7 @@ function ServicesHeaderEditor({ form, setForm }) {
           />
         </div>
         <div className="admin-field-group">
-          <label className="admin-label">TITLE RED ACCENT</label>
+          <label className="admin-label">Title Red Accent</label>
           <input
             type="text"
             className="admin-input"
@@ -494,7 +603,7 @@ function ServicesHeaderEditor({ form, setForm }) {
       </div>
 
       <div className="admin-field-group">
-        <label className="admin-label">SECTION SUBTITLE</label>
+        <label className="admin-label">Section Subtitle</label>
         <textarea
           rows={3}
           className="admin-textarea"
@@ -503,25 +612,15 @@ function ServicesHeaderEditor({ form, setForm }) {
         />
       </div>
 
-      <div className="admin-form-grid-2">
-        <div className="admin-field-group">
-          <label className="admin-label">BOTTOM CTA TEXT</label>
-          <input
-            type="text"
-            className="admin-input"
-            value={form.ctaText || ''}
-            onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
-          />
-        </div>
-        <div className="admin-field-group">
-          <label className="admin-label">BOTTOM CTA LINK</label>
-          <input
-            type="text"
-            className="admin-input"
-            value={form.ctaHref || ''}
-            onChange={(e) => setForm({ ...form, ctaHref: e.target.value })}
-          />
-        </div>
+      <div className="admin-field-group">
+        <label className="admin-label">Bottom CTA Text</label>
+        <input
+          type="text"
+          className="admin-input"
+          value={form.ctaText || ''}
+          placeholder="e.g. INQUIRE CUSTOM SOLUTION"
+          onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
+        />
       </div>
     </div>
   );
@@ -529,13 +628,15 @@ function ServicesHeaderEditor({ form, setForm }) {
 
 function TrustedByEditor({ form, setForm }) {
   const logos = Array.isArray(form.logos) ? form.logos : [];
+  const [expandedIdx, setExpandedIdx] = useState(null);
+
   return (
     <>
       <div className="admin-card">
-        <h2 className="admin-card-title">PARTNER SECTION COPY &amp; BACKDROP</h2>
+        <h2 className="admin-card-title">Partner Section Copy &amp; Backdrop</h2>
         <div className="admin-form-grid-3">
           <div className="admin-field-group">
-            <label className="admin-label">SUBTITLE LINE</label>
+            <label className="admin-label">Subtitle Line</label>
             <input
               type="text"
               className="admin-input"
@@ -544,7 +645,7 @@ function TrustedByEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">HEADING WHITE</label>
+            <label className="admin-label">Heading White</label>
             <input
               type="text"
               className="admin-input"
@@ -553,7 +654,7 @@ function TrustedByEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">HEADING RED</label>
+            <label className="admin-label">Heading Red</label>
             <input
               type="text"
               className="admin-input"
@@ -563,7 +664,7 @@ function TrustedByEditor({ form, setForm }) {
           </div>
         </div>
         <ImagePickerField
-          label="STADIUM CARD BACKGROUND IMAGE"
+          label="Stadium Card Background Image"
           value={form.bgImageSrc}
           defaultTag="partners"
           onChange={(url, media) =>
@@ -574,61 +675,87 @@ function TrustedByEditor({ form, setForm }) {
 
       <div className="admin-card">
         <div className="admin-card-header">
-          <h2 className="admin-card-title">PARTNER BRAND LOGOS ({logos.length})</h2>
+          <h2 className="admin-card-title">Partner Brand Logos ({logos.length})</h2>
           <button
             type="button"
-            className="admin-btn-secondary"
-            onClick={() =>
+            className="admin-btn-primary admin-btn-sm"
+            onClick={() => {
+              const nextIdx = logos.length;
               setForm({
                 ...form,
                 logos: [...logos, { id: `partner-${Date.now()}`, name: 'New Partner', src: '' }],
-              })
-            }
+              });
+              setExpandedIdx(nextIdx);
+            }}
           >
             + Add Partner Logo
           </button>
         </div>
 
-        <div className="admin-repeater-cards">
-          {logos.map((logo, idx) => (
-            <div key={logo.id || idx} className="admin-repeater-card">
-              <div className="repeater-card-top">
-                <strong>PARTNER #{idx + 1}</strong>
-                <button
-                  type="button"
-                  className="admin-btn-ghost-danger"
-                  onClick={() =>
-                    setForm({ ...form, logos: logos.filter((_, i) => i !== idx) })
-                  }
-                >
-                  Delete Partner
-                </button>
+        <div className="admin-compact-stack">
+          {logos.map((logo, idx) => {
+            const isOpen = expandedIdx === idx;
+            return (
+              <div key={logo.id || idx} className="admin-compact-row-card">
+                <div className="compact-row-summary">
+                  <div className="compact-row-thumb is-logo">
+                    {logo.src ? <img src={logo.src} alt={logo.name} /> : <span>Logo</span>}
+                  </div>
+                  <div className="compact-row-meta">
+                    <strong>{logo.name || `Partner #${idx + 1}`}</strong>
+                    <span className="compact-row-sub">{logo.src || 'No logo file chosen'}</span>
+                  </div>
+                  <div className="hero-card-controls">
+                    <button
+                      type="button"
+                      className="admin-btn-secondary admin-btn-sm"
+                      onClick={() => setExpandedIdx(isOpen ? null : idx)}
+                    >
+                      {isOpen ? 'Done' : 'Edit'}
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-btn-ghost-danger admin-btn-sm"
+                      onClick={() => {
+                        if (expandedIdx === idx) setExpandedIdx(null);
+                        setForm({ ...form, logos: logos.filter((_, i) => i !== idx) });
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                {isOpen && (
+                  <div className="compact-row-drawer">
+                    <div className="admin-field-group">
+                      <label className="admin-label">Brand Name</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={logo.name || ''}
+                        onChange={(e) => {
+                          const next = [...logos];
+                          next[idx] = { ...logo, name: e.target.value };
+                          setForm({ ...form, logos: next });
+                        }}
+                      />
+                    </div>
+                    <ImagePickerField
+                      label="Logo File (SVG / PNG / WebP)"
+                      value={logo.src}
+                      defaultTag="partners"
+                      onChange={(url, media) => {
+                        const next = [...logos];
+                        next[idx] = { ...logo, src: url, mediaId: media?.id ?? null };
+                        setForm({ ...form, logos: next });
+                      }}
+                    />
+                  </div>
+                )}
               </div>
-              <div className="admin-field-group">
-                <label className="admin-label">BRAND NAME</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={logo.name || ''}
-                  onChange={(e) => {
-                    const next = [...logos];
-                    next[idx] = { ...logo, name: e.target.value };
-                    setForm({ ...form, logos: next });
-                  }}
-                />
-              </div>
-              <ImagePickerField
-                label="LOGO FILE (SVG / PNG / WEBP)"
-                value={logo.src}
-                defaultTag="partners"
-                onChange={(url, media) => {
-                  const next = [...logos];
-                  next[idx] = { ...logo, src: url, mediaId: media?.id ?? null };
-                  setForm({ ...form, logos: next });
-                }}
-              />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </>
@@ -637,13 +764,15 @@ function TrustedByEditor({ form, setForm }) {
 
 function TestimonialsEditor({ form, setForm }) {
   const items = Array.isArray(form.items) ? form.items : [];
+  const [expandedIdx, setExpandedIdx] = useState(null);
+
   return (
     <>
       <div className="admin-card">
-        <h2 className="admin-card-title">TESTIMONIALS HEADER</h2>
+        <h2 className="admin-card-title">Testimonials Header</h2>
         <div className="admin-form-grid-3">
           <div className="admin-field-group">
-            <label className="admin-label">TAG TEXT</label>
+            <label className="admin-label">Tag Text</label>
             <input
               type="text"
               className="admin-input"
@@ -652,7 +781,7 @@ function TestimonialsEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">HEADING LINE 1</label>
+            <label className="admin-label">Heading Line 1</label>
             <input
               type="text"
               className="admin-input"
@@ -661,7 +790,7 @@ function TestimonialsEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">HEADING ACCENT</label>
+            <label className="admin-label">Heading Accent</label>
             <input
               type="text"
               className="admin-input"
@@ -670,8 +799,8 @@ function TestimonialsEditor({ form, setForm }) {
             />
           </div>
         </div>
-        <div className="admin-field-group">
-          <label className="admin-label">SUBTITLE</label>
+        <div className="admin-field-group" style={{ marginBottom: 0 }}>
+          <label className="admin-label">Subtitle</label>
           <input
             type="text"
             className="admin-input"
@@ -683,11 +812,12 @@ function TestimonialsEditor({ form, setForm }) {
 
       <div className="admin-card">
         <div className="admin-card-header">
-          <h2 className="admin-card-title">CLIENT REVIEWS ({items.length})</h2>
+          <h2 className="admin-card-title">Client Reviews ({items.length})</h2>
           <button
             type="button"
-            className="admin-btn-secondary"
-            onClick={() =>
+            className="admin-btn-primary admin-btn-sm"
+            onClick={() => {
+              const nextIdx = items.length;
               setForm({
                 ...form,
                 items: [
@@ -701,94 +831,130 @@ function TestimonialsEditor({ form, setForm }) {
                     avatarSrc: '',
                   },
                 ],
-              })
-            }
+              });
+              setExpandedIdx(nextIdx);
+            }}
           >
             + Add Testimonial
           </button>
         </div>
 
-        <div className="admin-repeater-cards">
-          {items.map((item, idx) => (
-            <div key={item.id || idx} className="admin-repeater-card">
-              <div className="repeater-card-top">
-                <strong>REVIEW #{idx + 1}</strong>
-                <button
-                  type="button"
-                  className="admin-btn-ghost-danger"
-                  onClick={() =>
-                    setForm({ ...form, items: items.filter((_, i) => i !== idx) })
-                  }
-                >
-                  Delete Review
-                </button>
-              </div>
-              <div className="admin-field-group">
-                <label className="admin-label">QUOTE TEXT</label>
-                <textarea
-                  rows={3}
-                  className="admin-textarea"
-                  value={item.quote || ''}
-                  onChange={(e) => {
-                    const next = [...items];
-                    next[idx] = { ...item, quote: e.target.value };
-                    setForm({ ...form, items: next });
-                  }}
-                />
-              </div>
-              <div className="admin-form-grid-3">
-                <div className="admin-field-group">
-                  <label className="admin-label">CLIENT NAME</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={item.name || ''}
-                    onChange={(e) => {
-                      const next = [...items];
-                      next[idx] = { ...item, name: e.target.value };
-                      setForm({ ...form, items: next });
-                    }}
-                  />
+        <div className="admin-compact-stack">
+          {items.map((item, idx) => {
+            const isOpen = expandedIdx === idx;
+            return (
+              <div key={item.id || idx} className="admin-compact-row-card">
+                <div className="compact-row-summary">
+                  <div className="compact-row-thumb is-avatar">
+                    {item.avatarSrc || item.avatar ? (
+                      <img src={item.avatarSrc || item.avatar} alt={item.name} />
+                    ) : (
+                      <span>{(item.name || 'C')[0]}</span>
+                    )}
+                  </div>
+                  <div className="compact-row-meta">
+                    <strong>
+                      {item.name || `Review #${idx + 1}`}{' '}
+                      <span style={{ fontWeight: 400, color: 'var(--admin-text-muted)' }}>
+                        · {item.company || item.role}
+                      </span>
+                    </strong>
+                    <span className="compact-row-sub">
+                      {item.quote ? `“${item.quote.slice(0, 90)}${item.quote.length > 90 ? '…' : ''}”` : 'No quote yet'}
+                    </span>
+                  </div>
+                  <div className="hero-card-controls">
+                    <button
+                      type="button"
+                      className="admin-btn-secondary admin-btn-sm"
+                      onClick={() => setExpandedIdx(isOpen ? null : idx)}
+                    >
+                      {isOpen ? 'Done' : 'Edit'}
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-btn-ghost-danger admin-btn-sm"
+                      onClick={() => {
+                        if (expandedIdx === idx) setExpandedIdx(null);
+                        setForm({ ...form, items: items.filter((_, i) => i !== idx) });
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="admin-field-group">
-                  <label className="admin-label">ROLE</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={item.role || ''}
-                    onChange={(e) => {
-                      const next = [...items];
-                      next[idx] = { ...item, role: e.target.value };
-                      setForm({ ...form, items: next });
-                    }}
-                  />
-                </div>
-                <div className="admin-field-group">
-                  <label className="admin-label">COMPANY</label>
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={item.company || ''}
-                    onChange={(e) => {
-                      const next = [...items];
-                      next[idx] = { ...item, company: e.target.value };
-                      setForm({ ...form, items: next });
-                    }}
-                  />
-                </div>
+
+                {isOpen && (
+                  <div className="compact-row-drawer">
+                    <div className="admin-field-group">
+                      <label className="admin-label">Quote Text</label>
+                      <textarea
+                        rows={3}
+                        className="admin-textarea"
+                        value={item.quote || ''}
+                        onChange={(e) => {
+                          const next = [...items];
+                          next[idx] = { ...item, quote: e.target.value };
+                          setForm({ ...form, items: next });
+                        }}
+                      />
+                    </div>
+                    <div className="admin-form-grid-3">
+                      <div className="admin-field-group">
+                        <label className="admin-label">Client Name</label>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          value={item.name || ''}
+                          onChange={(e) => {
+                            const next = [...items];
+                            next[idx] = { ...item, name: e.target.value };
+                            setForm({ ...form, items: next });
+                          }}
+                        />
+                      </div>
+                      <div className="admin-field-group">
+                        <label className="admin-label">Role</label>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          value={item.role || ''}
+                          onChange={(e) => {
+                            const next = [...items];
+                            next[idx] = { ...item, role: e.target.value };
+                            setForm({ ...form, items: next });
+                          }}
+                        />
+                      </div>
+                      <div className="admin-field-group">
+                        <label className="admin-label">Company</label>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          value={item.company || ''}
+                          onChange={(e) => {
+                            const next = [...items];
+                            next[idx] = { ...item, company: e.target.value };
+                            setForm({ ...form, items: next });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <ImagePickerField
+                      label="Client Avatar Photo"
+                      value={item.avatarSrc || item.avatar}
+                      defaultTag="testimonials"
+                      onChange={(url, media) => {
+                        const next = [...items];
+                        next[idx] = { ...item, avatarSrc: url, mediaId: media?.id ?? null };
+                        setForm({ ...form, items: next });
+                      }}
+                    />
+                  </div>
+                )}
               </div>
-              <ImagePickerField
-                label="CLIENT AVATAR PHOTO"
-                value={item.avatarSrc || item.avatar}
-                defaultTag="testimonials"
-                onChange={(url, media) => {
-                  const next = [...items];
-                  next[idx] = { ...item, avatarSrc: url, mediaId: media?.id ?? null };
-                  setForm({ ...form, items: next });
-                }}
-              />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </>
@@ -796,20 +962,36 @@ function TestimonialsEditor({ form, setForm }) {
 }
 
 function ContactFooterEditor({ form, setForm }) {
-  const contact = form.contact || {};
-  const footer = form.footer || {};
+  const contact = form?.contact || {};
+  const footer = form?.footer || {};
   const socials = Array.isArray(contact.socials) ? contact.socials : [];
 
-  const updateContact = (patch) => setForm({ ...form, contact: { ...contact, ...patch } });
-  const updateFooter = (patch) => setForm({ ...form, footer: { ...footer, ...patch } });
+  const updateContact = (patch) =>
+    setForm((prev) => ({
+      ...prev,
+      contact: { ...(prev?.contact || {}), ...patch },
+    }));
+
+  const updateFooter = (patch) =>
+    setForm((prev) => ({
+      ...prev,
+      footer: { ...(prev?.footer || {}), ...patch },
+    }));
+
+  const updateSocials = (nextSocials) =>
+    setForm((prev) => ({
+      ...prev,
+      contact: { ...(prev?.contact || {}), socials: nextSocials },
+      footer: { ...(prev?.footer || {}), socials: nextSocials },
+    }));
 
   return (
     <>
       <div className="admin-card">
-        <h2 className="admin-card-title">CONTACT DETAILS (SYNCED WITH FOOTER)</h2>
+        <h2 className="admin-card-title">Contact Details (Synced with Footer)</h2>
         <div className="admin-form-grid-2">
           <div className="admin-field-group">
-            <label className="admin-label">PHONE NUMBER</label>
+            <label className="admin-label">Phone Number</label>
             <input
               type="text"
               className="admin-input"
@@ -818,7 +1000,7 @@ function ContactFooterEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">PUBLIC CONTACT EMAIL</label>
+            <label className="admin-label">Public Contact Email</label>
             <input
               type="email"
               className="admin-input"
@@ -827,7 +1009,7 @@ function ContactFooterEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">LOCATION ADDRESS</label>
+            <label className="admin-label">Location Address</label>
             <input
               type="text"
               className="admin-input"
@@ -836,7 +1018,7 @@ function ContactFooterEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">BUSINESS HOURS</label>
+            <label className="admin-label">Business Hours</label>
             <input
               type="text"
               className="admin-input"
@@ -848,7 +1030,7 @@ function ContactFooterEditor({ form, setForm }) {
 
         <div className="admin-form-grid-2">
           <div className="admin-field-group">
-            <label className="admin-label">CONTACT DESCRIPTION</label>
+            <label className="admin-label">Contact Description</label>
             <textarea
               rows={3}
               className="admin-textarea"
@@ -857,7 +1039,7 @@ function ContactFooterEditor({ form, setForm }) {
             />
           </div>
           <div className="admin-field-group">
-            <label className="admin-label">INQUIRY FORWARD EMAIL (FORMSUBMIT TARGET)</label>
+            <label className="admin-label">Inquiry Forward Email (FormSubmit Target)</label>
             <input
               type="email"
               className="admin-input"
@@ -868,7 +1050,7 @@ function ContactFooterEditor({ form, setForm }) {
         </div>
 
         <ImagePickerField
-          label="CONTACT CUTOUT IMAGE"
+          label="Contact Cutout Image"
           value={contact.batsmanImg}
           defaultTag="general"
           onChange={(url, media) =>
@@ -878,7 +1060,7 @@ function ContactFooterEditor({ form, setForm }) {
       </div>
 
       <div className="admin-card">
-        <h2 className="admin-card-title">SOCIAL LINKS &amp; FOOTER BRANDING</h2>
+        <h2 className="admin-card-title">Social Links &amp; Footer Branding</h2>
         <div className="admin-repeater-list" style={{ marginBottom: '1.25rem' }}>
           {socials.map((soc, idx) => (
             <div key={idx} className="admin-repeater-row">
@@ -890,8 +1072,7 @@ function ContactFooterEditor({ form, setForm }) {
                 onChange={(e) => {
                   const next = [...socials];
                   next[idx] = { ...soc, label: e.target.value };
-                  updateContact({ socials: next });
-                  updateFooter({ socials: next });
+                  updateSocials(next);
                 }}
               />
               <input
@@ -902,8 +1083,7 @@ function ContactFooterEditor({ form, setForm }) {
                 onChange={(e) => {
                   const next = [...socials];
                   next[idx] = { ...soc, url: e.target.value };
-                  updateContact({ socials: next });
-                  updateFooter({ socials: next });
+                  updateSocials(next);
                 }}
               />
             </div>
@@ -911,7 +1091,7 @@ function ContactFooterEditor({ form, setForm }) {
         </div>
 
         <div className="admin-field-group">
-          <label className="admin-label">FOOTER BRAND DESCRIPTION</label>
+          <label className="admin-label">Footer Brand Description</label>
           <textarea
             rows={2}
             className="admin-textarea"
@@ -921,7 +1101,7 @@ function ContactFooterEditor({ form, setForm }) {
         </div>
 
         <div className="admin-field-group">
-          <label className="admin-label">COPYRIGHT NOTICE</label>
+          <label className="admin-label">Copyright Notice</label>
           <input
             type="text"
             className="admin-input"
@@ -933,3 +1113,4 @@ function ContactFooterEditor({ form, setForm }) {
     </>
   );
 }
+
