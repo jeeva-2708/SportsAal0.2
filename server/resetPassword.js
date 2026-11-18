@@ -36,19 +36,19 @@ async function main() {
   const passwordHash = await bcrypt.hash(newPassword, 10);
 
   const res = await query(
-    `UPDATE admin_users SET password_hash = $1 WHERE email = $2 RETURNING id, email`,
+    `UPDATE admin_users SET password_hash = ? WHERE email = ?`,
     [passwordHash, email]
   );
 
   if (res.rowCount === 0) {
     await query(
       `INSERT INTO admin_users (email, name, password_hash)
-       VALUES ($1, $2, $3)`,
+       VALUES (?, ?, ?)`,
       [email, ADMIN_DEFAULTS.name, passwordHash]
     );
     console.log(`Created admin user ${email} with updated bcrypt password hash.`);
   } else {
-    console.log(`Updated bcrypt password hash for ${res.rows[0].email}.`);
+    console.log(`Updated bcrypt password hash for ${email}.`);
   }
 
   await pool.end();
