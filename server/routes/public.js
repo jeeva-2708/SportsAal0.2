@@ -72,7 +72,7 @@ router.get('/services/:slug', async (req, res) => {
       `SELECT id, slug, title, tagline, category, short_description,
               card_image, hero_image, is_featured_home, sort_order, display_config
        FROM services
-       WHERE slug = $1 AND is_active = TRUE`,
+       WHERE slug = ? AND is_active = TRUE`,
       [slug]
     );
 
@@ -86,21 +86,21 @@ router.get('/services/:slug', async (req, res) => {
         `SELECT id, service_id, title, tag, price_label, description,
                 highlights, image_url, cta_text, sort_order, display_config
          FROM service_items
-         WHERE service_id = $1 AND is_active = TRUE
+         WHERE service_id = ? AND is_active = TRUE
          ORDER BY sort_order ASC, id ASC`,
         [service.id]
       ),
       query(
         `SELECT id, title, alt_text, file_url
          FROM media_gallery
-         WHERE section_tag = $1
+         WHERE section_tag = ?
          ORDER BY created_at DESC`,
         [`showcase:${service.slug}`]
       ),
       query(
         `SELECT id, slug, title
          FROM services
-         WHERE is_active = TRUE AND id <> $1
+         WHERE is_active = TRUE AND id <> ?
          ORDER BY sort_order ASC, id ASC`,
         [service.id]
       ),
@@ -134,12 +134,23 @@ router.post('/contact', async (req, res) => {
 
     const result = await query(
       `INSERT INTO contact_inquiries (name, email, phone, subject, message)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, created_at`,
+       VALUES (?, ?, ?, ?, ?)`,
       [name.slice(0, 150), email.slice(0, 255), phone.slice(0, 60), subject.slice(0, 160), message]
     );
 
-    return res.status(201).json({ ok: true, inquiry: result.rows[0] });
+    return res.status(201).json({
+      ok: true,
+      inquiry: {
+        id: result.insertId,
+        name: name.slice(0, 150),
+        email: email.slice(0, 255),
+        phone: phone.slice(0, 60),
+        subject: subject.slice(0, 160),
+        message,
+        status: 'new',
+        created_at: new Date().toISOString(),
+      },
+    });
   } catch (err) {
     console.error('Contact submission DB error:', err.message);
     return res.status(500).json({ error: 'Unable to save inquiry.' });

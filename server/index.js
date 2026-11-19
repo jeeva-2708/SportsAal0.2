@@ -76,11 +76,11 @@ app.use(['/admin-login', '/admin-portal'], (_req, res, next) => {
 app.get('/api/health', async (_req, res) => {
   try {
     await testConnection();
-    res.json({ ok: true, database: 'postgresql', connected: true });
+    res.json({ ok: true, database: 'mysql', connected: true });
   } catch (err) {
     res.status(503).json({
       ok: false,
-      database: 'postgresql',
+      database: 'mysql',
       connected: false,
       error: err.message,
     });
@@ -115,10 +115,10 @@ if (IS_PROD && fs.existsSync(DIST_DIR)) {
 async function startServer() {
   try {
     await bootstrapDatabase();
-    console.log('PostgreSQL connected, schema verified, and initial seed ready.');
+    console.log('MySQL connected, schema verified, and initial seed ready.');
   } catch (err) {
     console.warn(
-      'PostgreSQL initialization warning (API running, check .env PGPASSWORD / connection):',
+      'MySQL initialization warning (API running, check .env MYSQL_PASSWORD / connection):',
       err.message
     );
   }

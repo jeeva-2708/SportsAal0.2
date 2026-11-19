@@ -66,13 +66,13 @@ export async function seedDatabaseIfNeeded() {
   const assetFiles = syncDefaultFilesToUploads();
 
   // 1. Admin user
-  const adminCount = await query('SELECT COUNT(*)::int AS cnt FROM admin_users');
+  const adminCount = await query('SELECT COUNT(*) AS cnt FROM admin_users');
   if (adminCount.rows[0].cnt === 0) {
     const passwordHash = await bcrypt.hash(ADMIN_DEFAULTS.password, 10);
     await query(
       `INSERT INTO admin_users (email, name, password_hash)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (email) DO NOTHING`,
+       VALUES (?, ?, ?)
+       ON DUPLICATE KEY UPDATE email = email`,
       [ADMIN_DEFAULTS.email.toLowerCase(), ADMIN_DEFAULTS.name, passwordHash]
     );
     console.log(`Seeded default admin user (${ADMIN_DEFAULTS.email}).`);
@@ -86,8 +86,7 @@ export async function seedDatabaseIfNeeded() {
       const info = assetFiles[asset.key];
       const res = await query(
         `INSERT INTO media_gallery (title, alt_text, section_tag, file_url, original_filename, mime_type, size_bytes)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING id, file_url`,
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           asset.title,
           asset.alt,
@@ -98,7 +97,7 @@ export async function seedDatabaseIfNeeded() {
           info.sizeBytes,
         ]
       );
-      mediaMap[asset.key] = res.rows[0];
+      mediaMap[asset.key] = { id: res.insertId, file_url: info.fileUrl };
     }
     console.log(`Seeded ${DEFAULT_MEDIA_ASSETS.length} initial gallery items.`);
   } else {
@@ -114,22 +113,21 @@ export async function seedDatabaseIfNeeded() {
   for (const [key, content] of Object.entries(initialSections)) {
     await query(
       `INSERT INTO site_sections (section_key, content)
-       VALUES ($1, $2::jsonb)
-       ON CONFLICT (section_key) DO NOTHING`,
+       VALUES (?, ?)
+       ON DUPLICATE KEY UPDATE section_key = section_key`,
       [key, JSON.stringify(content)]
     );
   }
 
   // 4. Services & 2 sample items per service
-  const svcCount = await query('SELECT COUNT(*)::int AS cnt FROM services');
+  const svcCount = await query('SELECT COUNT(*) AS cnt FROM services');
   if (svcCount.rows[0].cnt === 0) {
     const initialServices = buildInitialServices(mediaMap);
     for (const svc of initialServices) {
       const svcRes = await query(
         `INSERT INTO services
           (slug, title, tagline, category, short_description, card_image, card_media_id, hero_image, hero_media_id, is_featured_home, is_active, sort_order, display_config)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb)
-         RETURNING id`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           svc.slug,
           svc.title,
@@ -147,12 +145,12 @@ export async function seedDatabaseIfNeeded() {
         ]
       );
 
-      const serviceId = svcRes.rows[0].id;
+      const serviceId = svcRes.insertId;
       for (const item of svc.items) {
         await query(
           `INSERT INTO service_items
             (service_id, title, tag, price_label, description, highlights, image_url, media_id, cta_text, is_active, sort_order)
-           VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, $10, $11)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             serviceId,
             item.title,
@@ -186,7 +184,7 @@ const isDirectRun =
 if (isDirectRun) {
   bootstrapDatabase()
     .then(() => {
-      console.log('PostgreSQL database initialized & seeded successfully.');
+      console.log('MySQL database initialized & seeded successfully.');
       return pool.end();
     })
     .catch((err) => {

@@ -29,7 +29,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     }
 
     const result = await query(
-      'SELECT id, email, name, password_hash FROM admin_users WHERE email = $1',
+      'SELECT id, email, name, password_hash FROM admin_users WHERE email = ?',
       [email]
     );
 
@@ -43,7 +43,7 @@ router.post('/login', loginLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials.' });
     }
 
-    await query('UPDATE admin_users SET last_login_at = NOW() WHERE id = $1', [user.id]);
+    await query('UPDATE admin_users SET last_login_at = NOW() WHERE id = ?', [user.id]);
 
     const admin = { id: user.id, email: user.email, name: user.name };
     const token = signAdminToken(admin);
@@ -64,7 +64,7 @@ router.post('/logout', (_req, res) => {
 router.get('/me', requireAdmin, async (req, res) => {
   try {
     const result = await query(
-      'SELECT id, email, name, last_login_at FROM admin_users WHERE id = $1',
+      'SELECT id, email, name, last_login_at FROM admin_users WHERE id = ?',
       [req.admin.id]
     );
     if (result.rowCount === 0) {
@@ -90,7 +90,7 @@ router.put('/password', requireAdmin, async (req, res) => {
     }
 
     const result = await query(
-      'SELECT id, password_hash FROM admin_users WHERE id = $1',
+      'SELECT id, password_hash FROM admin_users WHERE id = ?',
       [req.admin.id]
     );
     if (result.rowCount === 0) {
@@ -103,7 +103,7 @@ router.put('/password', requireAdmin, async (req, res) => {
     }
 
     const updatedHash = await bcrypt.hash(newPassword, 10);
-    await query('UPDATE admin_users SET password_hash = $1 WHERE id = $2', [
+    await query('UPDATE admin_users SET password_hash = ? WHERE id = ?', [
       updatedHash,
       req.admin.id,
     ]);
