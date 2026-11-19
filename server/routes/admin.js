@@ -129,19 +129,19 @@ router.get('/dashboard', async (_req, res) => {
   try {
     const [svcStats, itemsStats, mediaStats, inqStats, recentInq, sectionsRes] = await Promise.all([
       query(
-        `SELECT COUNT(*)::int AS total,
-                COUNT(*) FILTER (WHERE is_active)::int AS active
+        `SELECT COUNT(*) AS total,
+                COALESCE(SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END), 0) AS active
          FROM services`
       ),
       query(
-        `SELECT COUNT(*)::int AS total,
-                COUNT(*) FILTER (WHERE is_active)::int AS active
+        `SELECT COUNT(*) AS total,
+                COALESCE(SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END), 0) AS active
          FROM service_items`
       ),
-      query('SELECT COUNT(*)::int AS total FROM media_gallery'),
+      query('SELECT COUNT(*) AS total FROM media_gallery'),
       query(
-        `SELECT COUNT(*)::int AS total,
-                COUNT(*) FILTER (WHERE status = 'new')::int AS unread
+        `SELECT COUNT(*) AS total,
+                COALESCE(SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END), 0) AS unread
          FROM contact_inquiries`
       ),
       query(
@@ -218,13 +218,16 @@ router.put('/sections/:key', async (req, res) => {
       return res.status(400).json({ error: 'Section content payload must be a JSON object.' });
     }
 
-    const result = await query(
+    await query(
       `INSERT INTO site_sections (section_key, content, updated_at)
-       VALUES ($1, $2::jsonb, NOW())
-       ON CONFLICT (section_key)
-       DO UPDATE SET content = EXCLUDED.content, updated_at = NOW()
-       RETURNING section_key, content, updated_at`,
+       VALUES (?, ?, NOW())
+       ON DUPLICATE KEY UPDATE content = VALUES(content), updated_at = NOW()`,
       [key, JSON.stringify(content)]
+    );
+
+    const result = await query(
+      'SELECT section_key, content, updated_at FROM site_sections WHERE section_key = ?',
+      [key]
     );
 
     return res.json({ section: result.rows[0] });
@@ -320,8 +323,7 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
 
         const insertRes = await query(
           `INSERT INTO media_gallery (title, alt_text, section_tag, file_url, original_filename, mime_type, size_bytes)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)
-           RETURNING *`,
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [
             baseTitle.slice(0, 180),
             (customAlt || baseTitle).slice(0, 255),
@@ -332,7 +334,8 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
             Buffer.byteLength(svgText, 'utf8'),
           ]
         );
-        created.push(insertRes.rows[0]);
+        const fetchRes = await query('SELECT * FROM media_gallery WHERE id = ?', [insertRes.insertId]);
+        created.push(fetchRes.rows[0]);
       } else {
         const outName = `media-${Date.now()}-${idSuffix}.webp`;
 
@@ -350,8 +353,7 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
 
         const insertRes = await query(
           `INSERT INTO media_gallery (title, alt_text, section_tag, file_url, original_filename, mime_type, width, height, size_bytes)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-           RETURNING *`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             baseTitle.slice(0, 180),
             (customAlt || baseTitle).slice(0, 255),
@@ -364,7 +366,8 @@ router.post('/gallery/upload', upload.array('files', 10), async (req, res) => {
             info.size || webpBuffer.length || 0,
           ]
         );
-        created.push(insertRes.rows[0]);
+        const fetchRes = await query('SELECT * FROM media_gallery WHERE id = ?', [insertRes.insertId]);
+        created.push(fetchRes.rows[0]);
       }
     }
 
@@ -382,7 +385,7 @@ router.patch('/gallery/:id', async (req, res) => {
       return res.status(400).json({ error: 'Invalid media ID.' });
     }
 
-    const existing = await query('SELECT * FROM media_gallery WHERE id = $1', [id]);
+    const existing = await query('SELECT * FROM media_gallery WHERE id = ?', [id]);
     if (existing.rowCount === 0) {
       return res.status(404).json({ error: 'Media item not found.' });
     }
@@ -394,15 +397,15 @@ router.patch('/gallery/:id', async (req, res) => {
     const sectionTag =
       req.body?.section_tag !== undefined ? String(req.body.section_tag).trim() : cur.section_tag;
 
-    const updated = await query(
+    await query(
       `UPDATE media_gallery
-       SET title = $1, alt_text = $2, section_tag = $3
-       WHERE id = $4
-       RETURNING *`,
+       SET title = ?, alt_text = ?, section_tag = ?
+       WHERE id = ?`,
       [title.slice(0, 180), altText.slice(0, 255), sectionTag.slice(0, 100), id]
     );
 
-    return res.json({ media: updated.rows[0] });
+    const fetchRes = await query('SELECT * FROM media_gallery WHERE id = ?', [id]);
+    return res.json({ media: fetchRes.rows[0] });
   } catch (err) {
     console.error('Gallery update error:', err.message);
     return res.status(500).json({ error: 'Failed to update media metadata.' });
@@ -420,7 +423,7 @@ router.post('/gallery/:id/assign', async (req, res) => {
       return res.status(400).json({ error: 'Media ID and target assignment are required.' });
     }
 
-    const mediaRes = await query('SELECT * FROM media_gallery WHERE id = $1', [mediaId]);
+    const mediaRes = await query('SELECT * FROM media_gallery WHERE id = ?', [mediaId]);
     if (mediaRes.rowCount === 0) {
       return res.status(404).json({ error: 'Gallery media not found.' });
     }
@@ -436,7 +439,7 @@ router.post('/gallery/:id/assign', async (req, res) => {
         posterAlt: media.alt_text || media.title,
       };
       await query(
-        `UPDATE site_sections SET content = $1::jsonb, updated_at = NOW() WHERE section_key = 'about'`,
+        `UPDATE site_sections SET content = ?, updated_at = NOW() WHERE section_key = 'about'`,
         [JSON.stringify(next)]
       );
       return res.json({ ok: true, message: 'Assigned image to About poster.' });
@@ -453,7 +456,7 @@ router.post('/gallery/:id/assign', async (req, res) => {
         mediaId: media.id,
       });
       await query(
-        `UPDATE site_sections SET content = $1::jsonb, updated_at = NOW() WHERE section_key = 'hero'`,
+        `UPDATE site_sections SET content = ?, updated_at = NOW() WHERE section_key = 'hero'`,
         [JSON.stringify({ ...content, ribbonPhotos: ribbon })]
       );
       return res.json({ ok: true, message: 'Added image card to Hero ribbon.' });
@@ -470,7 +473,7 @@ router.post('/gallery/:id/assign', async (req, res) => {
         mediaId: media.id,
       });
       await query(
-        `UPDATE site_sections SET content = $1::jsonb, updated_at = NOW() WHERE section_key = 'trusted_by'`,
+        `UPDATE site_sections SET content = ?, updated_at = NOW() WHERE section_key = 'trusted_by'`,
         [JSON.stringify({ ...content, logos })]
       );
       return res.json({ ok: true, message: 'Added logo to Trusted By partners.' });
@@ -484,12 +487,12 @@ router.post('/gallery/:id/assign', async (req, res) => {
       }
       if (isHero) {
         await query(
-          'UPDATE services SET hero_image = $1, hero_media_id = $2, updated_at = NOW() WHERE id = $3',
+          'UPDATE services SET hero_image = ?, hero_media_id = ?, updated_at = NOW() WHERE id = ?',
           [media.file_url, media.id, serviceId]
         );
       } else {
         await query(
-          'UPDATE services SET card_image = $1, card_media_id = $2, updated_at = NOW() WHERE id = $3',
+          'UPDATE services SET card_image = ?, card_media_id = ?, updated_at = NOW() WHERE id = ?',
           [media.file_url, media.id, serviceId]
         );
       }
@@ -521,12 +524,13 @@ router.delete('/gallery/:id', async (req, res) => {
       return res.status(400).json({ error: 'Invalid media ID.' });
     }
 
-    const resDel = await query('DELETE FROM media_gallery WHERE id = $1 RETURNING file_url', [id]);
-    if (resDel.rowCount === 0) {
+    const existing = await query('SELECT file_url FROM media_gallery WHERE id = ?', [id]);
+    if (existing.rowCount === 0) {
       return res.status(404).json({ error: 'Media item not found.' });
     }
 
-    await deleteMediaFile(resDel.rows[0].file_url);
+    await query('DELETE FROM media_gallery WHERE id = ?', [id]);
+    await deleteMediaFile(existing.rows[0].file_url);
     return res.json({ ok: true });
   } catch (err) {
     console.error('Gallery delete error:', err.message);
@@ -541,8 +545,8 @@ router.get('/services', async (_req, res) => {
   try {
     const result = await query(
       `SELECT s.*,
-              COUNT(i.id)::int AS items_count,
-              COUNT(i.id) FILTER (WHERE i.is_active)::int AS active_items_count
+              COUNT(i.id) AS items_count,
+              COALESCE(SUM(CASE WHEN i.is_active = 1 THEN 1 ELSE 0 END), 0) AS active_items_count
        FROM services s
        LEFT JOIN service_items i ON i.service_id = s.id
        GROUP BY s.id
@@ -567,7 +571,7 @@ router.post('/services', async (req, res) => {
       return res.status(400).json({ error: 'A valid URL slug is required.' });
     }
 
-    const existing = await query('SELECT id FROM services WHERE slug = $1', [slug]);
+    const existing = await query('SELECT id FROM services WHERE slug = ?', [slug]);
     if (existing.rowCount > 0) {
       return res.status(409).json({ error: `A service with slug "${slug}" already exists.` });
     }
@@ -590,8 +594,7 @@ router.post('/services', async (req, res) => {
     const inserted = await query(
       `INSERT INTO services
         (slug, title, tagline, category, short_description, card_image, card_media_id, hero_image, hero_media_id, is_featured_home, is_active, sort_order, display_config)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb)
-       RETURNING *`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         slug,
         title,
@@ -606,6 +609,11 @@ router.post('/services', async (req, res) => {
         isActive,
         sortOrder,
         JSON.stringify(displayConfig),
+      ]
+    );
+
+    const fetchRes = await query('SELECT * FROM services WHERE id = ?', [inserted.insertId]);
+    return res.status(201).json({ service: fetchRes.rows[0] });
       ]
     );
 
@@ -641,7 +649,7 @@ router.put('/services/:id', async (req, res) => {
     }
 
     if (nextSlug !== cur.slug) {
-      const collision = await query('SELECT id FROM services WHERE slug = $1 AND id <> $2', [
+      const collision = await query('SELECT id FROM services WHERE slug = ? AND id <> ?', [
         nextSlug,
         id,
       ]);
@@ -655,24 +663,23 @@ router.put('/services/:id', async (req, res) => {
         ? normalizeDisplayConfig({ ...cur.display_config, ...req.body.display_config })
         : cur.display_config;
 
-    const updated = await query(
+    await query(
       `UPDATE services
-       SET slug = $1,
-           title = $2,
-           tagline = $3,
-           category = $4,
-           short_description = $5,
-           card_image = $6,
-           card_media_id = $7,
-           hero_image = $8,
-           hero_media_id = $9,
-           is_featured_home = $10,
-           is_active = $11,
-           sort_order = $12,
-           display_config = $13::jsonb,
+       SET slug = ?,
+           title = ?,
+           tagline = ?,
+           category = ?,
+           short_description = ?,
+           card_image = ?,
+           card_media_id = ?,
+           hero_image = ?,
+           hero_media_id = ?,
+           is_featured_home = ?,
+           is_active = ?,
+           sort_order = ?,
+           display_config = ?,
            updated_at = NOW()
-       WHERE id = $14
-       RETURNING *`,
+       WHERE id = ?`,
       [
         nextSlug,
         title,
@@ -711,7 +718,8 @@ router.put('/services/:id', async (req, res) => {
       ]
     );
 
-    return res.json({ service: updated.rows[0] });
+    const fetchRes = await query('SELECT * FROM services WHERE id = ?', [id]);
+    return res.json({ service: fetchRes.rows[0] });
   } catch (err) {
     console.error('Update service error:', err.message);
     return res.status(500).json({ error: 'Failed to update service.' });
@@ -725,10 +733,11 @@ router.delete('/services/:id', async (req, res) => {
       return res.status(400).json({ error: 'Invalid service ID.' });
     }
 
-    const del = await query('DELETE FROM services WHERE id = $1 RETURNING id', [id]);
-    if (del.rowCount === 0) {
+    const existing = await query('SELECT id FROM services WHERE id = ?', [id]);
+    if (existing.rowCount === 0) {
       return res.status(404).json({ error: 'Service not found.' });
     }
+    await query('DELETE FROM services WHERE id = ?', [id]);
     return res.json({ ok: true });
   } catch (err) {
     console.error('Delete service error:', err.message);
@@ -751,16 +760,20 @@ router.post('/services/:id/reset-item-overrides', async (req, res) => {
     if (fieldKey && ITEM_DISPLAY_KEYS.includes(fieldKey)) {
       await query(
         `UPDATE service_items
-         SET display_config = COALESCE(display_config, '{}'::jsonb) - $1,
+         SET display_config = JSON_REMOVE(COALESCE(display_config, JSON_OBJECT()), CONCAT('$.', ?)),
              updated_at = NOW()
-         WHERE service_id = $2`,
+         WHERE service_id = ?`,
         [fieldKey, id]
       );
     } else {
       await query(
         `UPDATE service_items
-         SET display_config = '{}'::jsonb,
+         SET display_config = JSON_OBJECT(),
              updated_at = NOW()
+         WHERE service_id = ?`,
+        [id]
+      );
+    }
          WHERE service_id = $1`,
         [id]
       );
@@ -807,7 +820,7 @@ router.post('/service-items', async (req, res) => {
       return res.status(400).json({ error: 'Valid service and item title are required.' });
     }
 
-    const svcExists = await query('SELECT id FROM services WHERE id = $1', [serviceId]);
+    const svcExists = await query('SELECT id FROM services WHERE id = ?', [serviceId]);
     if (svcExists.rowCount === 0) {
       return res.status(404).json({ error: 'Parent service not found.' });
     }
@@ -815,8 +828,7 @@ router.post('/service-items', async (req, res) => {
     const inserted = await query(
       `INSERT INTO service_items
         (service_id, title, tag, price_label, description, highlights, image_url, media_id, cta_text, display_config, is_active, sort_order)
-       VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, $10::jsonb, $11, $12)
-       RETURNING *`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         serviceId,
         title,
@@ -833,7 +845,8 @@ router.post('/service-items', async (req, res) => {
       ]
     );
 
-    return res.status(201).json({ item: inserted.rows[0] });
+    const fetchRes = await query('SELECT * FROM service_items WHERE id = ?', [inserted.insertId]);
+    return res.status(201).json({ item: fetchRes.rows[0] });
   } catch (err) {
     console.error('Create service-item error:', err.message);
     return res.status(500).json({ error: 'Failed to create service item.' });
@@ -847,7 +860,7 @@ router.put('/service-items/:id', async (req, res) => {
       return res.status(400).json({ error: 'Invalid item ID.' });
     }
 
-    const existing = await query('SELECT * FROM service_items WHERE id = $1', [id]);
+    const existing = await query('SELECT * FROM service_items WHERE id = ?', [id]);
     if (existing.rowCount === 0) {
       return res.status(404).json({ error: 'Service item not found.' });
     }
@@ -863,23 +876,22 @@ router.put('/service-items/:id', async (req, res) => {
         ? normalizeItemDisplayConfig(req.body.display_config)
         : cur.display_config || {};
 
-    const updated = await query(
+    await query(
       `UPDATE service_items
-       SET service_id = $1,
-           title = $2,
-           tag = $3,
-           price_label = $4,
-           description = $5,
-           highlights = $6::jsonb,
-           image_url = $7,
-           media_id = $8,
-           cta_text = $9,
-           display_config = $10::jsonb,
-           is_active = $11,
-           sort_order = $12,
+       SET service_id = ?,
+           title = ?,
+           tag = ?,
+           price_label = ?,
+           description = ?,
+           highlights = ?,
+           image_url = ?,
+           media_id = ?,
+           cta_text = ?,
+           display_config = ?,
+           is_active = ?,
+           sort_order = ?,
            updated_at = NOW()
-       WHERE id = $13
-       RETURNING *`,
+       WHERE id = ?`,
       [
         req.body?.service_id !== undefined ? Number(req.body.service_id) : cur.service_id,
         title,
@@ -913,7 +925,8 @@ router.put('/service-items/:id', async (req, res) => {
       ]
     );
 
-    return res.json({ item: updated.rows[0] });
+    const fetchRes = await query('SELECT * FROM service_items WHERE id = ?', [id]);
+    return res.json({ item: fetchRes.rows[0] });
   } catch (err) {
     console.error('Update service-item error:', err.message);
     return res.status(500).json({ error: 'Failed to update service item.' });
@@ -926,10 +939,11 @@ router.delete('/service-items/:id', async (req, res) => {
     if (!Number.isInteger(id)) {
       return res.status(400).json({ error: 'Invalid item ID.' });
     }
-    const del = await query('DELETE FROM service_items WHERE id = $1 RETURNING id', [id]);
-    if (del.rowCount === 0) {
+    const existing = await query('SELECT id FROM service_items WHERE id = ?', [id]);
+    if (existing.rowCount === 0) {
       return res.status(404).json({ error: 'Service item not found.' });
     }
+    await query('DELETE FROM service_items WHERE id = ?', [id]);
     return res.json({ ok: true });
   } catch (err) {
     console.error('Delete service-item error:', err.message);
@@ -961,14 +975,13 @@ router.patch('/inquiries/:id', async (req, res) => {
     if (!Number.isInteger(id) || !['new', 'contacted', 'archived'].includes(status)) {
       return res.status(400).json({ error: 'Valid inquiry ID and status are required.' });
     }
-    const updated = await query(
-      `UPDATE contact_inquiries SET status = $1 WHERE id = $2 RETURNING *`,
-      [status, id]
-    );
-    if (updated.rowCount === 0) {
+    const existing = await query('SELECT id FROM contact_inquiries WHERE id = ?', [id]);
+    if (existing.rowCount === 0) {
       return res.status(404).json({ error: 'Inquiry not found.' });
     }
-    return res.json({ inquiry: updated.rows[0] });
+    await query('UPDATE contact_inquiries SET status = ? WHERE id = ?', [status, id]);
+    const fetchRes = await query('SELECT * FROM contact_inquiries WHERE id = ?', [id]);
+    return res.json({ inquiry: fetchRes.rows[0] });
   } catch (err) {
     console.error('Update inquiry status error:', err.message);
     return res.status(500).json({ error: 'Failed to update inquiry status.' });
@@ -981,10 +994,11 @@ router.delete('/inquiries/:id', async (req, res) => {
     if (!Number.isInteger(id)) {
       return res.status(400).json({ error: 'Invalid inquiry ID.' });
     }
-    const del = await query('DELETE FROM contact_inquiries WHERE id = $1 RETURNING id', [id]);
-    if (del.rowCount === 0) {
+    const existing = await query('SELECT id FROM contact_inquiries WHERE id = ?', [id]);
+    if (existing.rowCount === 0) {
       return res.status(404).json({ error: 'Inquiry not found.' });
     }
+    await query('DELETE FROM contact_inquiries WHERE id = ?', [id]);
     return res.json({ ok: true });
   } catch (err) {
     console.error('Delete inquiry error:', err.message);

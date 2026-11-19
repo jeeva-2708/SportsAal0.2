@@ -1,59 +1,88 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pg from 'pg';
+import mysql from 'mysql2/promise';
 import { getDatabaseConfig, hasDatabaseCredentials } from './config.js';
-
-const { Pool, Client } = pg;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const pool = new Pool(getDatabaseConfig());
-
-pool.on('error', (err) => {
-  console.error('Unexpected PostgreSQL pool error:', err.message);
-});
+export const pool = mysql.createPool(getDatabaseConfig());
 
 function assertCredentialsConfigured() {
   if (!hasDatabaseCredentials()) {
     throw new Error(
-      'Missing PostgreSQL password: set PGPASSWORD (or DATABASE_URL) in SportsAal0.2/.env (not .env.example) and restart.'
+      'Missing MySQL password: set MYSQL_PASSWORD (or DATABASE_URL) in SportsAal0.2/.env and restart.'
     );
   }
 }
 
+/**
+ * Standardized query helper that executes parameterized MySQL queries
+ * and normalizes the return shape into { rows, rowCount, insertId }.
+ * Supports both MySQL (?) and legacy PostgreSQL ($1, $2) placeholder formats.
+ */
 export async function query(text, params = []) {
   assertCredentialsConfigured();
-  return pool.query(text, params);
+
+  // Convert PostgreSQL-style $1, $2 placeholders to MySQL ? if present
+  let formattedSql = text;
+  if (Array.isArray(params) && params.length > 0 && /\$\d+/.test(formattedSql)) {
+    formattedSql = formattedSql.replace(/\$(\d+)/g, '?');
+  }
+
+  const [results] = await pool.query(formattedSql, params);
+
+  if (Array.isArray(results)) {
+    return {
+      rows: results,
+      rowCount: results.length,
+      insertId: 0,
+    };
+  }
+
+  // ResultSetHeader for INSERT, UPDATE, DELETE
+  return {
+    rows: [],
+    rowCount: results?.affectedRows ?? 0,
+    insertId: results?.insertId ?? 0,
+  };
 }
 
 /**
- * Ensures the target PostgreSQL database exists (for local / VPS Postgres instances).
- * Safely skipped if connecting via a managed single-DB connectionString (DATABASE_URL).
+ * Ensures the target MySQL database exists.
+ * Safely skipped if connecting via DATABASE_URL.
  */
 export async function ensureDatabaseExists() {
   assertCredentialsConfigured();
   if (process.env.DATABASE_URL) return;
 
-  const targetDb = process.env.PGDATABASE || 'sportsaal';
+  const targetDb =
+    process.env.MYSQL_DATABASE ||
+    process.env.DB_NAME ||
+    process.env.PGDATABASE ||
+    'sportsaal';
+
   if (!/^[a-zA-Z0-9_]+$/.test(targetDb)) {
-    throw new Error(`Invalid PostgreSQL database identifier: ${targetDb}`);
+    throw new Error(`Invalid MySQL database identifier: ${targetDb}`);
   }
 
-  const adminClient = new Client(getDatabaseConfig('postgres'));
-  await adminClient.connect();
+  const baseConfig = getDatabaseConfig();
+  const adminConfig = { ...baseConfig };
+  delete adminConfig.database;
+
+  let adminConn;
   try {
-    const check = await adminClient.query(
-      'SELECT 1 FROM pg_database WHERE datname = $1',
-      [targetDb]
+    adminConn = await mysql.createConnection(adminConfig);
+    await adminConn.query(
+      `CREATE DATABASE IF NOT EXISTS \`${targetDb}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
-    if (check.rowCount === 0) {
-      await adminClient.query(`CREATE DATABASE "${targetDb}"`);
-      console.log(`Created PostgreSQL database "${targetDb}".`);
-    }
+    console.log(`Verified MySQL database "${targetDb}".`);
+  } catch (err) {
+    // If user lacks permission to create DB (e.g. Hostinger phpMyAdmin where DB is pre-created), log warning
+    console.warn(`Database check note: ${err.message}`);
   } finally {
-    await adminClient.end();
+    if (adminConn) await adminConn.end();
   }
 }
 

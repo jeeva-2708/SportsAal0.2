@@ -30,43 +30,60 @@ export const ADMIN_DEFAULTS = {
 export function hasDatabaseCredentials() {
   return Boolean(
     (process.env.DATABASE_URL && process.env.DATABASE_URL.trim().length > 0) ||
-      (typeof process.env.PGPASSWORD === 'string' && process.env.PGPASSWORD.length > 0)
+      (typeof (process.env.MYSQL_PASSWORD ?? process.env.DB_PASSWORD ?? process.env.PGPASSWORD) === 'string')
   );
 }
 
-export function shouldEnableSsl() {
-  if (process.env.PGSSL === 'false') return false;
-  if (process.env.PGSSL === 'true') return true;
-  if (IS_PROD) return true;
-  const dbUrl = (process.env.DATABASE_URL || '').toLowerCase();
-  if (
-    dbUrl.includes('supabase.co') ||
-    dbUrl.includes('supabase.com') ||
-    dbUrl.includes('pooler.supabase.com') ||
-    dbUrl.includes('sslmode=require')
-  ) {
-    return true;
-  }
-  return false;
-}
-
 export function getDatabaseConfig(overrideDatabase = null) {
-  const sslConfig = shouldEnableSsl() ? { rejectUnauthorized: false } : undefined;
+  const isSsl =
+    process.env.MYSQL_SSL === 'true' ||
+    process.env.DB_SSL === 'true' ||
+    process.env.PGSSL === 'true';
 
   if (process.env.DATABASE_URL && !overrideDatabase) {
     return {
-      connectionString: process.env.DATABASE_URL,
-      ssl: sslConfig,
+      uri: process.env.DATABASE_URL,
+      multipleStatements: true,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      ssl: isSsl ? { rejectUnauthorized: false } : undefined,
     };
   }
 
   return {
-    host: process.env.PGHOST || '127.0.0.1',
-    port: Number(process.env.PGPORT || 5432),
-    database: overrideDatabase || process.env.PGDATABASE || 'sportsaal',
-    user: process.env.PGUSER || 'postgres',
-    password: process.env.PGPASSWORD ?? '',
-    ssl: sslConfig,
+    host:
+      process.env.MYSQL_HOST ||
+      process.env.DB_HOST ||
+      process.env.PGHOST ||
+      '127.0.0.1',
+    port: Number(
+      process.env.MYSQL_PORT ||
+      process.env.DB_PORT ||
+      process.env.PGPORT ||
+      3306
+    ),
+    database:
+      overrideDatabase ||
+      process.env.MYSQL_DATABASE ||
+      process.env.DB_NAME ||
+      process.env.PGDATABASE ||
+      'sportsaal',
+    user:
+      process.env.MYSQL_USER ||
+      process.env.DB_USER ||
+      process.env.PGUSER ||
+      'root',
+    password:
+      process.env.MYSQL_PASSWORD ??
+      process.env.DB_PASSWORD ??
+      process.env.PGPASSWORD ??
+      '',
+    multipleStatements: true,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    ssl: isSsl ? { rejectUnauthorized: false } : undefined,
   };
 }
 
