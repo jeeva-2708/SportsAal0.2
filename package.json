@@ -3,13 +3,14 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node server/index.js",
-    "server": "node server/index.js",
+    "start": "node index.js",
+    "server": "node index.js",
     "db:init": "node server/seed.js",
     "admin:reset-password": "node server/resetPassword.js",
     "dev:all": "concurrently -n API,WEB -c blue,red \"npm run server\" \"npm run dev\""
