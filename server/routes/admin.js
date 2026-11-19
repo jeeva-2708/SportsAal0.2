@@ -614,10 +614,6 @@ router.post('/services', async (req, res) => {
 
     const fetchRes = await query('SELECT * FROM services WHERE id = ?', [inserted.insertId]);
     return res.status(201).json({ service: fetchRes.rows[0] });
-      ]
-    );
-
-    return res.status(201).json({ service: inserted.rows[0] });
   } catch (err) {
     console.error('Create service error:', err.message);
     return res.status(500).json({ error: 'Failed to create service.' });
@@ -771,10 +767,6 @@ router.post('/services/:id/reset-item-overrides', async (req, res) => {
          SET display_config = JSON_OBJECT(),
              updated_at = NOW()
          WHERE service_id = ?`,
-        [id]
-      );
-    }
-         WHERE service_id = $1`,
         [id]
       );
     }
